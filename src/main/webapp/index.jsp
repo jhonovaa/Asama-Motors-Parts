@@ -286,8 +286,10 @@
             .hero-buttons { flex-direction: column; align-items: center; }
         }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -300,6 +302,9 @@
                 <% } else { %>
                     <a href="login.jsp" class="btn-outline-moto-sm">Iniciar Sesión</a>
                 <% } %>
+                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
+                    <i id="themeIcon" class="bi bi-sun-fill"></i>
+                </button>
             </div>
         </div>
     </nav>

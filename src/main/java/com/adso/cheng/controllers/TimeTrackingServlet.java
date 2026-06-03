@@ -17,6 +17,44 @@ public class TimeTrackingServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if ("list".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            StringBuilder json = new StringBuilder("[");
+            String sql = "SELECT u.full_name, t.entry_time, t.exit_time FROM time_tracking t JOIN users u ON t.user_id = u.id WHERE t.date = CURRENT_DATE ORDER BY t.entry_time DESC";
+            
+            try (Connection conn = DbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    
+                    String name = rs.getString("full_name");
+                    // get string format of timestamp directly if possible
+                    String entry = rs.getTimestamp("entry_time") != null ? rs.getTimestamp("entry_time").toString() : "";
+                    String exit = rs.getTimestamp("exit_time") != null ? rs.getTimestamp("exit_time").toString() : "";
+                    
+                    json.append("{")
+                        .append("\"name\":\"").append(name.replace("\"", "\\\"")).append("\",")
+                        .append("\"entry\":\"").append(entry).append("\",")
+                        .append("\"exit\":\"").append(exit).append("\"")
+                        .append("}");
+                    first = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]");
+            
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            return;
+        }
+
         request.getRequestDispatcher("time_tracking.jsp").forward(request, response);
     }
 

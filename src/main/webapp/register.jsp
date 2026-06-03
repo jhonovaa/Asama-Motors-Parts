@@ -23,8 +23,15 @@
         .btn-moto:hover { background-color: #E55A2B; color: white; transform: translateY(-1px); }
         .text-orange { color: var(--accent-orange) !important; }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
+    <div style="position:fixed; top:16px; right:16px; z-index:1000;">
+        <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
+            <i id="themeIcon" class="bi bi-sun-fill"></i>
+        </button>
+    </div>
 
     <div class="register-card">
         <div class="text-center mb-4">
@@ -32,6 +39,23 @@
             <h3 class="fw-bold mb-1">Crea tu cuenta</h3>
             <p class="text-secondary small">Únete a Asama Moto Parts y compra online</p>
         </div>
+
+        <!-- SweetAlert2 for Registration Errors -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <% if(request.getAttribute("error") != null) { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No pudimos registrarte',
+                        text: '<%= request.getAttribute("error") %>',
+                        confirmButtonColor: '#FF6B35',
+                        background: document.body.classList.contains('light-mode') ? '#fff' : '#1a1a1a',
+                        color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
+                    });
+                });
+            </script>
+        <% } %>
 
         <form action="register" method="POST">
             <div class="mb-3">

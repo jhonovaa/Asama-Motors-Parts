@@ -67,19 +67,14 @@
         .nav-tabs .nav-link.active { color: var(--accent-orange); background: transparent; border-bottom: 3px solid var(--accent-orange); }
         .nav-tabs .nav-link:hover { color: #fff; }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard.jsp"><i class="bi bi-gear-wide-connected me-2"></i>Asama<span>MotoParts</span></a>
-        <div class="d-flex align-items-center gap-3">
-            <a class="btn btn-moto-outline btn-sm" href="dashboard.jsp"><i class="bi bi-arrow-left me-1"></i>Panel</a>
-        </div>
-    </div>
-</nav>
+<%@ include file="navbar.jsp" %>
 
-<div class="container py-4">
+<div class="container py-4 mt-2">
     <h3 class="fw-bold mb-1"><i class="bi bi-wrench-adjustable-circle me-2" style="color:var(--accent-orange)"></i>Taller de Mantenimiento</h3>
     <p class="text-secondary mb-4">Gestión de motos, órdenes de trabajo y reparaciones.</p>
 

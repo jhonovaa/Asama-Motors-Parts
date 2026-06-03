@@ -108,11 +108,29 @@ public class ProductDAO {
     }
 
     public boolean deleteProduct(int id) {
-        String sql = "DELETE FROM products WHERE id=?";
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+        String deleteLogsSql = "DELETE FROM inventory_logs WHERE product_id=?";
+        String deleteSalesSql = "DELETE FROM sales WHERE product_id=?";
+        String deleteProductSql = "DELETE FROM products WHERE id=?";
+        try (Connection conn = DbConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement logStmt = conn.prepareStatement(deleteLogsSql)) {
+                logStmt.setInt(1, id);
+                logStmt.executeUpdate();
+            }
+            try (PreparedStatement salesStmt = conn.prepareStatement(deleteSalesSql)) {
+                salesStmt.setInt(1, id);
+                salesStmt.executeUpdate();
+            }
+            try (PreparedStatement prodStmt = conn.prepareStatement(deleteProductSql)) {
+                prodStmt.setInt(1, id);
+                int result = prodStmt.executeUpdate();
+                conn.commit();
+                return result > 0;
+            } catch (SQLException ex) {
+                conn.rollback();
+                ex.printStackTrace();
+                return false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

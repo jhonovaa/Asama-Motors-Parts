@@ -107,12 +107,26 @@ public class InventoryServlet extends HttpServlet {
     }
     
     private String saveFile(Part part, HttpServletRequest request) throws IOException {
-        String uploadPath = request.getServletContext().getRealPath("") + File.separator + "resources" + File.separator + "fotos" + File.separator + "productos";
-        File uploadDir = new File(uploadPath);
+        String baseUploadPath = "c:\\Users\\salaz\\Desktop\\asama\\src\\main\\webapp\\resources\\fotos\\productos";
+        
+        File uploadDir = new File(baseUploadPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
         String fileName = UUID.randomUUID().toString() + ".jpg";
-        part.write(uploadPath + File.separator + fileName);
+        part.write(baseUploadPath + File.separator + fileName);
+        
+        // Also write to deployed directory for immediate UI access
+        String deployUploadPath = request.getServletContext().getRealPath("/resources/fotos/productos");
+        if (deployUploadPath != null) {
+            File deployDir = new File(deployUploadPath);
+            if (!deployDir.exists()) deployDir.mkdirs();
+            java.nio.file.Files.copy(
+                new java.io.File(baseUploadPath + File.separator + fileName).toPath(),
+                new java.io.File(deployUploadPath + File.separator + fileName).toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+        }
+
         return "resources/fotos/productos/" + fileName;
     }
 }

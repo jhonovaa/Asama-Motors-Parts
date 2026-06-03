@@ -69,8 +69,15 @@
             margin-bottom: 10px;
         }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
+    <div style="position:fixed; top:16px; right:16px; z-index:1000;">
+        <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
+            <i id="themeIcon" class="bi bi-sun-fill"></i>
+        </button>
+    </div>
     <div class="otp-card">
         <div class="otp-icon"><i class="bi bi-shield-lock"></i></div>
         <h3 class="fw-bold mb-1">Verificación OTP</h3>

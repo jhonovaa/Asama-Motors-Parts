@@ -12,7 +12,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Empleados - Asama Moto Parts</title>
+    <title>Gestion de Empleados - Asama Moto Parts</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -24,7 +24,8 @@
             --card-bg: #1a1a1a;
             --accent-orange: #FF6B35;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px;}
+        /* Se quito el padding-top: 60px para que el navbar suba correctamente */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
         
         .card { background: var(--card-bg); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-header { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; padding: 15px 20px; }
@@ -77,7 +78,6 @@
 
 <div class="container mt-4">
     <div class="row">
-        <!-- Add Employee Form -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header text-orange"><i class="bi bi-person-plus"></i> Registrar Empleado</div>
@@ -87,13 +87,13 @@
                             <input type="text" name="fullName" class="form-control" placeholder="Nombre Completo" required>
                         </div>
                         <div class="mb-3">
-                            <input type="text" name="documentId" class="form-control" placeholder="Cédula / Documento" required>
+                            <input type="text" name="documentId" class="form-control" placeholder="Cedula / Documento" required>
                         </div>
                         <div class="mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Correo Electrónico" required>
+                            <input type="email" name="email" class="form-control" placeholder="Correo Electronico" required>
                         </div>
                         <div class="mb-3">
-                            <input type="password" name="password" class="form-control" placeholder="Contraseña Temporal" required>
+                            <input type="password" name="password" class="form-control" placeholder="Contrasena Temporal" required>
                         </div>
                         <div class="mb-3">
                             <select name="roleId" class="form-select" required>
@@ -102,7 +102,7 @@
                                 <option value="2">Contador</option>
                                 <option value="3">Bodeguero</option>
                                 <option value="4">Cajero</option>
-                                <option value="6">Mecánico</option>
+                                <option value="6">Mecanico</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -115,7 +115,6 @@
             </div>
         </div>
 
-        <!-- Carnets / IDs List -->
         <div class="col-md-8">
             <div class="d-flex justify-content-between mb-3 align-items-center">
                 <h4 class="fw-bold">Carnets Generados</h4>
@@ -131,7 +130,7 @@
                 <div class="col-md-6">
                     <div class="carnet-card">
                         <% if(u.getPhotoPath() != null && !u.getPhotoPath().isEmpty()) { %>
-                            <img src="<%= u.getPhotoPath() %>" class="carnet-photo" alt="Foto">
+                            <img src="<%= u.getPhotoPath() %>?t=<%= System.currentTimeMillis() %>" class="carnet-photo" alt="Foto">
                         <% } else { %>
                             <div class="carnet-photo">
                                 <b><%= u.getFullName().substring(0,1).toUpperCase() %></b>
@@ -146,7 +145,7 @@
                             else if(u.getRoleId() == 2) role = "Contador";
                             else if(u.getRoleId() == 3) role = "Bodeguero";
                             else if(u.getRoleId() == 4) role = "Cajero";
-                            else if(u.getRoleId() == 6) role = "Mecánico";
+                            else if(u.getRoleId() == 6) role = "Mecanico";
                         %>
                         <span class="badge" style="background: rgba(255,107,53,0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange);"><%= role %></span>
                         
@@ -162,6 +161,16 @@
                                 });
                             </script>
                         </div>
+                        <div class="d-flex justify-content-center gap-2 mt-3 d-print-none">
+                            <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(<%= u.getId() %>, '<%= u.getFullName().replace("'", "\\'") %>', '<%= u.getDocumentId() %>', '<%= u.getEmail() %>', <%= u.getRoleId() %>)">
+                                <i class="bi bi-pencil"></i> Editar
+                            </button>
+                            <form action="employees" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar este empleado?');">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="<%= u.getId() %>">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <%      }
@@ -171,5 +180,64 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade d-print-none" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color:var(--accent-orange)"><i class="bi bi-person-lines-fill"></i> Editar Empleado</h5>
+        <button type="button" class="btn-close btn-close-white theme-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="employees" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+              <input type="hidden" name="action" value="edit">
+              <input type="hidden" name="id" id="editId">
+              <div class="mb-3">
+                  <label class="form-label text-secondary small">Nombre Completo</label>
+                  <input type="text" name="fullName" id="editName" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small">Cedula</label>
+                  <input type="text" name="documentId" id="editDoc" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small">Email</label>
+                  <input type="email" name="email" id="editEmail" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small">Rol</label>
+                  <select name="roleId" id="editRole" class="form-select" required>
+                      <option value="1">Administrador</option>
+                      <option value="2">Contador</option>
+                      <option value="3">Bodeguero</option>
+                      <option value="4">Cajero</option>
+                      <option value="6">Mecanico</option>
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small">Actualizar Foto (Opcional)</label>
+                  <input type="file" name="photo" class="form-control" accept="image/jpeg, image/png">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-moto">Guardar Cambios</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function openEditModal(id, name, doc, email, roleId) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editDoc').value = doc;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editRole').value = roleId;
+        new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+</script>
 </body>
 </html>

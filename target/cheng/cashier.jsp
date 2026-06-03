@@ -9,6 +9,7 @@
         return;
     }
 %>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Punto de Venta - Cajero</title>
@@ -30,13 +31,23 @@
         .navbar-brand { color: var(--metallic-chrome) !important; font-weight: 700; }
         .pos-panel { background: var(--metallic-gunmetal); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); height: 100%; }
         #barcodeInput { background: var(--card-bg); color: white; font-size: 1.5rem; letter-spacing: 2px; text-align: center; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; }
-        #barcodeInput:focus { box-shadow: 0 0 10px rgba(211,47,47,0.3); border-color: var(--accent-red); }
+        #barcodeInput:focus { box-shadow: 0 0 10px rgba(211,47,47,0.3); border-color: var(--accent-orange); }
+        
+        /* Ajustes para la tabla transparente */
+        .table { 
+            --bs-table-bg: transparent; 
+            color: var(--text-color); 
+        }
+        .table th, .table td { 
+            background-color: transparent !important; 
+            border-color: rgba(255,255,255,0.1); 
+            color: var(--text-color) !important;
+        }
         .table-dark { background-color: transparent; }
-        .table { color: #ccc; }
-        .table th, .table td { border-color: rgba(255,255,255,0.1); }
-        .btn-moto { background-color: var(--accent-red); color: #fff; border: none; border-radius: 30px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
+        
+        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
         .btn-moto:hover { background-color: #E55A2B; }
-        .btn-moto-outline { border: 1px solid var(--accent-red); color: var(--accent-red); background: transparent; border-radius: 30px; padding: 5px 15px; transition: 0.3s; }
+        .btn-moto-outline { border: 1px solid var(--accent-orange); color: var(--accent-orange); background: transparent; border-radius: 30px; padding: 5px 15px; transition: 0.3s; }
         .btn-moto-outline:hover { background: var(--accent-red); color: white; }
         
         .pulse-scanner { animation: pulseRed 2s infinite; }
@@ -46,18 +57,20 @@
             100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
         }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
 <%@ include file="navbar.jsp" %>
 
-<div class="container">
+<div class="container mt-4">
     <div class="row g-4 pb-4">
         <div class="col-md-5">
             <div class="pos-panel text-center">
                 <i class="bi bi-upc-scan fs-1 text-danger mb-3 pulse-scanner d-inline-block rounded-circle p-2"></i>
-                <h4 class="mb-4">Escáner Activo</h4>
-                <p class="text-secondary small">El sistema está escuchando el escáner de código de barras en todo momento. Simplemente apunte y dispare al producto.</p>
+                <h4 class="mb-4">Escaner Activo</h4>
+                <p class="text-secondary small">El sistema esta escuchando el escaner de codigo de barras en todo momento. Simplemente apunte y dispare al producto.</p>
                 <div class="mb-3 mt-4 text-start">
                     <label class="form-label text-muted small">Entrada Manual (Opcional):</label>
                     <input type="text" id="barcodeInput" class="form-control form-control-lg" placeholder="|||| |||||| ||||" autocomplete="off">
@@ -80,8 +93,7 @@
                             </tr>
                         </thead>
                         <tbody id="cartBody">
-                            <!-- Items via JS -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
                 <hr style="border-color: rgba(255,255,255,0.1);">
@@ -155,7 +167,7 @@
                 showStatus('✔ ' + data.name, 'success');
             }
         }).catch(err => {
-            showStatus('Error de conexión', 'danger');
+            showStatus('Error de conexion', 'danger');
         });
     }
 
@@ -187,7 +199,7 @@
         });
         
         if(cart.length === 0) {
-            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Esperando artículos...</td></tr>';
+            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Esperando articulos...</td></tr>';
         }
         
         totalPriceEl.innerText = '$' + total.toFixed(2);
@@ -203,8 +215,6 @@
     payBtn.addEventListener('click', () => {
         if(cart.length === 0) return;
         
-        // For a real POS, send the entire cart JSON. For this simple demo, we send the first item.
-        // Let's improve it to send the whole cart to a new real endpoint or just process one by one in demo.
         let promises = cart.map(item => {
             let sub = item.qty * item.price;
             return fetch('cashier', {
@@ -215,7 +225,7 @@
         });
 
         Promise.all(promises).then(() => {
-            showStatus('Venta procesada con éxito', 'success');
+            showStatus('Venta procesada con exito', 'success');
             cart = [];
             renderCart();
         }).catch(() => {

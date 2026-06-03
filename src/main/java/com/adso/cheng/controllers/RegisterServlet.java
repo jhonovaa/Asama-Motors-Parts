@@ -31,7 +31,7 @@ public class RegisterServlet extends HttpServlet {
         if (success) {
             response.sendRedirect("login.jsp?success=1");
         } else {
-            request.setAttribute("error", "No se pudo registrar la cuenta. Verifique sus datos.");
+            request.setAttribute("error", "No se pudo registrar. Es posible que el correo o documento ya estén en uso.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

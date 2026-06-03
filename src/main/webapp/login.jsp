@@ -150,8 +150,15 @@
             font-size: 0.85rem;
         }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
+    <div style="position:fixed; top:16px; right:16px; z-index:1000;">
+        <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
+            <i id="themeIcon" class="bi bi-sun-fill"></i>
+        </button>
+    </div>
     <div class="login-card">
         <div class="text-center mb-4">
             <div class="brand-icon">
@@ -165,6 +172,29 @@
             <div class="alert alert-danger py-2 text-center" role="alert">
                 <%= request.getAttribute("error") %>
             </div>
+        <% } %>
+
+        <!-- SweetAlert2 for Registration Success -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <% if("1".equals(request.getParameter("success"))) { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Cuenta creada!',
+                        text: 'Te has registrado exitosamente como Cliente. Ahora puedes iniciar sesión.',
+                        confirmButtonColor: '#FF6B35',
+                        background: document.body.classList.contains('light-mode') ? '#fff' : '#1a1a1a',
+                        color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
+                    });
+                    
+                    if(window.history.replaceState) {
+                        const url = new URL(window.location);
+                        url.searchParams.delete('success');
+                        window.history.replaceState({path:url.href}, '', url.href);
+                    }
+                });
+            </script>
         <% } %>
 
         <form action="login" method="POST">

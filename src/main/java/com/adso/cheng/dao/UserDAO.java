@@ -30,13 +30,15 @@ public class UserDAO {
     }
 
     public boolean registerCustomer(User user) {
-        String sql = "INSERT INTO users (full_name, document_id, email, password, role_id) VALUES (?, ?, ?, ?, 5)";
+        String barcode = user.getDocumentId();
+        String sql = "INSERT INTO users (full_name, document_id, email, password, role_id, barcode) VALUES (?, ?, ?, ?, 5, ?)";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getFullName());
             stmt.setString(2, user.getDocumentId());
             stmt.setString(3, user.getEmail());
             stmt.setString(4, HashUtil.sha256(user.getPassword()));
+            stmt.setString(5, barcode);
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

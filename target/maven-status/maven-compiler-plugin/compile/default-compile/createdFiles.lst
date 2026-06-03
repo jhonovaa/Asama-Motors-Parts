@@ -19,4 +19,5 @@ com\adso\cheng\controllers\CheckoutServlet$1.class
 com\adso\cheng\controllers\CashierServlet.class
 com\adso\cheng\controllers\MaintenanceServlet.class
 com\adso\cheng\controllers\LogoutServlet.class
+com\adso\cheng\controllers\VisualScannerServlet.class
 com\adso\cheng\dao\ProductDAO.class

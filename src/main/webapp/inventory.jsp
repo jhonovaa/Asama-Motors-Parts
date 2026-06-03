@@ -33,22 +33,24 @@
         .card { background: var(--metallic-gunmetal); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-header { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; padding: 15px 20px; }
         .form-control { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 10px; }
-        .form-control:focus { background: var(--card-bg); color: #fff; border-color: var(--accent-red); box-shadow: none; }
+        .form-control:focus { background: var(--card-bg); color: #fff; border-color: var(--accent-orange); box-shadow: none; }
         
         .table-dark { background-color: transparent !important; }
         .table { color: #ccc; }
         .table th, .table td { border-color: rgba(255,255,255,0.1); vertical-align: middle; }
         .barcode-svg { background: white; padding: 5px; border-radius: 8px; }
         
-        .btn-primary { background-color: var(--accent-red); color: #fff; border: none; border-radius: 20px; transition: 0.3s; }
+        .btn-primary { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 20px; transition: 0.3s; }
         .btn-primary:hover { background-color: #E55A2B; }
         
         .modal-content { background: var(--metallic-gunmetal); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 15px; }
         .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
         .modal-footer { border-top: 1px solid rgba(255,255,255,0.1); }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
 <%@ include file="navbar.jsp" %>
 

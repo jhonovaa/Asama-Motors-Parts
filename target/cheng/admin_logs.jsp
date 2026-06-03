@@ -32,7 +32,7 @@
         
         .dashboard-stats {
             background: var(--metallic-gunmetal);
-            border-left: 5px solid var(--accent-red);
+            border-left: 5px solid var(--accent-orange);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -47,20 +47,14 @@
         .table { color: #ccc; }
         .table th, .table td { border-color: rgba(255,255,255,0.1); }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard.jsp">Panel de Registros</a>
-        <div>
-            <a class="btn btn-outline-danger btn-sm me-2" href="dashboard.jsp" style="border-radius:20px;">Volver al Panel</a>
-            <a class="btn btn-outline-secondary btn-sm" href="logout" style="border-radius:20px;">Cerrar Sesión</a>
-        </div>
-    </div>
-</nav>
+<%@ include file="navbar.jsp" %>
 
-<div class="container">
+<div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="dashboard-stats">

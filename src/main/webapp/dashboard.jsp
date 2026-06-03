@@ -104,27 +104,14 @@
             border: 1px solid rgba(255,107,53,0.3);
         }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard.jsp"><i class="bi bi-gear-wide-connected me-2"></i>Asama<span>MotoParts</span></a>
-        <div class="d-flex align-items-center gap-3">
-            <span class="role-badge">
-                <% if(user.getRoleId()==1) out.print("Admin");
-                   else if(user.getRoleId()==2) out.print("Contador");
-                   else if(user.getRoleId()==3) out.print("Bodeguero");
-                   else if(user.getRoleId()==4) out.print("Cajero");
-                   else if(user.getRoleId()==5) out.print("Cliente");
-                   else if(user.getRoleId()==6) out.print("Mecánico"); %>
-            </span>
-            <a class="btn btn-moto-outline btn-sm" href="logout">Cerrar Sesión</a>
-        </div>
-    </div>
-</nav>
+<%@ include file="navbar.jsp" %>
 
-<div class="container pb-5">
+<div class="container pb-5 mt-4">
     <div class="row justify-content-center">
         <div class="col-md-11">
             <div class="welcome-card">
@@ -225,6 +212,15 @@
                                 <h5 class="text-white">Buscar Repuesto</h5>
                                 <p class="text-secondary small">Escanea códigos de barras con la cámara.</p>
                                 <a href="search_product.jsp" class="btn btn-moto w-100">Escanear</a>
+                            </div>
+                        </div>
+                        <!-- Escáner Visual IA for Cliente -->
+                        <div class="col-md-4 mt-4">
+                            <div class="action-card text-center">
+                                <i class="bi bi-camera fs-1 card-icon mb-3"></i>
+                                <h5 class="text-white">Escáner Visual IA</h5>
+                                <p class="text-secondary small">Captura una foto del repuesto y la IA lo identifica.</p>
+                                <a href="visual_scanner.jsp" class="btn btn-moto-outline w-100">Identificar Pieza</a>
                             </div>
                         </div>
 

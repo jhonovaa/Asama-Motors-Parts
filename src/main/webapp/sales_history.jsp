@@ -48,20 +48,16 @@
         }
         .table { color: #ccc; }
         .table th, .table td { border-color: rgba(255,255,255,0.1); }
-        .table thead th { border-bottom: 2px solid var(--accent-red); color: white; }
+        .table thead th { border-bottom: 2px solid var(--accent-orange); color: white; }
     </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard.jsp">
-            <i class="bi bi-arrow-left me-2"></i> Volver al Dashboard
-        </a>
-    </div>
-</nav>
+<%@ include file="navbar.jsp" %>
 
-<div class="container py-5">
+<div class="container py-5 mt-3">
     <h2 class="fw-bold mb-4">Historial de Ventas (Últimos 30 días)</h2>
     
     <div class="row g-4">
