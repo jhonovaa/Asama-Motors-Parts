@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner Visual de Repuestos - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -20,14 +21,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
 
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --card-bg: #1a1a1a;
-            --accent-orange: #FF6B35;
-            --accent-dark: #2D3436;
-            --card-border: rgba(255,255,255,0.06);
-        }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
 
         .scanner-section {
@@ -45,7 +38,7 @@
             margin: 0 auto;
             border-radius: 16px;
             overflow: hidden;
-            border: 3px solid var(--accent-dark);
+            border: 3px solid var(--card-border);
             background: #000;
         }
         .camera-container video {
@@ -65,7 +58,7 @@
         .scan-frame {
             width: 70%;
             height: 70%;
-            border: 2px dashed rgba(255,107,53,0.5);
+            border: 2px dashed var(--accent-orange);
             border-radius: 16px;
             position: relative;
         }
@@ -83,7 +76,7 @@
         }
 
         .capture-btn {
-            background: linear-gradient(135deg, var(--accent-orange), #E55A2B);
+            background: var(--accent-orange);
             color: white;
             border: none;
             border-radius: 50%;
@@ -160,7 +153,7 @@
             width: 100%;
             height: 160px;
             border-radius: 12px;
-            background: var(--accent-dark);
+            background: var(--card-bg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -181,14 +174,14 @@
         .btn-moto:hover { background-color: #E55A2B; color: white; }
 
         .search-bar {
-            background: var(--accent-dark);
+            background: var(--card-bg);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
             border-radius: 30px;
             padding: 12px 20px;
         }
         .search-bar:focus {
-            background: var(--accent-dark);
+            background: var(--card-bg);
             color: #fff;
             border-color: var(--accent-orange);
             outline: none;
@@ -395,7 +388,7 @@
                 predictions.forEach(pred => {
                     const label = pred.className;
                     const confidence = (pred.probability * 100).toFixed(1);
-                    tagsContainer.innerHTML += `<span class="prediction-tag">${label} (${confidence}%)</span>`;
+                    tagsContainer.innerHTML += '<span class="prediction-tag">' + label + ' (' + confidence + '%)</span>';
                     
                     // Split multi-word labels and collect unique terms
                     label.split(/[,\s]+/).forEach(term => {
@@ -497,30 +490,30 @@
             grid.innerHTML = '';
             products.forEach(p => {
                 const img = p.imageUrl 
-                    ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy">` 
-                    : `<div class="placeholder-img"><i class="bi bi-tools"></i></div>`;
+                    ? '<img src="' + p.imageUrl + '" alt="' + p.name + '" loading="lazy">' 
+                    : '<div class="placeholder-img"><i class="bi bi-tools"></i></div>';
                 
                 const stockBadge = p.stock > 0 
-                    ? `<span class="badge bg-success bg-opacity-25 text-success">${p.stock} en stock</span>`
-                    : `<span class="badge bg-danger bg-opacity-25 text-danger">Agotado</span>`;
+                    ? '<span class="badge bg-success bg-opacity-25 text-success">' + p.stock + ' en stock</span>'
+                    : '<span class="badge bg-danger bg-opacity-25 text-danger">Agotado</span>';
                 
                 const addToCartBtn = p.stock > 0 
-                    ? `<button class="btn btn-moto btn-sm w-100 mt-2" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})"><i class="bi bi-cart-plus me-1"></i>Añadir</button>`
-                    : `<button class="btn btn-secondary btn-sm w-100 mt-2" disabled>Agotado</button>`;
+                    ? '<button class="btn btn-moto btn-sm w-100 mt-2" onclick="addToCart(' + p.id + ', \'' + p.name.replace(/'/g, "\\'") + '\', ' + p.price + ')"><i class="bi bi-cart-plus me-1"></i>Añadir</button>'
+                    : '<button class="btn btn-secondary btn-sm w-100 mt-2" disabled>Agotado</button>';
 
-                grid.innerHTML += `
-                    <div class="col-md-6 col-xl-4">
-                        <div class="product-card">
-                            ${img}
-                            <h6 class="fw-bold text-white mb-1">${p.name}</h6>
-                            <p class="text-secondary small mb-1">${p.brand || 'Genérico'}</p>
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h5 class="text-orange fw-bold mb-0">$${p.price.toFixed(2)}</h5>
-                                ${stockBadge}
-                            </div>
-                            ${addToCartBtn}
-                        </div>
-                    </div>`;
+                grid.innerHTML += 
+                    '<div class="col-md-6 col-xl-4">' +
+                        '<div class="product-card">' +
+                            img +
+                            '<h6 class="fw-bold mb-1">' + p.name + '</h6>' +
+                            '<p class="text-secondary small mb-1">' + (p.brand || 'Genérico') + '</p>' +
+                            '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                                '<h5 class="text-orange fw-bold mb-0">$' + p.price.toFixed(2) + '</h5>' +
+                                stockBadge +
+                            '</div>' +
+                            addToCartBtn +
+                        '</div>' +
+                    '</div>';
             });
         }
 
@@ -530,7 +523,7 @@
             container.innerHTML = '<button class="filter-chip ' + (currentBrandFilter === '' ? 'active' : '') + '" onclick="filterByBrand(\'\')">Todos</button>';
             
             brands.forEach(brand => {
-                container.innerHTML += `<button class="filter-chip ${currentBrandFilter === brand ? 'active' : ''}" onclick="filterByBrand('${brand}')">${brand}</button>`;
+                container.innerHTML += '<button class="filter-chip ' + (currentBrandFilter === brand ? 'active' : '') + '" onclick="filterByBrand(\'' + brand + '\')">' + brand + '</button>';
             });
         }
 

@@ -1,5 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
@@ -9,100 +7,138 @@
         return;
     }
 %>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Punto de Venta - Cajero</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto de Venta - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
-        :root {
-            --bg-color: #0f1013;
-            --text-color: #f1f2f6;
-            --nav-bg: rgba(15, 16, 19, 0.85);
-            --metallic-chrome: #E5E4E2;
-            --metallic-gunmetal: #1a1d24;
-            --card-bg: #2a2e35;
-            --accent-orange: #FF6B35;
+        /* --- ANIMACION Y ESTILOS DEL ESCANER --- */
+        @keyframes scannerPulse {
+            0% { box-shadow: 0 0 0 0 var(--accent-glow); transform: scale(1); }
+            70% { box-shadow: 0 0 0 20px rgba(0,0,0,0); transform: scale(1.1); }
+            100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); transform: scale(1); }
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
-        .navbar { background-color: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .navbar-brand { color: var(--metallic-chrome) !important; font-weight: 700; }
-        .pos-panel { background: var(--metallic-gunmetal); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); height: 100%; }
-        #barcodeInput { background: var(--card-bg); color: white; font-size: 1.5rem; letter-spacing: 2px; text-align: center; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; }
-        #barcodeInput:focus { box-shadow: 0 0 10px rgba(211,47,47,0.3); border-color: var(--accent-orange); }
         
-        /* Ajustes para la tabla transparente */
-        .table { 
-            --bs-table-bg: transparent; 
-            color: var(--text-color); 
+        .pulse-scanner {
+            animation: scannerPulse 2s infinite;
+            color: var(--accent-orange) !important;
+            background: rgba(128, 128, 128, 0.1);
+            width: 80px;
+            height: 80px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
         }
-        .table th, .table td { 
-            background-color: transparent !important; 
-            border-color: rgba(255,255,255,0.1); 
-            color: var(--text-color) !important;
+
+        /* --- LEGIBILIDAD EXTREMA --- */
+        .text-secondary, .text-muted {
+            color: rgba(255, 255, 255, 0.75) !important;
         }
-        .table-dark { background-color: transparent; }
+        body.light-mode .text-secondary, body.light-mode .text-muted {
+            color: rgba(0, 0, 0, 0.65) !important;
+        }
         
-        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
-        .btn-moto:hover { background-color: #E55A2B; }
-        .btn-moto-outline { border: 1px solid var(--accent-orange); color: var(--accent-orange); background: transparent; border-radius: 30px; padding: 5px 15px; transition: 0.3s; }
-        .btn-moto-outline:hover { background: var(--accent-red); color: white; }
-        
-        .pulse-scanner { animation: pulseRed 2s infinite; }
-        @keyframes pulseRed {
-            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        /* Formularios consistentes */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 0 0 0.25rem var(--accent-glow) !important;
+        }
+
+        body.light-mode .form-control {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        body.light-mode .form-control::placeholder {
+            color: rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Tabla del carrito */
+        .cart-table th { font-weight: 700; letter-spacing: 0.5px; font-size: 0.85rem; border-bottom: 2px solid var(--card-border); }
+        .cart-table td { font-weight: 500; font-size: 0.95rem; border-bottom: 1px solid var(--card-border); vertical-align: middle; }
     </style>
-    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
 <script src="resources/theme.js"></script>
 
 <%@ include file="navbar.jsp" %>
 
-<div class="container mt-4">
-    <div class="row g-4 pb-4">
-        <div class="col-md-5">
-            <div class="pos-panel text-center">
-                <i class="bi bi-upc-scan fs-1 text-danger mb-3 pulse-scanner d-inline-block rounded-circle p-2"></i>
-                <h4 class="mb-4">Escaner Activo</h4>
-                <p class="text-secondary small">El sistema esta escuchando el escaner de codigo de barras en todo momento. Simplemente apunte y dispare al producto.</p>
-                <div class="mb-3 mt-4 text-start">
-                    <label class="form-label text-muted small">Entrada Manual (Opcional):</label>
-                    <input type="text" id="barcodeInput" class="form-control form-control-lg" placeholder="|||| |||||| ||||" autocomplete="off">
+<div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px;">
+    <div class="row g-4">
+        
+        <div class="col-lg-4 col-md-5">
+            <div class="action-card h-100 d-flex flex-column text-center p-4 p-xl-5">
+                <div class="flex-grow-1 d-flex flex-column justify-content-center">
+                    <div class="pulse-scanner rounded-circle mb-4">
+                        <i class="bi bi-upc-scan fs-1"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Escaner Activo</h4>
+                    <p class="text-secondary small mb-4">El sistema esta escuchando el escaner de codigo de barras en todo momento. Simplemente apunte y dispare al producto.</p>
                 </div>
-                <div id="scanStatus" class="alert d-none mt-3" role="alert"></div>
+                
+                <div class="mt-auto border-top border-secondary border-opacity-25 pt-4 text-start">
+                    <label class="form-label text-secondary fw-semibold small mb-2"><i class="bi bi-keyboard me-2"></i>Entrada Manual (Opcional):</label>
+                    <input type="text" id="barcodeInput" class="form-control form-control-lg text-center" placeholder="|||| |||||| ||||" autocomplete="off">
+                </div>
+                <div id="scanStatus" class="alert d-none mt-3 fw-bold small py-2 rounded-pill" role="alert"></div>
             </div>
         </div>
         
-        <div class="col-md-7">
-            <div class="pos-panel d-flex flex-column">
-                <h4 class="mb-4 text-white"><i class="bi bi-cart"></i> Cuenta Actual</h4>
-                <div class="table-responsive flex-grow-1" style="max-height: 400px;">
-                    <table class="table table-borderless table-sm">
-                        <thead style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="col-lg-8 col-md-7">
+            <div class="action-card h-100 d-flex flex-column p-4">
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
+                    <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-cart3 me-2"></i>Cuenta Actual</h4>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearCart()" title="Vaciar Carrito"><i class="bi bi-trash"></i></button>
+                </div>
+                
+                <div class="table-responsive flex-grow-1" style="min-height: 350px; max-height: 50vh; overflow-y: auto;">
+                    <table class="table table-borderless cart-table mb-0">
+                        <thead class="sticky-top" style="background: var(--card-bg);">
                             <tr>
-                                <th class="text-secondary">Producto</th>
-                                <th class="text-secondary">Cant.</th>
-                                <th class="text-secondary">P. Unit.</th>
-                                <th class="text-secondary text-end">Subtotal</th>
+                                <th class="text-secondary text-uppercase pb-2">Producto</th>
+                                <th class="text-secondary text-uppercase pb-2 text-center">Cant.</th>
+                                <th class="text-secondary text-uppercase pb-2 text-end">P. Unit.</th>
+                                <th class="text-secondary text-uppercase pb-2 text-end">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody id="cartBody">
                             </tbody>
                     </table>
                 </div>
-                <hr style="border-color: rgba(255,255,255,0.1);">
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <h3 class="mb-0 text-white">Total: <span class="text-danger fw-bold" id="totalPrice">$0.00</span></h3>
-                    <button id="payBtn" class="btn btn-moto btn-lg px-5" disabled>Cobrar (Enter)</button>
+                
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1">Total a Pagar:</p>
+                            <h2 class="mb-0 fw-bold text-accent" id="totalPrice" style="font-size: 2.5rem; letter-spacing: -1px;">$0.00</h2>
+                        </div>
+                        <button id="payBtn" class="btn btn-accent btn-lg rounded-pill px-5 fw-bold shadow-lg d-flex align-items-center gap-2 transition-all" disabled>
+                            <i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 
@@ -117,9 +153,8 @@
     let barcodeBuffer = '';
     let barcodeTimer = null;
 
-    // Global Scanner listener. Buffers fast keystrokes ending in Enter.
+    // Escucha global para el escaner fisico
     document.addEventListener('keypress', function(e) {
-        // If user is manually typing in the input, let the input's own listener handle it
         if(document.activeElement === barcodeInput) return;
 
         if (e.key === 'Enter') {
@@ -128,19 +163,16 @@
                 processScan(barcodeBuffer.trim());
                 barcodeBuffer = '';
             } else if(cart.length > 0) {
-                // If enter pressed empty, maybe trigger pay
                 payBtn.click();
             }
         } else {
             barcodeBuffer += e.key;
             clearTimeout(barcodeTimer);
-            // Clear buffer if more than 50ms pass between keystrokes (humans type slower, scanners type fast)
-            // Increased to 200ms to be safe with slower scanners
             barcodeTimer = setTimeout(() => { barcodeBuffer = ''; }, 200); 
         }
     });
 
-    // Manual input listener
+    // Entrada manual desde el input
     barcodeInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -161,13 +193,13 @@
         .then(response => response.json())
         .then(data => {
             if(data.error) {
-                showStatus(data.error, 'danger');
+                showStatus('<i class="bi bi-exclamation-triangle-fill me-2"></i>' + data.error, 'danger');
             } else {
                 addToCart(data);
-                showStatus('✔ ' + data.name, 'success');
+                showStatus('<i class="bi bi-check-circle-fill me-2"></i>' + data.name + ' agregado', 'success');
             }
         }).catch(err => {
-            showStatus('Error de conexion', 'danger');
+            showStatus('<i class="bi bi-wifi-off me-2"></i>Error de conexion', 'danger');
         });
     }
 
@@ -185,56 +217,80 @@
     function renderCart() {
         cartBody.innerHTML = '';
         let total = 0;
+        
+        if(cart.length === 0) {
+            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-5"><i class="bi bi-cart-x fs-1 d-block mb-3"></i>Esperando articulos...</td></tr>';
+            totalPriceEl.innerText = '$0.00';
+            payBtn.disabled = true;
+            return;
+        }
+
         cart.forEach(item => {
             let subtotal = item.qty * item.price;
             total += subtotal;
-            cartBody.innerHTML += `
-                <tr>
-                    <td><strong class="text-white">${item.name}</strong> <br><small class="text-secondary">${item.brand}</small></td>
-                    <td><span class="badge bg-secondary">${item.qty}</span></td>
-                    <td>$${item.price.toFixed(2)}</td>
-                    <td class="text-end fw-bold text-white">$${subtotal.toFixed(2)}</td>
-                </tr>
-            `;
+            cartBody.innerHTML +=
+                '<tr>' +
+                    '<td>' +
+                        '<strong class="fw-bold" style="color: var(--text-color);">' + item.name + '</strong><br>' +
+                        '<span class="badge border border-secondary text-secondary mt-1">' + item.brand + '</span>' +
+                    '</td>' +
+                    '<td class="text-center align-middle">' +
+                        '<span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-25 px-3 py-2 fs-6">' + item.qty + '</span>' +
+                    '</td>' +
+                    '<td class="text-end align-middle fw-medium">$' + item.price.toFixed(2) + '</td>' +
+                    '<td class="text-end align-middle fw-bold text-accent fs-5">$' + subtotal.toFixed(2) + '</td>' +
+                '</tr>';
         });
         
-        if(cart.length === 0) {
-            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Esperando articulos...</td></tr>';
-        }
-        
         totalPriceEl.innerText = '$' + total.toFixed(2);
-        payBtn.disabled = cart.length === 0;
+        payBtn.disabled = false;
     }
 
     function showStatus(msg, type) {
-        scanStatus.className = 'alert alert-' + type;
-        scanStatus.innerText = msg;
-        setTimeout(() => { scanStatus.className = 'alert d-none'; }, 2000);
+        // Adaptamos el color del alert para que no desentone con el theme
+        let alertClass = type === 'success' ? 'bg-success text-success bg-opacity-10 border-success' : 'bg-danger text-danger bg-opacity-10 border-danger';
+        scanStatus.className = 'alert mt-3 fw-bold small py-2 rounded-pill border ' + alertClass;
+        scanStatus.innerHTML = msg;
+        setTimeout(() => { scanStatus.className = 'alert d-none'; }, 2500);
+    }
+
+    function clearCart() {
+        if(cart.length > 0 && confirm('¿Desea vaciar la cuenta actual?')) {
+            cart = [];
+            renderCart();
+        }
     }
 
     payBtn.addEventListener('click', () => {
         if(cart.length === 0) return;
         
+        payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Procesando...';
+        payBtn.disabled = true;
+
         let promises = cart.map(item => {
             let sub = item.qty * item.price;
             return fetch('cashier', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `action=pay&productId=${item.id}&quantity=${item.qty}&total=${sub}`
+                body: 'action=pay&productId=' + item.id + '&quantity=' + item.qty + '&total=' + sub
             });
         });
 
         Promise.all(promises).then(() => {
-            showStatus('Venta procesada con exito', 'success');
+            showStatus('<i class="bi bi-bag-check-fill me-2"></i>Venta procesada con exito', 'success');
             cart = [];
             renderCart();
+            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)';
         }).catch(() => {
             alert('Error al procesar la venta');
+            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)';
+            payBtn.disabled = false;
         });
     });
     
-    // Initial render
+    // Renderizado inicial
     renderCart();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

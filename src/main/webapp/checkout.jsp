@@ -12,20 +12,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Pago - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --card-bg: #1a1a1a;
-            --accent-orange: #FF6B35;
-        }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
-        .checkout-card { background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
-        .form-control { background: #2D3436; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; }
-        .form-control:focus { background: #2D3436; color: #fff; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+        .checkout-card { background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
+        .form-control { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-color); border-radius: 8px; }
+        .form-control:focus { background: var(--card-bg); color: var(--text-color); border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+        .form-control:disabled { background: var(--bg-color); color: var(--text-color); opacity: 0.7; }
         .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 12px; font-weight: 600; width: 100%; transition: 0.3s; }
         .btn-moto:hover { background-color: #E55A2B; color: white; transform: translateY(-1px); }
         .mp-badge { background: #009ee3; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
@@ -60,7 +56,7 @@
                         </div>
                     </div>
 
-                    <div class="alert alert-warning py-2 small bg-dark text-warning border-warning">
+                    <div class="alert alert-warning py-2 small">
                         <i class="bi bi-info-circle"></i> Simulación de pasarela de pago. Su pedido será procesado inmediatamente.
                     </div>
 
@@ -71,7 +67,7 @@
                     <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
                     <h3 class="mt-3">¡Pago Exitoso!</h3>
                     <p class="text-secondary">Tu pedido ha sido registrado y será enviado pronto.</p>
-                    <a href="dashboard.jsp" class="btn btn-outline-light mt-3" style="border-radius: 20px;">Ir a mi panel</a>
+                    <a href="dashboard.jsp" class="btn btn-moto-outline mt-3" style="border-radius: 20px;">Ir a mi panel</a>
                 </div>
             </div>
         </div>

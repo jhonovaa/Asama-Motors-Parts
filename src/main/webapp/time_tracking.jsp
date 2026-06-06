@@ -4,134 +4,220 @@
 <head>
     <meta charset="UTF-8">
     <title>Terminal de Asistencia - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Face API JS -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     
+    <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
-        :root { --bg-color: #0a0a0a; --accent-orange: #FF6B35; --card-bg: #1a1a1a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: #fff; min-height: 100vh; display: flex; align-items: center; padding: 20px; }
-        
-        .main-container { width: 100%; max-width: 1200px; margin: 0 auto; }
-        
-        .terminal-card, .history-card { 
-            background: var(--card-bg); border-radius: 20px; padding: 30px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); 
-            height: 100%;
+        /* --- LEGIBILIDAD EXTREMA Y ESTILOS KIOSCO --- */
+        .text-secondary, .text-muted { color: rgba(255, 255, 255, 0.75) !important; }
+        body.light-mode .text-secondary, body.light-mode .text-muted { color: rgba(0, 0, 0, 0.65) !important; }
+
+        /* Contenedor de Video */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--accent-orange);
+            background: #000;
+            aspect-ratio: 4/3;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
-        
-        .terminal-card { text-align: center; }
-        
-        .nav-tabs { border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; justify-content: center;}
-        .nav-tabs .nav-link { color: #888; border: none; font-weight: 500; font-size: 1.05rem; padding: 10px 15px;}
-        .nav-tabs .nav-link.active { color: var(--accent-orange); background: transparent; border-bottom: 2px solid var(--accent-orange); }
-        
-        #video-container { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 15px; overflow: hidden; border: 3px solid #2D3436; aspect-ratio: 4/3; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); }
-        canvas { position: absolute; top: 0; left: 0; transform: scaleX(-1); width: 100%; height: 100%; object-fit: cover; }
-        
-        .pulse-icon { font-size: 4rem; color: var(--accent-orange); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-        
-        .form-control { background: #2D3436; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 1.2rem; text-align: center; padding: 12px; border-radius: 10px; }
-        .form-control:focus { background: #2D3436; color: #fff; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
-        
-        .loading-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10;}
-        
-        .table-dark { background-color: transparent !important; }
-        .table { color: #ccc; font-size: 0.9rem; }
-        .table th, .table td { border-color: rgba(255,255,255,0.1); vertical-align: middle; }
-        .badge-entrada { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;}
-        .badge-salida { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;}
-        
-        .table-container { max-height: 400px; overflow-y: auto; }
-        /* Custom scrollbar for table container */
-        .table-container::-webkit-scrollbar { width: 6px; }
-        .table-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .table-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Pestanas Customizadas */
+        .custom-tabs {
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 20px;
+        }
+        .custom-tabs .nav-link {
+            color: var(--text-color);
+            opacity: 0.6;
+            border: none;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .custom-tabs .nav-link:hover { opacity: 0.8; }
+        .custom-tabs .nav-link.active {
+            color: var(--accent-orange);
+            opacity: 1;
+            border-bottom: 2px solid var(--accent-orange);
+            background: transparent;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Formularios consistentes */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.3) !important; }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 0 0 0.25rem var(--accent-glow) !important;
+        }
+        body.light-mode .form-control {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        body.light-mode .form-control::placeholder { color: rgba(0, 0, 0, 0.3) !important; }
+
+        /* Badges de Asistencia */
+        .badge-entrada { background: rgba(46, 204, 113, 0.15); color: #2ECC71; border: 1px solid rgba(46, 204, 113, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+        .badge-salida { background: rgba(231, 76, 60, 0.15); color: #E74C3C; border: 1px solid rgba(231, 76, 60, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+
+        /* Icono Pulso Carnet */
+        @keyframes pulseAnim {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-glow); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(0,0,0,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+        }
+        .pulse-icon-wrapper {
+            font-size: 4rem;
+            color: var(--accent-orange);
+            animation: pulseAnim 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(128,128,128,0.1);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        /* Tabla de Asistencia */
+        .history-table th { font-weight: 700; border-bottom: 2px solid var(--card-border); color: var(--text-color); }
+        .history-table td { border-bottom: 1px solid var(--card-border); color: var(--text-color); }
     </style>
-    <link rel="stylesheet" href="resources/theme.css">
 </head>
 <body>
 <script src="resources/theme.js"></script>
 
-    <a href="index.jsp" class="btn btn-outline-secondary position-absolute top-0 start-0 m-4" style="border-radius: 20px; z-index: 100;"><i class="bi bi-arrow-left"></i> Volver</a>
-    <div class="position-absolute top-0 end-0 m-4" style="z-index: 100;">
-        <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
-            <i id="themeIcon" class="bi bi-sun-fill"></i>
+    <div class="d-flex justify-content-between align-items-center w-100 p-4 position-absolute top-0 start-0" style="z-index: 100;">
+        <a href="dashboard.jsp" class="btn btn-moto-outline rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+        <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-sm" title="Cambiar tema">
+            <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
         </button>
     </div>
 
-    <div class="main-container">
+    <div class="container-fluid px-4 pb-5" style="margin-top: 100px;">
         <div class="row g-4 align-items-stretch">
             
-            <!-- Left Column: Scanner -->
-            <div class="col-lg-6">
-                <div class="terminal-card">
-                    <h3 class="fw-bold mb-1">Terminal de Asistencia</h3>
-                    <p class="text-secondary mb-4" id="clock" style="font-size: 0.9rem;"></p>
+            <div class="col-lg-5 col-xl-4">
+                <div class="action-card h-100 p-4 p-xl-5 d-flex flex-column text-center">
+                    <h3 class="fw-bold mb-1 text-accent">Terminal de Asistencia</h3>
+                    <p class="text-secondary fw-medium mb-4" id="clock" style="font-size: 1rem;"></p>
 
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <ul class="nav nav-tabs custom-tabs justify-content-center w-100" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="face-tab" data-bs-toggle="tab" data-bs-target="#face-pane" type="button" role="tab"><i class="bi bi-person-bounding-box me-1"></i> Facial</button>
+                            <button class="nav-link active" id="face-tab" data-bs-toggle="tab" data-bs-target="#face-pane" type="button" role="tab">
+                                <i class="bi bi-person-bounding-box me-1"></i> Facial
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="barcode-tab" data-bs-toggle="tab" data-bs-target="#barcode-pane" type="button" role="tab"><i class="bi bi-upc-scan me-1"></i> Carnet</button>
+                            <button class="nav-link" id="barcode-tab" data-bs-toggle="tab" data-bs-target="#barcode-pane" type="button" role="tab">
+                                <i class="bi bi-upc-scan me-1"></i> Carnet
+                            </button>
                         </li>
                     </ul>
 
-                    <div class="tab-content">
-                        <!-- Face Recognition Tab -->
-                        <div class="tab-pane fade show active" id="face-pane" role="tabpanel">
-                            <div id="video-container">
-                                <video id="video" autoplay muted></video>
+                    <div class="tab-content flex-grow-1 d-flex flex-column justify-content-center w-100">
+                        <div class="tab-pane fade show active w-100" id="face-pane" role="tabpanel">
+                            <div id="video-container" class="video-wrapper mb-4">
+                                <video id="video" autoplay muted playsinline></video>
                                 <div id="modelLoading" class="loading-overlay">
-                                    <div class="spinner-border text-warning mb-2"></div>
-                                    <span class="small text-warning" id="loadingText">Cargando modelos...</span>
+                                    <div class="spinner-border text-warning mb-3" style="width: 3rem; height: 3rem;"></div>
+                                    <span class="fw-bold text-warning" id="loadingText">Cargando modelos...</span>
                                 </div>
                             </div>
-                            <div class="mt-3 text-secondary small"><i class="bi bi-info-circle"></i> Mira a la cámara fijamente. Límite de detección: 5 segs.</div>
+                            <p class="text-secondary small fw-medium mb-0">
+                                <i class="bi bi-info-circle me-1"></i> Mira a la camara fijamente. Limite de deteccion: 5 segs.
+                            </p>
                         </div>
 
-                        <!-- Barcode Tab -->
-                        <div class="tab-pane fade" id="barcode-pane" role="tabpanel">
-                            <div class="pulse-icon my-4"><i class="bi bi-upc-scan"></i></div>
-                            <h5 class="mb-4">Escanea tu Carnet</h5>
-                            <input type="text" id="manualInput" class="form-control" placeholder="Escribe tu ID..." autocomplete="off">
+                        <div class="tab-pane fade w-100" id="barcode-pane" role="tabpanel">
+                            <div class="pulse-icon-wrapper my-5">
+                                <i class="bi bi-upc-scan"></i>
+                            </div>
+                            <h5 class="fw-bold mb-4">Escanea tu Carnet</h5>
+                            <input type="text" id="manualInput" class="form-control form-control-lg" placeholder="Escribe o escanea tu ID..." autocomplete="off">
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Right Column: Live History Table -->
-            <div class="col-lg-6">
-                <div class="history-card">
-                    <h4 class="fw-bold mb-1" style="color:var(--accent-orange)"><i class="bi bi-clock-history me-2"></i>Asistencia de Hoy</h4>
-                    <p class="text-secondary small mb-4">El historial en vivo del personal que ha ingresado el día de hoy.</p>
+            <div class="col-lg-7 col-xl-8 d-flex flex-column gap-4">
+                <div class="action-card flex-grow-1 p-4 p-xl-5 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+                        <div>
+                            <h4 class="fw-bold mb-1 text-accent"><i class="bi bi-clock-history me-2"></i>Asistencia de Hoy</h4>
+                            <p class="text-secondary small mb-0">Historial en vivo del personal que ha interactuado el dia de hoy.</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="loadAttendanceTable()"><i class="bi bi-arrow-clockwise"></i></button>
+                    </div>
                     
-                    <div class="table-container pe-2">
-                        <table class="table table-hover align-middle" id="attendanceTable">
-                            <thead>
+                    <div class="table-responsive flex-grow-1" style="max-height: 50vh; overflow-y: auto;">
+                        <table class="table table-hover table-borderless history-table align-middle" id="attendanceTable">
+                            <thead class="sticky-top" style="background: var(--card-bg);">
                                 <tr>
-                                    <th>Empleado</th>
-                                    <th>Estado</th>
-                                    <th>Hora</th>
+                                    <th class="text-uppercase small pb-3">Empleado</th>
+                                    <th class="text-uppercase small pb-3 text-center">Estado</th>
+                                    <th class="text-uppercase small pb-3 text-end">Hora</th>
                                 </tr>
                             </thead>
                             <tbody id="attendanceTbody">
-                                <!-- Loaded dynamically via JS -->
                                 <tr>
-                                    <td colspan="3" class="text-center text-secondary py-4">
+                                    <td colspan="3" class="text-center text-secondary py-5">
                                         <div class="spinner-border spinner-border-sm me-2"></div> Cargando historial...
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                
+                <div class="action-card p-4">
+                    <div class="border-bottom border-secondary pb-3 mb-4">
+                        <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-calendar-check me-2"></i>Reportes Diarios PDF</h5>
+                        <p class="text-secondary small mb-0">Descarga el reporte de asistencias completas (entrada y salida) por dia.</p>
+                    </div>
+                    <div id="historyDaysContainer" class="d-flex flex-wrap gap-3">
+                        <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium">Cargando reportes disponibles...</span>
                     </div>
                 </div>
             </div>
@@ -141,10 +227,10 @@
 
     <script>
         // Set Light/Dark colors for SweetAlert
-        const getSwalBg = () => document.body.classList.contains('light-mode') ? '#fff' : '#1a1a1a';
-        const getSwalColor = () => document.body.classList.contains('light-mode') ? '#000' : '#fff';
+        const getSwalBg = () => document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24';
+        const getSwalColor = () => document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa';
 
-        // Clock
+        // Reloj en vivo
         setInterval(() => {
             let now = new Date();
             document.getElementById('clock').innerText = now.toLocaleString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -159,17 +245,16 @@
                 tbody.innerHTML = '';
                 
                 if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-4">No hay asistencias registradas hoy.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No hay asistencias registradas hoy.</td></tr>';
                     return;
                 }
                 
                 data.forEach(row => {
                     const hasExit = row.exit && row.exit.trim() !== "";
                     const statusHtml = hasExit 
-                        ? `<span class="badge-salida"><i class="bi bi-box-arrow-right"></i> Salida</span>`
-                        : `<span class="badge-entrada"><i class="bi bi-box-arrow-in-right"></i> Entrada</span>`;
+                        ? '<span class="badge-salida"><i class="bi bi-box-arrow-right me-1"></i> Salida</span>'
+                        : '<span class="badge-entrada"><i class="bi bi-box-arrow-in-right me-1"></i> Entrada</span>';
                     
-                    // Format times
                     let timeDisplay = "";
                     if (row.entry) {
                         let d = new Date(row.entry);
@@ -181,11 +266,10 @@
                     }
 
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="fw-medium">${row.name}</td>
-                        <td>${statusHtml}</td>
-                        <td class="text-secondary small"><i class="bi bi-clock me-1"></i>${timeDisplay}</td>
-                    `;
+                    tr.innerHTML = 
+                        '<td class="fw-bold fs-6">' + row.name + '</td>' +
+                        '<td class="text-center">' + statusHtml + '</td>' +
+                        '<td class="text-end text-secondary fw-medium"><i class="bi bi-clock me-1"></i>' + timeDisplay + '</td>';
                     tbody.appendChild(tr);
                 });
             })
@@ -198,11 +282,14 @@
         let faceMatcher = null;
         let isProcessing = false;
         
-        let unknownFramesCount = 0; // for 5-second logic (approx 5 frames if interval is 1s)
+        let unknownFramesCount = 0; 
+        
+        let detectionInterval = null;
+        let currentCanvas = null;
+        let isFaceTabActive = true;
 
         async function initFaceRecognition() {
             try {
-                // 1. Load Models
                 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
                 await Promise.all([
                     faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -212,18 +299,15 @@
 
                 document.getElementById('loadingText').innerText = "Cargando rostros autorizados...";
 
-                // 2. Fetch Employee Data
                 const response = await fetch('faceData');
                 const employees = await response.json();
                 
                 let loadedCount = 0;
 
-                // 3. Create Labeled Descriptors
                 for (let emp of employees) {
                     try {
-                        if (!emp.photoUrl) continue; // Skip if no photo
+                        if (!emp.photoUrl) continue; 
                         
-                        // Append timestamp to bust cache so new photos load immediately
                         const img = await faceapi.fetchImage(emp.photoUrl + '?t=' + Date.now());
                         const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
                         if (detections) {
@@ -234,72 +318,95 @@
                 }
 
                 if(loadedCount === 0) {
-                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger text-center p-3'>No hay personal con foto registrada para escaneo facial.</span>";
-                    return; // Stop trying to start camera if no models exist
+                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-exclamation-triangle d-block fs-1 mb-2'></i>No hay personal con foto para escaneo facial.</span>";
+                    return; 
                 }
 
-                faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.55); // 0.55 is max distance
+                faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.55);
                 document.getElementById('modelLoading').style.display = 'none';
-                startVideo();
+                
+                if(isFaceTabActive) {
+                    startVideo();
+                }
 
             } catch(e) {
                 console.error("Face API Error:", e);
-                document.getElementById('modelLoading').innerHTML = "<span class='text-danger'>Error cargando reconocimiento facial. Usa el Carnet.</span>";
+                document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i>Error en modulo facial. Usa el Carnet.</span>";
             }
         }
 
         function startVideo() {
             navigator.mediaDevices.getUserMedia({ video: {} })
-                .then(stream => video.srcObject = stream)
+                .then(stream => {
+                    video.srcObject = stream;
+                    document.getElementById('modelLoading').style.display = 'none';
+                })
                 .catch(err => {
                     document.getElementById('modelLoading').style.display = 'flex';
-                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger text-center p-3'>No se pudo acceder a la cámara.</span>";
+                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i>No se pudo acceder a la camara.</span>";
                 });
         }
 
+        function stopVideo() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+            if (currentCanvas) {
+                currentCanvas.remove();
+                currentCanvas = null;
+            }
+        }
+
         video.addEventListener('play', () => {
-            const canvas = faceapi.createCanvasFromMedia(video);
-            document.getElementById('video-container').append(canvas);
+            if (currentCanvas) currentCanvas.remove();
+            currentCanvas = faceapi.createCanvasFromMedia(video);
+            document.getElementById('video-container').append(currentCanvas);
             
-            // Adjust to container size, not intrinsic video size
             const updateCanvasSize = () => {
                 const container = document.getElementById('video-container');
                 const displaySize = { width: container.clientWidth, height: container.clientHeight };
-                faceapi.matchDimensions(canvas, displaySize);
+                faceapi.matchDimensions(currentCanvas, displaySize);
                 return displaySize;
             };
             
             let displaySize = updateCanvasSize();
-            window.addEventListener('resize', () => displaySize = updateCanvasSize());
+            window.addEventListener('resize', () => {
+                if(currentCanvas) displaySize = updateCanvasSize();
+            });
 
-            setInterval(async () => {
-                if(isProcessing || !faceMatcher) return;
+            if (detectionInterval) clearInterval(detectionInterval);
+            detectionInterval = setInterval(async () => {
+                if(isProcessing || !faceMatcher || !isFaceTabActive) return;
 
                 const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
                 const resizedDetections = faceapi.resizeResults(detections, displaySize);
                 
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                faceapi.draw.drawDetections(canvas, resizedDetections);
+                currentCanvas.getContext('2d').clearRect(0, 0, currentCanvas.width, currentCanvas.height);
+                faceapi.draw.drawDetections(currentCanvas, resizedDetections);
 
                 if (resizedDetections.length > 0) {
                     const bestMatch = faceMatcher.findBestMatch(resizedDetections[0].descriptor);
                     
                     if(bestMatch.label !== 'unknown' && bestMatch.distance < 0.55) {
-                        unknownFramesCount = 0; // reset
+                        unknownFramesCount = 0; 
                         isProcessing = true;
                         submitAttendance(bestMatch.label);
                     } else {
-                        // Face detected but unknown
                         unknownFramesCount++;
-                        if(unknownFramesCount >= 5) { // Approx 5 seconds
+                        if(unknownFramesCount >= 5) { 
                             isProcessing = true;
-                            unknownFramesCount = 0; // reset
+                            unknownFramesCount = 0; 
                             
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Rostro no reconocido',
                                 text: 'Si eres empleado, puede que no tengas una foto de perfil registrada para el escaneo.',
-                                confirmButtonColor: '#FF6B35',
+                                confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#00E5FF',
                                 background: getSwalBg(),
                                 color: getSwalColor(),
                                 timer: 4000
@@ -309,23 +416,135 @@
                         }
                     }
                 } else {
-                    unknownFramesCount = 0; // reset if no face detected
+                    unknownFramesCount = 0; 
                 }
             }, 1000);
         });
 
-        // Initialize Face API and Table
+        // Cambio de pestanas
+        document.getElementById('face-tab').addEventListener('shown.bs.tab', function () {
+            isFaceTabActive = true;
+            if (faceMatcher) {
+                startVideo();
+            }
+        });
+
+        document.getElementById('barcode-tab').addEventListener('shown.bs.tab', function () {
+            isFaceTabActive = false;
+            stopVideo();
+        });
+
+        // Inicializacion
         window.addEventListener('load', () => {
             loadAttendanceTable();
+            loadHistoryDates();
             initFaceRecognition();
         });
+
+        // --- HISTORY PDF LOGIC ---
+        function loadHistoryDates() {
+            fetch('time-tracking?action=history_dates')
+            .then(res => res.json())
+            .then(dates => {
+                const container = document.getElementById('historyDaysContainer');
+                container.innerHTML = '';
+                if(dates.length === 0) {
+                    container.innerHTML = '<span class="text-secondary small">No hay historial disponible.</span>';
+                    return;
+                }
+                dates.forEach(date => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-moto-outline rounded-pill px-4 fw-bold d-flex align-items-center gap-2';
+                    btn.innerHTML = '<i class="bi bi-calendar-day"></i> ' + date + ' <i class="bi bi-filetype-pdf fs-5 ms-1 text-danger"></i>';
+                    btn.onclick = () => downloadPdfForDate(date);
+                    container.appendChild(btn);
+                });
+            })
+            .catch(err => {
+                document.getElementById('historyDaysContainer').innerHTML = '<span class="text-danger small">Error al cargar historial.</span>';
+                console.error("Error loading dates:", err);
+            });
+        }
+
+        function downloadPdfForDate(date) {
+            Swal.fire({
+                title: 'Generando PDF...',
+                text: 'Obteniendo registros de ' + date,
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); },
+                background: getSwalBg(),
+                color: getSwalColor()
+            });
+
+            fetch('time-tracking?action=history_by_date&date=' + date)
+            .then(res => res.json())
+            .then(data => {
+                Swal.close();
+                if(data.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Sin registros',
+                        text: 'No hay asistencias completas (entrada y salida) para este dia.',
+                        background: getSwalBg(),
+                        color: getSwalColor()
+                    });
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFontSize(18);
+                doc.text('Reporte de Asistencia - ' + date, 14, 22);
+                doc.setFontSize(11);
+                doc.setTextColor(100);
+                doc.text('Asama Moto Parts', 14, 30);
+
+                const tableData = data.map(row => {
+                    let dIn = new Date(row.entry);
+                    let timeIn = dIn.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    let dOut = new Date(row.exit);
+                    let timeOut = dOut.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    return [row.name, timeIn, timeOut];
+                });
+
+                // Extraemos el color naranja de la paleta actual para el PDF
+                const pdfAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim();
+                let hexColor = [0, 229, 255]; // Fallback Azul Electrico
+                if(pdfAccent.startsWith('#')) {
+                    let c = pdfAccent.substring(1);      // strip #
+                    let rgb = parseInt(c, 16);   // convert rrggbb to decimal
+                    hexColor = [(rgb >> 16) & 0xff, (rgb >>  8) & 0xff, (rgb >>  0) & 0xff];
+                }
+
+                doc.autoTable({
+                    startY: 40,
+                    head: [['Empleado', 'Hora Entrada', 'Hora Salida']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: { fillColor: hexColor },
+                    styles: { fontSize: 10 }
+                });
+
+                doc.save('Asistencia_' + date + '.pdf');
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo generar el reporte.',
+                    background: getSwalBg(),
+                    color: getSwalColor()
+                });
+            });
+        }
 
         // --- BARCODE SCANNER LOGIC ---
         let barcodeBuffer = "";
         let lastKeyTime = Date.now();
 
         document.addEventListener('keypress', function(e) {
-            // Ignore if active element is input
             if(document.activeElement.tagName === 'INPUT') return;
             
             let currentTime = Date.now();
@@ -365,21 +584,20 @@
                     Swal.fire({
                         icon: 'success',
                         title: data.type === 'Entrada' ? '¡Bienvenido!' : '¡Hasta pronto!',
-                        html: `${data.type} registrada para:<br><strong>${data.name}</strong>`,
+                        html: data.type + ' registrada para:<br><strong class="fs-4 mt-2 d-block">' + data.name + '</strong>',
                         timer: 3500,
                         showConfirmButton: false,
                         background: getSwalBg(),
                         color: getSwalColor()
                     }).then(() => { isProcessing = false; });
                     
-                    // Reload table
                     loadAttendanceTable();
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
                         text: data.error || 'Error al registrar asistencia',
-                        confirmButtonColor: '#FF6B35',
+                        confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#00E5FF',
                         background: getSwalBg(),
                         color: getSwalColor()
                     }).then(() => { isProcessing = false; });

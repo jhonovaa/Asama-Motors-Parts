@@ -14,50 +14,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Repuesto - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Load html5-qrcode for barcode scanning -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --card-bg: #1a1a1a;
-            --accent-orange: #FF6B35;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
-        .main-container { max-width: 800px; margin: 40px auto; }
-        
-        .card-custom {
-            background: var(--card-bg);
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            padding: 30px;
-        }
 
-        .nav-tabs { border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
-        .nav-tabs .nav-link { 
-            color: #888; border: none; font-weight: 500; background: transparent; padding: 10px 20px;
-        }
-        .nav-tabs .nav-link:hover { color: var(--accent-orange); border: none; }
-        .nav-tabs .nav-link.active { 
-            color: var(--accent-orange); background: transparent; border: none; border-bottom: 2px solid var(--accent-orange);
-        }
-
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,107,53,0.3); }
-        #reader button { background-color: var(--accent-orange); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 10px 0; }
-        
-        .form-control { background: #2D3436; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 10px; padding: 12px; }
-        .form-control:focus { background: #2D3436; color: #fff; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
-        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 10px; padding: 12px 20px; font-weight: 600; width: 100%; transition: 0.3s; }
-        .btn-moto:hover { background-color: #E55A2B; color: white; }
-
-        .result-card { background: #2D3436; border-radius: 10px; padding: 20px; margin-top: 30px; display: none; border-left: 4px solid var(--accent-orange); }
-        .result-img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; }
-        .text-orange { color: var(--accent-orange) !important; }
-    </style>
 </head>
 <body>
 
@@ -125,7 +88,7 @@
                 </div>
             </div>
             
-            <div id="errorCard" class="alert alert-danger mt-4" style="display:none; background: rgba(220,53,69,0.1); border-color: rgba(220,53,69,0.3); color: #ff6b6b;">
+            <div id="errorCard" class="alert alert-danger mt-4" style="display:none;">
                 <i class="bi bi-exclamation-triangle me-2"></i> No se encontró ningún repuesto con ese código.
             </div>
 
@@ -207,7 +170,7 @@
 
                         let imgContainer = document.getElementById('resultImgContainer');
                         if (data.imageUrl) {
-                            imgContainer.innerHTML = `<img src="${data.imageUrl}" class="result-img">`;
+                            imgContainer.innerHTML = '<img src="' + data.imageUrl + '" class="result-img">';
                         } else {
                             imgContainer.innerHTML = `<div class="result-img bg-dark d-flex align-items-center justify-content-center text-secondary mx-auto"><i class="bi bi-tools fs-1"></i></div>`;
                         }

@@ -11,16 +11,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --card-bg: #1a1a1a;
-            --accent-orange: #FF6B35;
-        }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
         .cart-container { background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
         .table { color: var(--text-color); }
@@ -97,21 +92,20 @@
                 total += subtotal;
                 
                 let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">${item.name}</td>
-                    <td>$${item.price.toFixed(2)}</td>
-                    <td class="text-center">
-                        <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                        <span class="mx-3 fw-bold">${item.qty}</span>
-                        <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
-                    </td>
-                    <td class="fw-bold">$${subtotal.toFixed(2)}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${index})" style="border-radius: 5px;">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                `;
+                tr.innerHTML = 
+                    '<td class="fw-bold">' + item.name + '</td>' +
+                    '<td>$' + item.price.toFixed(2) + '</td>' +
+                    '<td class="text-center">' +
+                        '<button class="qty-btn" onclick="updateQty(' + index + ', -1)">-</button>' +
+                        '<span class="mx-3 fw-bold">' + item.qty + '</span>' +
+                        '<button class="qty-btn" onclick="updateQty(' + index + ', 1)">+</button>' +
+                    '</td>' +
+                    '<td class="fw-bold">$' + subtotal.toFixed(2) + '</td>' +
+                    '<td class="text-end">' +
+                        '<button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(' + index + ')" style="border-radius: 5px;">' +
+                            '<i class="bi bi-trash"></i>' +
+                        '</button>' +
+                    '</td>';
                 tbody.appendChild(tr);
             });
             

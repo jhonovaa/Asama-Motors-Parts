@@ -9,21 +9,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --metallic-gunmetal: #1a1a1a;
-            --accent-orange: #FF6B35;
-        }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px;}
         .product-card {
-            background: var(--metallic-gunmetal);
+            background: var(--card-bg);
             border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
             padding: 20px;
             text-align: center;
             transition: 0.3s;
@@ -34,8 +29,8 @@
         .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
         .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 8px 20px; font-weight: 600; transition: 0.3s; }
         .btn-moto:hover { background-color: #E55A2B; color: white;}
-        .search-bar { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 30px; padding: 12px 20px; width: 100%; max-width: 500px; margin: 0 auto; display: block;}
-        .search-bar:focus { background: #1a1a1a; color: #fff; border-color: var(--accent-orange); outline: none; box-shadow: 0 0 0 3px rgba(255,107,53,0.15);}
+        .search-bar { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-color); border-radius: 30px; padding: 12px 20px; width: 100%; max-width: 500px; margin: 0 auto; display: block;}
+        .search-bar:focus { background: var(--card-bg); color: var(--text-color); border-color: var(--accent-orange); outline: none; box-shadow: 0 0 0 3px rgba(255,107,53,0.15);}
         .text-orange { color: var(--accent-orange) !important; }
     </style>
 </head>
@@ -62,11 +57,11 @@
                     <% if(p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
                         <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>" class="product-img">
                     <% } else { %>
-                        <div class="product-img d-flex align-items-center justify-content-center bg-dark text-secondary">
+                        <div class="product-img d-flex align-items-center justify-content-center text-secondary" style="background: var(--card-border);">
                             <i class="bi bi-tools fs-1"></i>
                         </div>
                     <% } %>
-                    <h5 class="fw-bold text-white mb-1"><%= p.getName() %></h5>
+                    <h5 class="fw-bold mb-1"><%= p.getName() %></h5>
                     <p class="text-secondary small mb-2"><%= p.getBrand() != null ? p.getBrand() : "Genérico" %></p>
                     <h4 class="text-orange fw-bold mb-3">$<%= String.format("%.2f", p.getPrice()) %></h4>
                     <% if(p.getStock() > 0) { %>

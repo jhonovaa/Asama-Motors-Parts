@@ -15,41 +15,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contabilidad - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --bg-color: #0f1013;
-            --text-color: #f1f2f6;
-            --nav-bg: rgba(15, 16, 19, 0.85);
-            --metallic-gunmetal: #1a1d24;
-            --card-bg: #2a2e35;
-            --accent-orange: #FF6B35;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
-        .navbar-custom { background-color: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .navbar-brand { color: #E5E4E2 !important; font-weight: 700; }
-        
         .dashboard-stats {
-            background: var(--metallic-gunmetal);
+            background: var(--card-bg);
             border-left: 5px solid var(--accent-orange);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
             margin-bottom: 25px;
             height: 100%;
         }
-        
-        .card { background: var(--metallic-gunmetal); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 30px;}
-        .card-header { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; padding: 15px 20px; }
-        
-        .table-dark { background-color: transparent !important; }
-        .table { color: #ccc; }
-        .table th, .table td { border-color: rgba(255,255,255,0.1); }
     </style>
-    <link rel="stylesheet" href="resources/theme.css">
+    <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
 <script src="resources/theme.js"></script>
@@ -85,31 +67,31 @@
         <div class="col-md-3">
             <div class="dashboard-stats">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-wallet2 text-danger"></i> Ingresos Totales</h6>
-                <h3 class="mb-0 text-white fw-bold">$<%= String.format("%.2f", totalGeneral) %></h3>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalGeneral) %></h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stats" style="border-left-color: #ff9800;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-shop text-warning"></i> Físico (Caja)</h6>
-                <h3 class="mb-0 text-white fw-bold">$<%= String.format("%.2f", totalPresencial) %></h3>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalPresencial) %></h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stats" style="border-left-color: #4caf50;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-globe text-success"></i> Virtual (Online)</h6>
-                <h3 class="mb-0 text-white fw-bold">$<%= String.format("%.2f", totalVirtual) %></h3>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalVirtual) %></h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stats" style="border-left-color: #03a9f4;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-box-seam text-info"></i> Unidades Vendidas</h6>
-                <h3 class="mb-0 text-white fw-bold"><%= productosVendidos %></h3>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);"><%= productosVendidos %></h3>
             </div>
         </div>
     </div>
 
     <!-- Presencial Table -->
-    <div class="card shadow-sm">
+    <div class="card-custom shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-warning"><i class="bi bi-shop"></i> Historial de Ventas Físicas (Cajero)</h5>
             <button class="btn btn-sm btn-secondary" style="border-radius:20px;" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
@@ -117,7 +99,7 @@
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-borderless table-hover m-0 table-sm">
-                    <thead style="border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; background: var(--metallic-gunmetal);">
+                    <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
                         <tr>
                             <th class="text-secondary">Fecha</th>
                             <th class="text-secondary">Producto</th>
@@ -142,10 +124,10 @@
                         %>
                         <tr>
                             <td><%= rs.getTimestamp("sale_date").toString().substring(0, 16) %></td>
-                            <td class="text-white"><%= rs.getString("product_name") %></td>
+                            <td><%= rs.getString("product_name") %></td>
                             <td><span class="badge bg-secondary"><%= rs.getString("cashier_name") %></span></td>
                             <td class="text-center"><%= rs.getInt("quantity") %></td>
-                            <td class="text-end fw-bold text-white">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
+                            <td class="text-end fw-bold">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
                         </tr>
                         <%
                                 }
@@ -158,14 +140,14 @@
     </div>
 
     <!-- Virtual Table -->
-    <div class="card shadow-sm">
+    <div class="card-custom shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-success"><i class="bi bi-globe"></i> Historial de Ventas Online (E-commerce)</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-borderless table-hover m-0 table-sm">
-                    <thead style="border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; background: var(--metallic-gunmetal);">
+                    <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
                         <tr>
                             <th class="text-secondary">Fecha</th>
                             <th class="text-secondary">Producto</th>
@@ -190,10 +172,10 @@
                         %>
                         <tr>
                             <td><%= rs.getTimestamp("sale_date").toString().substring(0, 16) %></td>
-                            <td class="text-white"><%= rs.getString("product_name") %></td>
+                            <td><%= rs.getString("product_name") %></td>
                             <td><span class="badge bg-primary"><%= rs.getString("customer_name") %></span></td>
                             <td class="text-center"><%= rs.getInt("quantity") %></td>
-                            <td class="text-end fw-bold text-white">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
+                            <td class="text-end fw-bold">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
                         </tr>
                         <%
                                 }

@@ -153,12 +153,15 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void savePhotoAndPath(Part filePart, int userId, Connection conn, HttpServletRequest request) throws Exception {
-        String baseUploadPath = "c:\\Users\\salaz\\Desktop\\asama\\src\\main\\webapp\\resources\\fotos\\empleados";
-        File uploadDir = new File(baseUploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
+        String baseWebapp = com.adso.cheng.utils.UploadUtil.getSourceWebappPath(request);
+        String uploadPath = baseWebapp + File.separator + "resources" + File.separator + "fotos" + File.separator + "empleados";
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
 
         String fileName = userId + ".jpg";
-        filePart.write(baseUploadPath + File.separator + fileName);
+        filePart.write(uploadPath + File.separator + fileName);
         
         // Also write to deployed directory for immediate UI access
         String deployUploadPath = request.getServletContext().getRealPath("/resources/fotos/empleados");
@@ -166,12 +169,12 @@ public class EmployeeServlet extends HttpServlet {
             File deployDir = new File(deployUploadPath);
             if (!deployDir.exists()) deployDir.mkdirs();
             java.nio.file.Files.copy(
-                new java.io.File(baseUploadPath + File.separator + fileName).toPath(),
+                new java.io.File(uploadPath + File.separator + fileName).toPath(),
                 new java.io.File(deployUploadPath + File.separator + fileName).toPath(),
                 java.nio.file.StandardCopyOption.REPLACE_EXISTING
             );
         }
-
+        
         String photoPath = "resources/fotos/empleados/" + fileName;
         
         try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE users SET photo_path = ? WHERE id = ?")) {

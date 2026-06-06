@@ -6,18 +6,17 @@
     int navRole = navLoggedIn ? navUser.getRoleId() : 0;
     String currentPage = request.getRequestURI();
 %>
-<!-- Theme CSS & JS -->
-<link rel="stylesheet" href="resources/theme.css">
+<link rel="stylesheet" href="resources/theme.css?v=6">
 <script src="resources/theme.js"></script>
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <%
     String alertMsg = request.getParameter("msg");
     if(alertMsg != null && !alertMsg.trim().isEmpty()) {
-        boolean isError = alertMsg.toLowerCase().contains("error") || alertMsg.toLowerCase().contains("inválido") || alertMsg.toLowerCase().contains("falló");
+        boolean isError = alertMsg.toLowerCase().contains("error") || alertMsg.toLowerCase().contains("invalido") || alertMsg.toLowerCase().contains("fallo");
         String icon = isError ? "error" : "success";
-        String title = isError ? "Oops..." : "¡Éxito!";
+        String title = isError ? "Oops..." : "Exito!";
 %>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -25,12 +24,15 @@
             icon: '<%= icon %>',
             title: '<%= title %>',
             text: '<%= alertMsg %>',
-            confirmButtonColor: '#FF6B35',
-            background: document.body.classList.contains('light-mode') ? '#fff' : '#1a1a1a',
-            color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
+            confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ff6b00',
+            background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24',
+            color: document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa',
+            customClass: {
+                popup: 'asama-swal-popup'
+            }
         });
         
-        // Clean URL after showing alert
+        // Limpiar URL despues de mostrar la alerta
         if(window.history.replaceState) {
             const url = new URL(window.location);
             url.searchParams.delete('msg');
@@ -40,113 +42,80 @@
 </script>
 <% } %>
 
-<style>
-    .asama-navbar {
-        background: rgba(15, 16, 19, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 12px 0;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    }
-    .asama-navbar .navbar-brand { color: #f1f2f6 !important; font-weight: 800; font-size: 1.25rem; text-decoration: none; letter-spacing: -0.5px; }
-    .asama-navbar .navbar-brand span { color: #FF6B35; }
-    .asama-nav-link {
-        color: #a0a5b1 !important; font-size: 0.9rem; font-weight: 500;
-        padding: 8px 16px !important; border-radius: 8px; transition: all 0.3s ease;
-        text-decoration: none; margin: 0 4px;
-    }
-    .asama-nav-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.08); transform: translateY(-1px); }
-    .asama-nav-link.active-link { color: #FF6B35 !important; background: rgba(255, 107, 53, 0.1); font-weight: 600; }
-    .nav-role-badge {
-        display: inline-block; padding: 5px 12px; border-radius: 6px;
-        font-size: 0.75rem; font-weight: 600; background: rgba(255, 107, 53, 0.15);
-        color: #FF6B35; border: 1px solid rgba(255, 107, 53, 0.3); text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .btn-nav-logout {
-        background: transparent; color: #f1f2f6; border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 6px; padding: 6px 18px; font-size: 0.85rem; font-weight: 600;
-        transition: all 0.3s ease; text-decoration: none;
-    }
-    .btn-nav-logout:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
-    .theme-toggle-btn {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 8px;
-        width: 36px; height: 36px;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer;
-        color: #FF6B35;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-    }
-    .theme-toggle-btn:hover { background: rgba(255,107,53,0.15); border-color: #FF6B35; transform: scale(1.05); }
-</style>
-
-<nav class="navbar navbar-expand-lg navbar-dark asama-navbar">
-    <div class="container-fluid px-3">
-        <a class="navbar-brand" href="<%= navLoggedIn ? "dashboard.jsp" : "index.jsp" %>">
-            <i class="bi bi-gear-wide-connected me-1"></i>Asama<span>MotoParts</span>
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm asama-navbar modern-glass">
+    <div class="container-fluid px-4 py-2">
+        <a class="navbar-brand d-flex align-items-center gap-2 brand-hover" href="<%= navLoggedIn ? "dashboard.jsp" : "index.jsp" %>">
+            <div class="brand-icon-wrapper">
+                <i class="bi bi-gear-wide-connected fs-4 text-accent"></i>
+            </div>
+            <span class="fw-bold fs-4 tracking-tight asama-text">Asama<span class="text-accent fw-light">MotoParts</span></span>
         </a>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#asamaNavbar" style="border-color: rgba(255,255,255,0.1);">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler custom-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#asamaNavbar" aria-controls="asamaNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-accent"></i>
         </button>
         
         <div class="collapse navbar-collapse" id="asamaNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
                 <% if(!navLoggedIn) { %>
-                    <li class="nav-item"><a class="asama-nav-link" href="catalog.jsp">Catálogo</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="cart.jsp"><i class="bi bi-cart me-1"></i>Carrito</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i>Catalogo</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-2"></i>Carrito</a></li>
                 <% } else if(navRole == 1) { // Admin %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="inventory">Inventario</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="cashier">Ventas</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="employees">Personal</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="maintenance">Taller</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="time_tracking.jsp">Asistencia</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="sales_history.jsp">Historiales</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> Personal</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historiales</a></li>
                 <% } else if(navRole == 2) { // Contador %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="accountant.jsp">Contabilidad</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> Contabilidad</a></li>
                 <% } else if(navRole == 3) { // Bodeguero %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="inventory">Inventario</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="search_product.jsp">Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
                 <% } else if(navRole == 4) { // Cajero %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="cashier">Ventas</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="search_product.jsp">Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
                 <% } else if(navRole == 5) { // Cliente %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Mi Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="catalog.jsp">Catálogo</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="cart.jsp"><i class="bi bi-cart me-1"></i>Carrito</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="search_product.jsp">Buscar</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i>Escáner IA</a></li>
-                <% } else if(navRole == 6) { // Mecánico %>
-                    <li class="nav-item"><a class="asama-nav-link" href="dashboard.jsp">Panel</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="maintenance">Taller</a></li>
-                    <li class="nav-item"><a class="asama-nav-link" href="search_product.jsp">Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> Mi Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Carrito</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> Escaner IA</a></li>
+                <% } else if(navRole == 6) { // Mecanico %>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
                 <% } %>
             </ul>
             
-            <div class="d-flex align-items-center gap-3">
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Cambiar tema">
-                    <i id="themeIcon" class="bi bi-sun-fill"></i>
+            <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
+                <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all" title="Cambiar tema">
+                    <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
                 </button>
+                
                 <% if(navLoggedIn) { %>
-                    <span class="nav-role-badge">
-                        <% if(navRole==1) out.print("Admin");
-                           else if(navRole==2) out.print("Contador");
-                           else if(navRole==3) out.print("Bodeguero");
-                           else if(navRole==4) out.print("Cajero");
-                           else if(navRole==5) out.print("Cliente");
-                           else if(navRole==6) out.print("Mecánico"); %>
-                    </span>
-                    <a class="btn-nav-logout" href="logout">Salir</a>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge rounded-pill role-badge px-3 py-2 fw-semibold d-flex align-items-center shadow-sm">
+                            <i class="bi bi-shield-check me-2"></i>
+                            <% if(navRole==1) out.print("Admin");
+                               else if(navRole==2) out.print("Contador");
+                               else if(navRole==3) out.print("Bodeguero");
+                               else if(navRole==4) out.print("Cajero");
+                               else if(navRole==5) out.print("Cliente");
+                               else if(navRole==6) out.print("Mecanico"); %>
+                        </span>
+                        <a class="btn btn-outline-danger btn-sm px-4 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center gap-2 transition-all" href="logout">
+                            <span>Salir</span> <i class="bi bi-box-arrow-right"></i>
+                        </a>
+                    </div>
                 <% } else { %>
-                    <a class="btn-nav-logout" href="login.jsp">Iniciar Sesión</a>
+                    <a class="btn btn-accent px-4 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center gap-2 transition-all" href="login.jsp">
+                        <i class="bi bi-person-circle"></i> Iniciar Sesion
+                    </a>
                 <% } %>
             </div>
         </div>

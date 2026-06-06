@@ -22,23 +22,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taller de Mantenimiento - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #f0f0f0;
-            --nav-bg: rgba(10, 10, 10, 0.9);
-            --accent-orange: #FF6B35;
-            --accent-dark: #2D3436;
-            --card-bg: #1a1a1a;
-            --card-border: rgba(255,255,255,0.06);
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
-        .navbar { background-color: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); }
-        .navbar-brand { color: #fff !important; font-weight: 800; }
-        .navbar-brand span { color: var(--accent-orange); }
         .section-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -47,27 +35,12 @@
             margin-bottom: 24px;
         }
         .section-title { color: var(--accent-orange); font-weight: 700; margin-bottom: 20px; }
-        .btn-moto { background-color: var(--accent-orange); color: #fff; border-radius: 30px; padding: 10px 20px; font-weight: 600; border: none; transition: 0.3s; }
-        .btn-moto:hover { background-color: #E55A2B; color: white; }
-        .btn-moto-outline { background-color: transparent; color: var(--accent-orange); border: 1px solid var(--accent-orange); border-radius: 30px; padding: 10px 20px; font-weight: 600; transition: 0.3s; }
-        .btn-moto-outline:hover { background-color: var(--accent-orange); color: white; }
-        .form-control, .form-select {
-            background: var(--accent-dark); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 10px;
-        }
-        .form-control:focus, .form-select:focus { background: var(--accent-dark); color: #fff; border-color: var(--accent-orange); box-shadow: none; }
-        .form-select option { background: var(--accent-dark); color: #fff; }
-        .table { color: #ccc; }
-        .table th, .table td { border-color: rgba(255,255,255,0.08); vertical-align: middle; }
         .badge-pending { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
         .badge-progress { background: rgba(52,152,219,0.15); color: #3498db; border: 1px solid rgba(52,152,219,0.3); }
         .badge-done { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
         .status-badge { padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
-        .nav-tabs { border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .nav-tabs .nav-link { color: #888; border: none; padding: 12px 20px; font-weight: 500; }
-        .nav-tabs .nav-link.active { color: var(--accent-orange); background: transparent; border-bottom: 3px solid var(--accent-orange); }
-        .nav-tabs .nav-link:hover { color: #fff; }
     </style>
-    <link rel="stylesheet" href="resources/theme.css">
+    <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
 <script src="resources/theme.js"></script>

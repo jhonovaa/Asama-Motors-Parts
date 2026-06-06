@@ -34,7 +34,6 @@ public class TimeTrackingServlet extends HttpServlet {
                     if (!first) json.append(",");
                     
                     String name = rs.getString("full_name");
-                    // get string format of timestamp directly if possible
                     String entry = rs.getTimestamp("entry_time") != null ? rs.getTimestamp("entry_time").toString() : "";
                     String exit = rs.getTimestamp("exit_time") != null ? rs.getTimestamp("exit_time").toString() : "";
                     
@@ -44,6 +43,67 @@ public class TimeTrackingServlet extends HttpServlet {
                         .append("\"exit\":\"").append(exit).append("\"")
                         .append("}");
                     first = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]");
+            
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            return;
+        } else if ("history_dates".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            StringBuilder json = new StringBuilder("[");
+            String sql = "SELECT DISTINCT date FROM time_tracking ORDER BY date DESC";
+            
+            try (Connection conn = DbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    json.append("\"").append(rs.getDate("date").toString()).append("\"");
+                    first = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]");
+            
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            return;
+        } else if ("history_by_date".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            String targetDate = request.getParameter("date");
+            
+            StringBuilder json = new StringBuilder("[");
+            String sql = "SELECT u.full_name, t.entry_time, t.exit_time FROM time_tracking t JOIN users u ON t.user_id = u.id WHERE t.date = ?::DATE AND t.exit_time IS NOT NULL ORDER BY t.entry_time ASC";
+            
+            try (Connection conn = DbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, targetDate);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) json.append(",");
+                        
+                        String name = rs.getString("full_name");
+                        String entry = rs.getTimestamp("entry_time") != null ? rs.getTimestamp("entry_time").toString() : "";
+                        String exit = rs.getTimestamp("exit_time") != null ? rs.getTimestamp("exit_time").toString() : "";
+                        
+                        json.append("{")
+                            .append("\"name\":\"").append(name.replace("\"", "\\\"")).append("\",")
+                            .append("\"entry\":\"").append(entry).append("\",")
+                            .append("\"exit\":\"").append(exit).append("\"")
+                            .append("}");
+                        first = false;
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

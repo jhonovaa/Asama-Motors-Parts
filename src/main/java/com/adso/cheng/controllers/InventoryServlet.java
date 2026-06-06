@@ -107,7 +107,8 @@ public class InventoryServlet extends HttpServlet {
     }
     
     private String saveFile(Part part, HttpServletRequest request) throws IOException {
-        String baseUploadPath = "c:\\Users\\salaz\\Desktop\\asama\\src\\main\\webapp\\resources\\fotos\\productos";
+        String baseWebapp = com.adso.cheng.utils.UploadUtil.getSourceWebappPath(request);
+        String baseUploadPath = baseWebapp + File.separator + "resources" + File.separator + "fotos" + File.separator + "productos";
         
         File uploadDir = new File(baseUploadPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();

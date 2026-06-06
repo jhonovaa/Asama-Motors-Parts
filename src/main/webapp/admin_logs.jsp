@@ -14,40 +14,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Registros Administrativos - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        :root {
-            --bg-color: #0f1013;
-            --text-color: #f1f2f6;
-            --nav-bg: rgba(15, 16, 19, 0.85);
-            --metallic-gunmetal: #1a1d24;
-            --card-bg: #2a2e35;
-            --accent-orange: #FF6B35;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
-        .navbar-custom { background-color: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .navbar-brand { color: #E5E4E2 !important; font-weight: 700; }
-        
-        .dashboard-stats {
-            background: var(--metallic-gunmetal);
-            border-left: 5px solid var(--accent-orange);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 25px;
-        }
-        
-        .card { background: var(--metallic-gunmetal); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card-header { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; padding: 15px 20px; }
-        
-        .table-dark { background-color: transparent !important; }
-        .table { color: #ccc; }
-        .table th, .table td { border-color: rgba(255,255,255,0.1); }
-    </style>
-    <link rel="stylesheet" href="resources/theme.css">
+<link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
 <script src="resources/theme.js"></script>

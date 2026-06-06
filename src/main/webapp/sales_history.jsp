@@ -13,44 +13,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Ventas - Asama Moto Parts</title>
+    <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        :root {
-            --bg-color: #0f1013;
-            --text-color: #f1f2f6;
-            --nav-bg: rgba(15, 16, 19, 0.85);
-            --metallic-chrome: #E5E4E2;
-            --metallic-gunmetal: #1a1d24;
-            --card-bg: #2a2e35;
-            --accent-orange: #FF6B35;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-        .navbar {
-            background-color: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .navbar-brand { color: var(--metallic-chrome) !important; font-weight: 700; }
-        .card-custom {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .table { color: #ccc; }
-        .table th, .table td { border-color: rgba(255,255,255,0.1); }
-        .table thead th { border-bottom: 2px solid var(--accent-orange); color: white; }
-    </style>
-    <link rel="stylesheet" href="resources/theme.css">
+
+    <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
 <script src="resources/theme.js"></script>
@@ -117,14 +88,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay registros.</td></tr>';
             } else {
                 data.forEach(row => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${row.date}</td>
-                            <td>${row.cashier}</td>
-                            <td>${row.sales_count}</td>
-                            <td class="text-white fw-bold">$${row.revenue.toFixed(2)}</td>
-                        </tr>
-                    `;
+                    tbody.innerHTML += 
+                        '<tr>' +
+                            '<td>' + row.date + '</td>' +
+                            '<td>' + row.cashier + '</td>' +
+                            '<td>' + row.sales_count + '</td>' +
+                            '<td class="fw-bold">$' + row.revenue.toFixed(2) + '</td>' +
+                        '</tr>';
                 });
             }
         });
@@ -139,13 +109,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No hay registros.</td></tr>';
             } else {
                 data.forEach(row => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${row.date}</td>
-                            <td>${row.sales_count}</td>
-                            <td class="text-white fw-bold">$${row.revenue.toFixed(2)}</td>
-                        </tr>
-                    `;
+                    tbody.innerHTML += 
+                        '<tr>' +
+                            '<td>' + row.date + '</td>' +
+                            '<td>' + row.sales_count + '</td>' +
+                            '<td class="fw-bold">$' + row.revenue.toFixed(2) + '</td>' +
+                        '</tr>';
                 });
             }
         });
