@@ -84,9 +84,11 @@
     </a>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('asama_cart')) || [];
         let isLoggedIn = <%= session.getAttribute("user") != null %>;
         let roleId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getRoleId() : 0 %>;
+        let currentUserId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getId() : -1 %>;
+        let cartKey = 'asama_cart_' + currentUserId;
+        let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
 
         function updateCartBadge() {
             let badge = document.getElementById('cartBadge');
@@ -100,13 +102,17 @@
         }
 
         function addToCart(id, name, price) {
+            if (!isLoggedIn) {
+                window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+añadir+al+carrito";
+                return;
+            }
             let item = cart.find(i => i.id === id);
             if(item) {
                 item.qty++;
             } else {
                 cart.push({id, name, price, qty: 1});
             }
-            localStorage.setItem('asama_cart', JSON.stringify(cart));
+            localStorage.setItem(cartKey, JSON.stringify(cart));
             updateCartBadge();
             
             // Show a tiny toast or alert

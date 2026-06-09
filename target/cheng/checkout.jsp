@@ -75,7 +75,9 @@
 
     <script>
         function submitOrder() {
-            let cart = localStorage.getItem('asama_cart');
+            let currentUserId = <%= user != null ? user.getId() : -1 %>;
+            let cartKey = 'asama_cart_' + currentUserId;
+            let cart = localStorage.getItem(cartKey);
             if(!cart || cart === '[]') {
                 alert("El carrito está vacío");
                 window.location.href = 'catalog.jsp';
@@ -92,7 +94,7 @@
             })
             .then(response => {
                 if(response.ok) {
-                    localStorage.removeItem('asama_cart');
+                    localStorage.removeItem(cartKey);
                     document.getElementById('paymentForm').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                 } else {
