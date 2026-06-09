@@ -87,18 +87,34 @@ public class EmployeeServlet extends HttpServlet {
                 String documentId = request.getParameter("documentId");
                 String email = request.getParameter("email");
                 int roleId = Integer.parseInt(request.getParameter("roleId"));
+                String password = request.getParameter("password");
                 
                 String barcode = documentId;
                 
-                String sql = "UPDATE users SET full_name=?, document_id=?, email=?, role_id=?, barcode=? WHERE id=?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, fullName);
-                    stmt.setString(2, documentId);
-                    stmt.setString(3, email);
-                    stmt.setInt(4, roleId);
-                    stmt.setString(5, barcode);
-                    stmt.setInt(6, id);
-                    stmt.executeUpdate();
+                if (password != null && !password.trim().isEmpty()) {
+                    String hashedPassword = HashUtil.sha256(password);
+                    String sql = "UPDATE users SET full_name=?, document_id=?, email=?, role_id=?, barcode=?, password=? WHERE id=?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setString(1, fullName);
+                        stmt.setString(2, documentId);
+                        stmt.setString(3, email);
+                        stmt.setInt(4, roleId);
+                        stmt.setString(5, barcode);
+                        stmt.setString(6, hashedPassword);
+                        stmt.setInt(7, id);
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    String sql = "UPDATE users SET full_name=?, document_id=?, email=?, role_id=?, barcode=? WHERE id=?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setString(1, fullName);
+                        stmt.setString(2, documentId);
+                        stmt.setString(3, email);
+                        stmt.setInt(4, roleId);
+                        stmt.setString(5, barcode);
+                        stmt.setInt(6, id);
+                        stmt.executeUpdate();
+                    }
                 }
                 
                 // Handle file upload for edit

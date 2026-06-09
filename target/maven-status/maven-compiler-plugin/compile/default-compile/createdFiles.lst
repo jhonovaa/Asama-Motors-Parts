@@ -1,11 +1,14 @@
 com\adso\cheng\controllers\ProductSearchServlet.class
 com\adso\cheng\utils\DbConnection.class
+com\adso\cheng\utils\EmailUtil$1.class
 com\adso\cheng\controllers\RegisterServlet.class
 com\adso\cheng\controllers\TimeTrackingServlet.class
 com\adso\cheng\controllers\CheckoutServlet$1.class
 com\adso\cheng\controllers\ImageServlet.class
+com\adso\cheng\DbAddUser.class
 com\adso\cheng\controllers\VisualScannerServlet.class
 com\adso\cheng\models\User.class
+com\adso\cheng\controllers\ResendOtpServlet.class
 com\adso\cheng\models\Product.class
 com\adso\cheng\controllers\ProfileServlet.class
 com\adso\cheng\controllers\EmployeeServlet.class
@@ -21,5 +24,6 @@ com\adso\cheng\controllers\CheckoutServlet.class
 com\adso\cheng\controllers\DashboardDataServlet.class
 com\adso\cheng\controllers\CashierServlet.class
 com\adso\cheng\controllers\MaintenanceServlet.class
+com\adso\cheng\utils\EmailUtil.class
 com\adso\cheng\controllers\LogoutServlet.class
 com\adso\cheng\dao\ProductDAO.class

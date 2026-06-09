@@ -11,6 +11,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @WebServlet("/time-tracking")
 public class TimeTrackingServlet extends HttpServlet {
@@ -23,11 +26,12 @@ public class TimeTrackingServlet extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             
             StringBuilder json = new StringBuilder("[");
-            String sql = "SELECT u.full_name, t.entry_time, t.exit_time FROM time_tracking t JOIN users u ON t.user_id = u.id WHERE t.date = CURRENT_DATE ORDER BY t.entry_time DESC";
+            String sql = "SELECT u.full_name, t.entry_time, t.exit_time FROM time_tracking t JOIN users u ON t.user_id = u.id WHERE t.date = ? ORDER BY t.entry_time DESC";
             
             try (Connection conn = DbConnection.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setDate(1, java.sql.Date.valueOf(ZonedDateTime.now(ZoneId.of("America/Bogota")).toLocalDate()));
+                try (ResultSet rs = stmt.executeQuery()) {
                 
                 boolean first = true;
                 while (rs.next()) {
@@ -43,6 +47,7 @@ public class TimeTrackingServlet extends HttpServlet {
                         .append("\"exit\":\"").append(exit).append("\"")
                         .append("}");
                     first = false;
+                }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,12 +153,17 @@ public class TimeTrackingServlet extends HttpServlet {
                 }
             }
 
+            ZoneId bogotaZone = ZoneId.of("America/Bogota");
+            Timestamp now = Timestamp.valueOf(ZonedDateTime.now(bogotaZone).toLocalDateTime());
+            java.sql.Date today = java.sql.Date.valueOf(ZonedDateTime.now(bogotaZone).toLocalDate());
+
             // Check if there is an open shift today
-            String checkSql = "SELECT id, exit_time FROM time_tracking WHERE user_id = ? AND date = CURRENT_DATE ORDER BY id DESC LIMIT 1";
+            String checkSql = "SELECT id, exit_time FROM time_tracking WHERE user_id = ? AND date = ? ORDER BY id DESC LIMIT 1";
             int trackingId = -1;
             boolean hasExit = false;
             try (PreparedStatement cStmt = conn.prepareStatement(checkSql)) {
                 cStmt.setInt(1, userId);
+                cStmt.setDate(2, today);
                 try (ResultSet rs = cStmt.executeQuery()) {
                     if (rs.next()) {
                         trackingId = rs.getInt("id");
@@ -164,17 +174,20 @@ public class TimeTrackingServlet extends HttpServlet {
 
             if (trackingId == -1 || hasExit) {
                 // Register Entry
-                String inSql = "INSERT INTO time_tracking (user_id, entry_time) VALUES (?, CURRENT_TIMESTAMP)";
+                String inSql = "INSERT INTO time_tracking (user_id, entry_time, date) VALUES (?, ?, ?)";
                 try (PreparedStatement inStmt = conn.prepareStatement(inSql)) {
                     inStmt.setInt(1, userId);
+                    inStmt.setTimestamp(2, now);
+                    inStmt.setDate(3, today);
                     inStmt.executeUpdate();
                     out.print("{\"success\": true, \"type\": \"Entrada\", \"name\": \"" + userName + "\"}");
                 }
             } else {
                 // Register Exit
-                String outSql = "UPDATE time_tracking SET exit_time = CURRENT_TIMESTAMP WHERE id = ?";
+                String outSql = "UPDATE time_tracking SET exit_time = ? WHERE id = ?";
                 try (PreparedStatement outStmt = conn.prepareStatement(outSql)) {
-                    outStmt.setInt(1, trackingId);
+                    outStmt.setTimestamp(1, now);
+                    outStmt.setInt(2, trackingId);
                     outStmt.executeUpdate();
                     out.print("{\"success\": true, \"type\": \"Salida\", \"name\": \"" + userName + "\"}");
                 }

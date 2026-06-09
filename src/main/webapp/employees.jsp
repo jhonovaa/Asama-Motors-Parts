@@ -200,6 +200,10 @@
                   </select>
               </div>
               <div class="mb-3">
+                  <label class="form-label text-secondary small fw-semibold">Nueva Contraseña (Dejar en blanco para no cambiar)</label>
+                  <input type="password" name="password" id="editPassword" class="form-control" placeholder="Opcional">
+              </div>
+              <div class="mb-3">
                   <label class="form-label text-secondary small fw-semibold">Actualizar Foto (Opcional)</label>
                   <input type="file" name="photo" class="form-control" accept="image/jpeg, image/png">
               </div>

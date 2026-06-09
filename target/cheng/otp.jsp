@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
         /* --- LEGIBILIDAD EXTREMA --- */
-        /* Hacemos que los textos secundarios sean casi blancos para que resalten */
         .text-secondary, .text-muted { 
             color: rgba(255, 255, 255, 0.85) !important; 
             font-weight: 500;
@@ -29,65 +28,59 @@
             font-weight: 600;
         }
 
-        /* Input de Codigo OTP Gigante y Claro */
-        .form-control {
+        /* --- INPUTS OTP MODERNOS (6 CASILLAS) --- */
+        .otp-inputs-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .otp-box {
+            width: 55px;
+            height: 65px;
+            text-align: center;
+            font-size: 2rem !important;
+            font-weight: 800 !important;
+            border-radius: 12px !important;
             background-color: rgba(255, 255, 255, 0.08) !important;
             color: #ffffff !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            font-weight: 800;
-            padding: 15px 20px;
-            border-radius: 12px;
-            letter-spacing: 12px; 
-            font-size: 1.8rem;
+            padding: 0 !important;
+            transition: all 0.2s ease;
         }
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
-            letter-spacing: 12px;
-            font-weight: 600;
-        }
-        .form-control:focus {
+        
+        .otp-box:focus {
             background-color: rgba(255, 255, 255, 0.12) !important;
             border-color: var(--accent-orange) !important;
-            box-shadow: 0 0 0 0.3rem var(--accent-glow) !important;
+            box-shadow: 0 0 15px var(--accent-glow) !important;
+            transform: translateY(-2px);
         }
 
-        /* Compatibilidad Modo Claro para el Input */
-        body.light-mode .form-control {
+        /* Compatibilidad Modo Claro para las casillas */
+        body.light-mode .otp-box {
             background-color: #ffffff !important;
             color: #121417 !important;
             border-color: rgba(0, 0, 0, 0.25) !important;
         }
-        body.light-mode .form-control::placeholder {
-            color: rgba(0, 0, 0, 0.4) !important;
+        body.light-mode .otp-box:focus {
+            background-color: #ffffff !important;
         }
 
-        /* Estilo de la caja OTP simulada (Super visible) */
-        .otp-display-box {
-            background: rgba(0, 229, 255, 0.1);
-            border: 2px dashed var(--accent-orange);
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: 15px;
-            color: var(--accent-orange);
-            margin: 15px 0 25px;
-            font-family: 'Courier New', monospace;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-            text-shadow: 0 0 10px var(--accent-glow);
+        /* Efecto de pulso en el icono principal */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+            70% { box-shadow: 0 0 0 15px rgba(0,0,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
         }
-        
-        body.light-mode .otp-display-box {
-            background: rgba(255, 214, 0, 0.15);
-            text-shadow: none;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        .icon-pulse {
+            animation: pulseGlow 2s infinite;
         }
     </style>
 </head>
 <body class="body-center" style="background: radial-gradient(circle at center, var(--card-bg) 0%, var(--bg-color) 100%);">
 <script src="resources/theme.js"></script>
 
-    <!-- Boton de Tema -->
     <div style="position:fixed; top:20px; right:20px; z-index:1000;">
         <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-lg" title="Cambiar tema">
             <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
@@ -95,36 +88,48 @@
     </div>
 
     <div class="login-card p-4 p-md-5 shadow-lg text-center" style="width: 100%; max-width: 480px; border-radius: 20px;">
-        <div class="brand-icon mx-auto mb-3" style="width: 75px; height: 75px; font-size: 35px; background-color: var(--accent-orange); color: #121417; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px var(--accent-glow);">
+        
+        <div class="brand-icon mx-auto mb-4 icon-pulse" style="width: 80px; height: 80px; font-size: 38px; background-color: var(--accent-orange); color: #121417; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
             <i class="bi bi-shield-lock-fill"></i>
         </div>
         
-        <h2 class="fw-bold mb-2 title-main text-white">Verificacion OTP</h2>
-        <p class="text-secondary mb-4 fs-6">Ingresa el codigo de seguridad de 6 digitos para acceder a tu cuenta.</p>
-        
-        <!-- Simulacion OTP -->
-        <div class="bg-dark bg-opacity-50 rounded-4 p-4 mb-4 border border-secondary border-opacity-50 shadow-sm">
-            <span class="badge bg-secondary bg-opacity-75 text-light mb-3 fw-bold border border-secondary border-opacity-50 px-3 py-2 fs-6">
-                <i class="bi bi-info-circle-fill me-2"></i>Simulacion de Envio
-            </span>
-            <div class="otp-display-box mx-auto d-flex justify-content-center align-items-center"><%= otpCode %></div>
-            <p class="small text-muted mb-0 fw-bold">En produccion real, este codigo se enviara a tu correo electronico.</p>
-        </div>
+        <h2 class="fw-bold mb-2 title-main text-white">Seguridad de Cuenta</h2>
+        <p class="text-secondary mb-4 fs-6">Hemos enviado un codigo de 6 digitos a tu correo electronico. Ingresalo a continuacion.</p>
         
         <% if(request.getAttribute("error") != null) { %>
             <div class="alert bg-danger bg-opacity-25 border border-danger text-danger py-3 px-3 text-center rounded-3 fw-bold mb-4 shadow-sm fs-6" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i> <%= request.getAttribute("error") %>
             </div>
         <% } %>
-        
-        <form action="verifyOtp" method="POST">
-            <div class="mb-4">
-                <input type="text" name="otp" class="form-control text-center shadow-sm" placeholder="------" maxlength="6" required autofocus pattern="[0-9]{6}" title="Ingresa los 6 digitos exactos">
+
+        <% if(session.getAttribute("emailWarning") != null) { %>
+            <div class="alert bg-warning bg-opacity-25 border border-warning text-warning py-3 px-3 text-center rounded-3 fw-bold mb-4 shadow-sm fs-6" role="alert">
+                <i class="bi bi-info-circle-fill me-2 fs-5"></i> <%= session.getAttribute("emailWarning") %>
             </div>
+        <% } %>
+        
+        <form action="verifyOtp" method="POST" id="otpForm">
+            <input type="hidden" name="otp" id="realOtpInput" required pattern="[0-9]{6}">
+            
+            <div class="otp-inputs-container">
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" autofocus>
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="form-control otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            </div>
+            
             <button type="submit" class="btn btn-accent w-100 rounded-pill fw-bold py-3 fs-5 shadow-lg transition-all d-flex justify-content-center align-items-center gap-2">
                 <i class="bi bi-check-circle-fill"></i> Verificar e Ingresar
             </button>
         </form>
+
+        <div class="mt-3">
+            <button id="resendBtn" class="btn btn-outline-secondary w-100 rounded-pill fw-bold py-2 transition-all d-flex justify-content-center align-items-center gap-2" disabled>
+                <i class="bi bi-arrow-clockwise"></i> <span id="countdownSpan">Reenviar en 60s</span>
+            </button>
+        </div>
         
         <div class="text-center mt-4 pt-4 border-top border-secondary border-opacity-25">
             <a href="login.jsp" class="text-secondary text-decoration-none hover-accent transition-all fw-bold fs-6">
@@ -135,8 +140,59 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Correccion automatica para que el titulo principal sea negro en modo claro
         document.addEventListener("DOMContentLoaded", function() {
+            // --- LOGICA DE CASILLAS OTP AUTOMATICAS ---
+            const inputs = document.querySelectorAll('.otp-box');
+            const hiddenInput = document.getElementById('realOtpInput');
+            const form = document.getElementById('otpForm');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('focus', () => {
+                    input.select();
+                });
+
+                input.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    if (e.target.value !== '') {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                    updateHiddenInput();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '') {
+                        if (index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                    if (pastedData) {
+                        for (let i = 0; i < pastedData.length; i++) {
+                            if (inputs[i]) {
+                                inputs[i].value = pastedData[i];
+                            }
+                        }
+                        updateHiddenInput();
+                        const nextEmpty = Math.min(pastedData.length, 5);
+                        inputs[nextEmpty].focus();
+                    }
+                });
+            });
+
+            function updateHiddenInput() {
+                let otpValue = '';
+                inputs.forEach(input => {
+                    otpValue += input.value;
+                });
+                hiddenInput.value = otpValue;
+            }
+
             const title = document.querySelector('.title-main');
             
             function updateTitleColor() {
@@ -149,11 +205,67 @@
                 }
             }
             
-            updateTitleColor(); // Ejecutar al cargar
+            updateTitleColor();
             
             const themeBtn = document.querySelector('.theme-toggle-btn');
             themeBtn.addEventListener('click', () => {
-                setTimeout(updateTitleColor, 50); // Esperar a que theme.js cambie la clase
+                setTimeout(updateTitleColor, 50);
+            });
+            
+            let timeLeft = 60;
+            const resendBtn = document.getElementById('resendBtn');
+            const countdownSpan = document.getElementById('countdownSpan');
+            
+            let timer = setInterval(() => {
+                timeLeft--;
+                countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    resendBtn.classList.remove('btn-outline-secondary');
+                    resendBtn.classList.add('btn-outline-light');
+                    countdownSpan.innerText = 'Reenviar código';
+                }
+            }, 1000);
+
+            resendBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                resendBtn.disabled = true;
+                resendBtn.classList.remove('btn-outline-light');
+                resendBtn.classList.add('btn-outline-secondary');
+                countdownSpan.innerText = 'Enviando...';
+                
+                fetch('resendOtp', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            timeLeft = 60;
+                            countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                            timer = setInterval(() => {
+                                timeLeft--;
+                                countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                                if (timeLeft <= 0) {
+                                    clearInterval(timer);
+                                    resendBtn.disabled = false;
+                                    resendBtn.classList.remove('btn-outline-secondary');
+                                    resendBtn.classList.add('btn-outline-light');
+                                    countdownSpan.innerText = 'Reenviar código';
+                                }
+                            }, 1000);
+                        } else {
+                            alert('Error al reenviar el correo: ' + (data.message || 'Error desconocido'));
+                            countdownSpan.innerText = 'Reenviar código';
+                            resendBtn.disabled = false;
+                            resendBtn.classList.remove('btn-outline-secondary');
+                            resendBtn.classList.add('btn-outline-light');
+                        }
+                    }).catch(err => {
+                        alert('Error de red al intentar reenviar el correo.');
+                        countdownSpan.innerText = 'Reenviar código';
+                        resendBtn.disabled = false;
+                        resendBtn.classList.remove('btn-outline-secondary');
+                        resendBtn.classList.add('btn-outline-light');
+                    });
             });
         });
     </script>

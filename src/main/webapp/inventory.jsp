@@ -21,6 +21,92 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
+        /* --- LEGIBILIDAD EXTREMA --- */
+        .text-secondary, .text-muted { 
+            color: rgba(255, 255, 255, 0.85) !important; 
+            font-weight: 500;
+        }
+        body.light-mode .text-secondary, body.light-mode .text-muted { 
+            color: rgba(0, 0, 0, 0.75) !important; 
+            font-weight: 600;
+        }
+
+        /* Formularios */
+        .form-label {
+            font-weight: 600 !important;
+            color: var(--text-color) !important;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, textarea {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            font-weight: 500;
+            padding: 10px 15px;
+        }
+        .form-control::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+        .form-control:focus, textarea:focus {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 0 0 0.25rem var(--accent-glow) !important;
+        }
+        body.light-mode .form-control, body.light-mode textarea {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        body.light-mode .form-control::placeholder, body.light-mode textarea::placeholder {
+            color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* Boton de archivo */
+        .form-control::file-selector-button {
+            background-color: var(--accent-orange);
+            color: #121417;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 15px;
+            margin-right: 15px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .form-control::file-selector-button:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Tablas: Forzar contraste sobreescribiendo Bootstrap */
+        .table { 
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--text-color);
+            color: var(--text-color) !important; 
+        }
+        .table th { 
+            font-weight: 700 !important; 
+            letter-spacing: 0.5px; 
+            font-size: 0.85rem; 
+            border-bottom: 2px solid var(--card-border) !important; 
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        body.light-mode .table th {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+        .table td { 
+            font-weight: 600 !important; 
+            font-size: 1rem !important; 
+            border-bottom: 1px solid var(--card-border) !important; 
+            vertical-align: middle; 
+            color: var(--text-color) !important; /* Fuerza a que sea blanco/negro segun el modo */
+        }
+        .table tbody tr:hover td { 
+            background-color: rgba(255, 255, 255, 0.08) !important; 
+        }
+        body.light-mode .table tbody tr:hover td { 
+            background-color: rgba(0, 0, 0, 0.04) !important; 
+        }
 
         /* Codigo de Barras Blanco para Escaneres */
         .inventory-barcode-container {
@@ -96,17 +182,16 @@
                 </div>
                 
                 <div class="table-responsive flex-grow-1 px-3" style="max-height: 65vh; overflow-y: auto;">
-                    <table class="table table-hover align-middle table-borderless">
+                    <table class="table align-middle table-borderless">
                         <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
                             <tr>
-                                <th class="text-secondary text-uppercase pb-3">Foto</th>
-                                <th class="text-secondary text-uppercase pb-3">ID</th>
-                                <th class="text-secondary text-uppercase pb-3">Repuesto</th>
-                                <th class="text-secondary text-uppercase pb-3">Marca</th>
-                                <th class="text-secondary text-uppercase pb-3 text-center">Stock</th>
-                                <th class="text-secondary text-uppercase pb-3 text-end">Precio</th>
-                                <th class="text-secondary text-uppercase pb-3 text-center">Codigo</th>
-                                <th class="text-secondary text-uppercase pb-3 text-center">Acciones</th>
+                                <th class="text-uppercase pb-3">Foto</th>
+                                <th class="text-uppercase pb-3">Repuesto</th>
+                                <th class="text-uppercase pb-3">Marca</th>
+                                <th class="text-uppercase pb-3 text-center">Stock</th>
+                                <th class="text-uppercase pb-3 text-end">Precio</th>
+                                <th class="text-uppercase pb-3 text-center">Codigo</th>
+                                <th class="text-uppercase pb-3 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,13 +201,12 @@
                                     for(Product p : list) {
                                         String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
                             %>
-                            <tr style="border-bottom: 1px solid var(--card-border);">
+                            <tr>
                                 <td>
                                     <img src="<%= img %>" width="45" height="45" class="rounded-3 shadow-sm" style="object-fit:cover; border: 1px solid var(--card-border);">
                                 </td>
-                                <td class="text-muted">#<%= p.getId() %></td>
                                 <td class="fw-bold fs-6"><%= p.getName() %></td>
-                                <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-25 py-1 px-2"><%= p.getBrand() %></span></td>
+                                <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-25 py-1 px-2 fw-medium"><%= p.getBrand() %></span></td>
                                 <td class="text-center">
                                     <% if(p.getStock() <= 5) { %>
                                         <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
@@ -162,7 +246,7 @@
                             </tr>
                             <%      }
                                 } else {
-                                    out.print("<tr><td colspan='8' class='text-center text-secondary py-5'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario esta vacio.</td></tr>");
+                                    out.print("<tr><td colspan='7' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario esta vacio.</td></tr>");
                                 }
                             %>
                         </tbody>
@@ -232,7 +316,6 @@
         new bootstrap.Modal(document.getElementById('editModal')).show();
     }
     
-    // Invertir el color del boton cerrar del modal en modo oscuro
     document.addEventListener("DOMContentLoaded", function() {
         const isLight = document.body.classList.contains('light-mode');
         document.documentElement.style.setProperty('--close-btn-filter', isLight ? 'none' : 'invert(1) grayscale(100%) brightness(200%)');
