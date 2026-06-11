@@ -5,6 +5,8 @@
     boolean navLoggedIn = navUser != null;
     int navRole = navLoggedIn ? navUser.getRoleId() : 0;
     String currentPage = request.getRequestURI();
+    String navUserAgent = request.getHeader("User-Agent");
+    boolean isApp = navUserAgent != null && navUserAgent.contains("ChengAndroidApp");
 %>
 <link rel="stylesheet" href="resources/theme.css?v=6">
 <script src="resources/theme.js"></script>
@@ -61,13 +63,20 @@
                     <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i>Catalogo</a></li>
                     <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-2"></i>Carrito</a></li>
                 <% } else if(navRole == 1) { // Admin %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> Personal</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historiales</a></li>
+                    <% if(isApp) { %>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Estadisticas</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historial</a></li>
+                    <% } else { %>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> Personal</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historiales</a></li>
+                    <% } %>
                 <% } else if(navRole == 2) { // Contador %>
                     <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
                     <li class="nav-item"><a class="nav-link custom-link" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> Contabilidad</a></li>
@@ -80,11 +89,17 @@
                     <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
                     <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
                 <% } else if(navRole == 5) { // Cliente %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> Mi Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Carrito</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> Escaner IA</a></li>
+                    <% if(isApp) { %>
+                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Pedido</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
+                    <% } else { %>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> Mi Panel</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Carrito</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> Escaner IA</a></li>
+                    <% } %>
                 <% } else if(navRole == 6) { // Mecanico %>
                     <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
                     <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>

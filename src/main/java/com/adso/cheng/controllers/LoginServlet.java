@@ -30,6 +30,17 @@ public class LoginServlet extends HttpServlet {
         User user = userDAO.authenticate(email, password);
 
         if (user != null) {
+            // Validar acceso exclusivo desde la App Android
+            String userAgent = request.getHeader("User-Agent");
+            if (userAgent != null && userAgent.contains("ChengAndroidApp")) {
+                int role = user.getRoleId();
+                if (role != 1 && role != 5) {
+                    request.setAttribute("error", "Acceso denegado: Esta aplicación es exclusiva para Administradores y Clientes");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
+                }
+            }
+
             HttpSession session = request.getSession();
             session.setAttribute("pendingUser", user);
             
