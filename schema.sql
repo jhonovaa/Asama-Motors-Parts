@@ -120,3 +120,25 @@ INSERT INTO products (name, description, brand, price, stock, barcode) VALUES
 ('Cable de Acelerador', 'Cable de acelerador universal ajustable.', 'Genérico', 15000.00, 25, 'ASAMA-1010'),
 ('Manigueta Freno Derecha', 'Manigueta de freno en aluminio con pivot.', 'Genérico', 25000.00, 18, 'ASAMA-1011'),
 ('Kit Rodamientos Dirección', 'Juego completo de rodamientos de dirección.', 'All Balls', 45000.00, 12, 'ASAMA-1012');
+
+-- 9. Post Sale Requests Table (Garantías y Devoluciones)
+CREATE TABLE post_sale_requests (
+    id SERIAL PRIMARY KEY,
+    sale_id INT NOT NULL REFERENCES sales(id),
+    request_type VARCHAR(50) NOT NULL, -- GARANTIA, DEVOLUCION
+    damage VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    image_path VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'PENDIENTE', -- PENDIENTE, APROBADA, RECHAZADA
+    admin_reply TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. Accountant Reports Table (Reportes en PDF generados para el contador)
+CREATE TABLE accountant_reports (
+    id SERIAL PRIMARY KEY,
+    request_id INT NOT NULL REFERENCES post_sale_requests(id),
+    pdf_path VARCHAR(255) NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

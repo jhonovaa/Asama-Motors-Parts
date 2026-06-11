@@ -90,6 +90,65 @@
         </div>
     </div>
 
+    <!-- Notificaciones de Devoluciones y Garantías -->
+    <div class="card-custom shadow-sm mb-4 border-danger border-2">
+        <div class="card-header d-flex justify-content-between align-items-center bg-danger bg-opacity-10">
+            <h5 class="mb-0 text-danger"><i class="bi bi-bell-fill"></i> Notificaciones de Devoluciones y Garantías</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 300px;">
+                <table class="table table-borderless table-hover m-0 table-sm">
+                    <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
+                        <tr>
+                            <th class="text-secondary">Fecha de Aprobación</th>
+                            <th class="text-secondary">ID Reclamo</th>
+                            <th class="text-secondary">Estado</th>
+                            <th class="text-secondary text-end">Reporte (PDF)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%
+                            try (Connection conn = DbConnection.getConnection();
+                                 Statement stmt = conn.createStatement();
+                                 ResultSet rs = stmt.executeQuery(
+                                    "SELECT id, request_id, pdf_path, is_read, created_at FROM accountant_reports ORDER BY created_at DESC"
+                                 )) {
+                                boolean hasReports = false;
+                                while(rs.next()) {
+                                    hasReports = true;
+                                    boolean isRead = rs.getBoolean("is_read");
+                        %>
+                        <tr>
+                            <td><%= rs.getTimestamp("created_at").toString().substring(0, 16) %></td>
+                            <td><span class="badge bg-secondary">#<%= rs.getInt("request_id") %></span></td>
+                            <td>
+                                <% if(!isRead) { %>
+                                    <span class="badge bg-danger rounded-pill">NUEVO</span>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark rounded-pill">Revisado</span>
+                                <% } %>
+                            </td>
+                            <td class="text-end">
+                                <a href="<%= rs.getString("pdf_path") %>" target="_blank" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="this.parentElement.previousElementSibling.innerHTML='<span class=\'badge bg-light text-dark rounded-pill\'>Revisado</span>';">
+                                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>Ver PDF
+                                </a>
+                            </td>
+                        </tr>
+                        <%
+                                }
+                                if(!hasReports) {
+                        %>
+                        <tr><td colspan="4" class="text-center text-muted py-4">No hay reportes recientes.</td></tr>
+                        <%
+                                }
+                            } catch(Exception e) {}
+                        %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Presencial Table -->
     <div class="card-custom shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">

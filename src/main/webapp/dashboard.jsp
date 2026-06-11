@@ -123,13 +123,14 @@
                                     <th class="text-secondary small text-uppercase">Repuesto</th>
                                     <th class="text-secondary small text-uppercase text-center">Cant.</th>
                                     <th class="text-secondary small text-uppercase text-end">Total</th>
+                                    <th class="text-secondary small text-uppercase text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <%
                                 try (Connection conn = DbConnection.getConnection();
                                      PreparedStatement stmt = conn.prepareStatement(
-                                         "SELECT s.sale_date, p.name, s.quantity, s.total_price " +
+                                         "SELECT s.id, s.sale_date, p.name, s.quantity, s.total_price " +
                                          "FROM sales s JOIN products p ON s.product_id = p.id " +
                                          "WHERE s.customer_id = ? ORDER BY s.sale_date DESC")) {
                                     stmt.setInt(1, user.getId());
@@ -143,6 +144,11 @@
                                     <td class="fw-medium"><%= rs.getString("name") %></td>
                                     <td class="text-center"><span class="badge bg-secondary bg-opacity-25 text-light px-2"><%= rs.getInt("quantity") %></span></td>
                                     <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
+                                    <td class="text-center">
+                                        <a href="post_sale_request.jsp?sale_id=<%= rs.getInt("id") %>" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="Solicitar Garantía o Devolución">
+                                            <i class="bi bi-shield-exclamation me-1"></i>Reclamo
+                                        </a>
+                                    </td>
                                 </tr>
                                 <%
                                     }
@@ -312,6 +318,14 @@
                         <h6 class="fw-bold mb-2">Historiales</h6>
                         <p class="text-secondary small mb-4" style="font-size: 0.8rem;">Auditoria de ventas y sistema.</p>
                         <a href="sales_history.jsp" class="btn btn-sm btn-moto w-100 rounded-pill">Revisar</a>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="action-card p-4 text-center h-100 transition-all">
+                        <i class="bi bi-shield-check fs-2 text-accent mb-3 d-block"></i>
+                        <h6 class="fw-bold mb-2">Garantías</h6>
+                        <p class="text-secondary small mb-4" style="font-size: 0.8rem;">Reclamos y devoluciones.</p>
+                        <a href="adminRequests" class="btn btn-sm btn-moto w-100 rounded-pill">Revisar</a>
                     </div>
                 </div>
             </div>
