@@ -77,6 +77,10 @@ public class EmployeeServlet extends HttpServlet {
         try (Connection conn = DbConnection.getConnection()) {
             if ("delete".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
+                if (id == 1) {
+                    response.sendRedirect("employees?msg=Error:+No+se+puede+eliminar+al+Administrador+Principal");
+                    return;
+                }
                 try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE id = ?")) {
                     stmt.setInt(1, id);
                     stmt.executeUpdate();

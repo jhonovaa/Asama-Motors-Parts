@@ -147,11 +147,13 @@
                                 <button class="btn btn-sm btn-outline-warning rounded-pill px-3" onclick="openEditModal(<%= u.getId() %>, '<%= u.getFullName().replace("'", "\\'") %>', '<%= u.getDocumentId() %>', '<%= u.getEmail() %>', <%= u.getRoleId() %>)">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
+                                <% if(u.getId() != 1) { %>
                                 <form action="employees" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar este empleado?');">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<%= u.getId() %>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="bi bi-trash"></i></button>
                                 </form>
+                                <% } %>
                             </div>
                         </div>
                     </div>

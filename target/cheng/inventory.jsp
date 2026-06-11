@@ -155,6 +155,20 @@
                                 <input type="number" name="stock" class="form-control" placeholder="0" required>
                             </div>
                         </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Estante</label>
+                                <input type="text" name="estante" class="form-control" placeholder="Ej. A">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Fila</label>
+                                <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mínimo Programado</label>
+                            <input type="number" name="minimo_programado" class="form-control" value="5" required>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Codigo de Barras</label>
                             <input type="text" name="barcode" class="form-control" placeholder="Vacio para autogenerar">
@@ -189,6 +203,7 @@
                                 <th class="text-uppercase pb-3">Repuesto</th>
                                 <th class="text-uppercase pb-3">Marca</th>
                                 <th class="text-uppercase pb-3 text-center">Stock</th>
+                                <th class="text-uppercase pb-3 text-center">Ubicación</th>
                                 <th class="text-uppercase pb-3 text-end">Precio</th>
                                 <th class="text-uppercase pb-3 text-center">Codigo</th>
                                 <th class="text-uppercase pb-3 text-center">Acciones</th>
@@ -208,11 +223,14 @@
                                 <td class="fw-bold fs-6"><%= p.getName() %></td>
                                 <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-25 py-1 px-2 fw-medium"><%= p.getBrand() %></span></td>
                                 <td class="text-center">
-                                    <% if(p.getStock() <= 5) { %>
+                                    <% if(p.getStock() <= p.getMinimoProgramado()) { %>
                                         <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
                                     <% } else { %>
                                         <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
                                     <% } %>
+                                </td>
+                                <td class="text-center fw-medium">
+                                    <%= (p.getEstante() != null ? p.getEstante() : "-") %> / <%= (p.getFila() != null ? p.getFila() : "-") %>
                                 </td>
                                 <td class="fw-bold text-end text-accent fs-6">$<%= String.format("%.2f", p.getPrice()) %></td>
                                 <td class="text-center">
@@ -233,7 +251,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>)">
+                                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
@@ -246,7 +264,7 @@
                             </tr>
                             <%      }
                                 } else {
-                                    out.print("<tr><td colspan='7' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario esta vacio.</td></tr>");
+                                    out.print("<tr><td colspan='8' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario esta vacio.</td></tr>");
                                 }
                             %>
                         </tbody>
@@ -290,6 +308,20 @@
                       <input type="number" name="stock" id="editStock" class="form-control" required>
                   </div>
               </div>
+              <div class="row g-2 mb-3">
+                  <div class="col-6">
+                      <label class="form-label">Estante</label>
+                      <input type="text" name="estante" id="editEstante" class="form-control">
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label">Fila</label>
+                      <input type="text" name="fila" id="editFila" class="form-control">
+                  </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Mínimo Programado</label>
+                  <input type="number" name="minimo_programado" id="editMinimoProgramado" class="form-control" required>
+              </div>
               <div class="mb-3">
                   <label class="form-label">Actualizar Imagen (Opcional)</label>
                   <input type="file" name="image" class="form-control" accept=".jpg,.jpeg">
@@ -306,13 +338,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function openEditModal(id, name, brand, desc, price, stock) {
+    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado) {
         document.getElementById('editId').value = id;
         document.getElementById('editName').value = name;
         document.getElementById('editBrand').value = brand;
         document.getElementById('editDesc').value = (desc === 'null' || !desc) ? '' : desc;
         document.getElementById('editPrice').value = price;
         document.getElementById('editStock').value = stock;
+        document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
+        document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
+        document.getElementById('editMinimoProgramado').value = minimoProgramado;
         new bootstrap.Modal(document.getElementById('editModal')).show();
     }
     

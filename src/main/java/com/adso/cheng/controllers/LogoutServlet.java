@@ -16,6 +16,13 @@ public class LogoutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        response.sendRedirect("login.jsp");
+        
+        String msg = request.getParameter("msg");
+        String redirectUrl = "login.jsp";
+        if (msg != null && !msg.trim().isEmpty()) {
+            redirectUrl += "?msg=" + java.net.URLEncoder.encode(msg, "UTF-8");
+        }
+        
+        response.sendRedirect(redirectUrl);
     }
 }

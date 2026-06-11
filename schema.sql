@@ -47,6 +47,9 @@ CREATE TABLE products (
     stock INT NOT NULL DEFAULT 0,
     barcode VARCHAR(100) UNIQUE NOT NULL,
     image_url VARCHAR(255),
+    estante VARCHAR(50),
+    fila VARCHAR(50),
+    minimo_programado INT DEFAULT 5,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

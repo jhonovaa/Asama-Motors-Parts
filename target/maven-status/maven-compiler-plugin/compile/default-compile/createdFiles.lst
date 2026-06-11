@@ -27,3 +27,4 @@ com\adso\cheng\controllers\MaintenanceServlet.class
 com\adso\cheng\utils\EmailUtil.class
 com\adso\cheng\controllers\LogoutServlet.class
 com\adso\cheng\dao\ProductDAO.class
+com\adso\cheng\utils\AlterTable.class

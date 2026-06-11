@@ -44,7 +44,7 @@ public class ProductDAO {
     }
 
     public int addProduct(Product p) {
-        String sql = "INSERT INTO products (name, description, brand, price, stock, barcode, image_url) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO products (name, description, brand, price, stock, barcode, image_url, estante, fila, minimo_programado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getName());
@@ -54,6 +54,9 @@ public class ProductDAO {
             stmt.setInt(5, p.getStock());
             stmt.setString(6, p.getBarcode()); // Auto-generated in UI usually
             stmt.setString(7, p.getImageUrl());
+            stmt.setString(8, p.getEstante());
+            stmt.setString(9, p.getFila());
+            stmt.setInt(10, p.getMinimoProgramado());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("id");
@@ -80,9 +83,9 @@ public class ProductDAO {
     }
 
     public boolean updateProduct(Product p) {
-        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=? WHERE id=?";
+        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=? WHERE id=?";
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, image_url=? WHERE id=?";
+            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, image_url=? WHERE id=?";
         }
         
         try (Connection conn = DbConnection.getConnection();
@@ -92,12 +95,15 @@ public class ProductDAO {
             stmt.setString(3, p.getBrand());
             stmt.setDouble(4, p.getPrice());
             stmt.setInt(5, p.getStock());
+            stmt.setString(6, p.getEstante());
+            stmt.setString(7, p.getFila());
+            stmt.setInt(8, p.getMinimoProgramado());
             
             if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-                stmt.setString(6, p.getImageUrl());
-                stmt.setInt(7, p.getId());
+                stmt.setString(9, p.getImageUrl());
+                stmt.setInt(10, p.getId());
             } else {
-                stmt.setInt(6, p.getId());
+                stmt.setInt(9, p.getId());
             }
             
             return stmt.executeUpdate() > 0;
@@ -147,6 +153,9 @@ public class ProductDAO {
         p.setStock(rs.getInt("stock"));
         p.setBarcode(rs.getString("barcode"));
         p.setImageUrl(rs.getString("image_url"));
+        p.setEstante(rs.getString("estante"));
+        p.setFila(rs.getString("fila"));
+        p.setMinimoProgramado(rs.getInt("minimo_programado"));
         return p;
     }
 }
