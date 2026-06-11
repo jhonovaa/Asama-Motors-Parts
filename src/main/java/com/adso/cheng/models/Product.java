@@ -9,6 +9,10 @@ public class Product {
     private int stock;
     private String barcode;
     private String imageUrl;
+    private String estante;
+    private String fila;
+    private int minimoProgramado = 5;
+
     
     // Default constructor
     public Product() {}
@@ -37,4 +41,13 @@ public class Product {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getEstante() { return estante; }
+    public void setEstante(String estante) { this.estante = estante; }
+
+    public String getFila() { return fila; }
+    public void setFila(String fila) { this.fila = fila; }
+
+    public int getMinimoProgramado() { return minimoProgramado; }
+    public void setMinimoProgramado(int minimoProgramado) { this.minimoProgramado = minimoProgramado; }
 }

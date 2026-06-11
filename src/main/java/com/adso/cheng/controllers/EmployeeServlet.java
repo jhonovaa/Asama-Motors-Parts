@@ -73,66 +73,135 @@ public class EmployeeServlet extends HttpServlet {
             return;
         }
 
-        String fullName = request.getParameter("fullName");
-        String documentId = request.getParameter("documentId");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        int roleId = Integer.parseInt(request.getParameter("roleId"));
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "add"; // Default action if not provided
+        }
 
-                        
-        
-        String hashedPassword = HashUtil.sha256(password);
-        
-        // Auto-generate barcode based on Role prefix and Document ID
-        String rolePrefix = "EMP";
-        if(roleId == 1) rolePrefix = "ADM";
-        else if(roleId == 2) rolePrefix = "CON";
-        else if(roleId == 3) rolePrefix = "BOD";
-        else if(roleId == 4) rolePrefix = "CAJ";
-        else if(roleId == 6) rolePrefix = "MEC";
-
-        String barcode = "ASAMA-" + rolePrefix + "-" + documentId;
-
-        String sql = "INSERT INTO users (full_name, document_id, email, password, role_id, barcode, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, fullName);
-            stmt.setString(2, documentId);
-            stmt.setString(3, email);
-            stmt.setString(4, hashedPassword); 
-            stmt.setInt(5, roleId);
-            stmt.setString(6, barcode);
-            
-            // Temporary null for photo_path, will update after getting ID
-            stmt.setString(7, null);
-            
-            stmt.executeUpdate();
-            
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                int newUserId = rs.getInt(1);
+        try (Connection conn = DbConnection.getConnection()) {
+            if ("delete".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                if (id == 1) {
+                    response.sendRedirect("employees?msg=Error:+No+se+puede+eliminar+al+Administrador+Principal");
+                    return;
+                }
+                try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE id = ?")) {
+                    stmt.setInt(1, id);
+                    stmt.executeUpdate();
+                }
+            } else if ("edit".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String fullName = request.getParameter("fullName");
+                String documentId = request.getParameter("documentId");
+                String email = request.getParameter("email");
+                int roleId = Integer.parseInt(request.getParameter("roleId"));
+                String password = request.getParameter("password");
                 
-                // Handle file upload
+                String barcode = documentId;
+                
+                if (password != null && !password.trim().isEmpty()) {
+                    String hashedPassword = HashUtil.sha256(password);
+                    String sql = "UPDATE users SET full_name=?, document_id=?, email=?, role_id=?, barcode=?, password=? WHERE id=?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setString(1, fullName);
+                        stmt.setString(2, documentId);
+                        stmt.setString(3, email);
+                        stmt.setInt(4, roleId);
+                        stmt.setString(5, barcode);
+                        stmt.setString(6, hashedPassword);
+                        stmt.setInt(7, id);
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    String sql = "UPDATE users SET full_name=?, document_id=?, email=?, role_id=?, barcode=? WHERE id=?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setString(1, fullName);
+                        stmt.setString(2, documentId);
+                        stmt.setString(3, email);
+                        stmt.setInt(4, roleId);
+                        stmt.setString(5, barcode);
+                        stmt.setInt(6, id);
+                        stmt.executeUpdate();
+                    }
+                }
+                
+                // Handle file upload for edit
                 Part filePart = request.getPart("photo");
                 if (filePart != null && filePart.getSize() > 0) {
                     String uploadPath = request.getServletContext().getRealPath("") + File.separator + "resources" + File.separator + "fotos" + File.separator + "empleados";
                     File uploadDir = new File(uploadPath);
                     if (!uploadDir.exists()) uploadDir.mkdirs();
 
-                    String fileName = newUserId + ".jpg"; // Save as user_id.jpg
+                    String fileName = id + ".jpg"; // Save as id.jpg
                     filePart.write(uploadPath + File.separator + fileName);
                     
                     String photoPath = "resources/fotos/empleados/" + fileName;
                     
-                    // Update user with photo path
                     try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE users SET photo_path = ? WHERE id = ?")) {
                         updateStmt.setString(1, photoPath);
-                        updateStmt.setInt(2, newUserId);
+                        updateStmt.setInt(2, id);
                         updateStmt.executeUpdate();
                     }
                 }
+            } else { // "add"
+                String fullName = request.getParameter("fullName");
+                String documentId = request.getParameter("documentId");
+                String email = request.getParameter("email");
+                String password = request.getParameter("password");
+                int roleId = Integer.parseInt(request.getParameter("roleId"));
+
+                String hashedPassword = HashUtil.sha256(password);
+                
+                // Auto-generate barcode based on Role prefix and Document ID
+                String rolePrefix = "EMP";
+                if(roleId == 1) rolePrefix = "ADM";
+                else if(roleId == 2) rolePrefix = "CON";
+                else if(roleId == 3) rolePrefix = "BOD";
+                else if(roleId == 4) rolePrefix = "CAJ";
+                else if(roleId == 6) rolePrefix = "MEC";
+
+                String barcode = "ASAMA-" + rolePrefix + "-" + documentId;
+
+                String sql = "INSERT INTO users (full_name, document_id, email, password, role_id, barcode, photo_path) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                    stmt.setString(1, fullName);
+                    stmt.setString(2, documentId);
+                    stmt.setString(3, email);
+                    stmt.setString(4, hashedPassword); 
+                    stmt.setInt(5, roleId);
+                    stmt.setString(6, barcode);
+                    
+                    // Temporary null for photo_path, will update after getting ID
+                    stmt.setString(7, null);
+                    
+                    stmt.executeUpdate();
+                    
+                    ResultSet rs = stmt.getGeneratedKeys();
+                    if (rs.next()) {
+                        int newUserId = rs.getInt(1);
+                        
+                        // Handle file upload
+                        Part filePart = request.getPart("photo");
+                        if (filePart != null && filePart.getSize() > 0) {
+                            String uploadPath = request.getServletContext().getRealPath("") + File.separator + "resources" + File.separator + "fotos" + File.separator + "empleados";
+                            File uploadDir = new File(uploadPath);
+                            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+                            String fileName = newUserId + ".jpg"; // Save as user_id.jpg
+                            filePart.write(uploadPath + File.separator + fileName);
+                            
+                            String photoPath = "resources/fotos/empleados/" + fileName;
+                            
+                            // Update user with photo path
+                            try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE users SET photo_path = ? WHERE id = ?")) {
+                                updateStmt.setString(1, photoPath);
+                                updateStmt.setInt(2, newUserId);
+                                updateStmt.executeUpdate();
+                            }
+                        }
+                    }
+                }
             }
-            
         } catch (Exception e) {
             e.printStackTrace();
         }

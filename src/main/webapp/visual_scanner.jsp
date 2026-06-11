@@ -543,14 +543,20 @@
 
         // ========== CART ==========
         function addToCart(id, name, price) {
-            let cart = JSON.parse(localStorage.getItem('asama_cart')) || [];
+            if (!isLoggedIn) {
+                window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+añadir+al+carrito";
+                return;
+            }
+            let currentUserId = <%= user != null ? user.getId() : -1 %>;
+            let cartKey = 'asama_cart_' + currentUserId;
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
             let item = cart.find(i => i.id === id);
             if (item) {
                 item.qty++;
             } else {
                 cart.push({id, name, price, qty: 1});
             }
-            localStorage.setItem('asama_cart', JSON.stringify(cart));
+            localStorage.setItem(cartKey, JSON.stringify(cart));
             
             // Show nice toast instead of alert
             showToast(name + ' añadido al carrito');

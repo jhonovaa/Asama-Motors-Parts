@@ -61,7 +61,6 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
                 <% if(!navLoggedIn) { %>
                     <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i>Catalogo</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-2"></i>Carrito</a></li>
                 <% } else if(navRole == 1) { // Admin %>
                     <% if(isApp) { %>
                         <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Estadisticas</a></li>
@@ -136,3 +135,41 @@
         </div>
     </div>
 </nav>
+
+<% if (navLoggedIn) { %>
+<script>
+    // Inactivity auto-logout (15 minutes)
+    let inactivityTimer;
+    const timeoutMS = 15 * 60 * 1000;
+
+    function resetTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sesión Expirada',
+                    text: 'Tu sesión se ha cerrado automáticamente por seguridad debido a 15 minutos de inactividad.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    backdrop: `rgba(0,0,0,0.95)`
+                }).then(() => {
+                    window.location.href = "logout?msg=Sesion+expirada+por+inactividad";
+                });
+            } else {
+                window.location.href = "logout";
+            }
+        }, timeoutMS);
+    }
+
+    // Listen to user interactions to reset the timer
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => 
+        document.addEventListener(evt, resetTimer, true)
+    );
+
+    // Start timer on page load
+    resetTimer();
+</script>
+<% } %>

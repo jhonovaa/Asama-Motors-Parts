@@ -147,11 +147,13 @@
                                 <button class="btn btn-sm btn-outline-warning rounded-pill px-3" onclick="openEditModal(<%= u.getId() %>, '<%= u.getFullName().replace("'", "\\'") %>', '<%= u.getDocumentId() %>', '<%= u.getEmail() %>', <%= u.getRoleId() %>)">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
+                                <% if(u.getId() != 1) { %>
                                 <form action="employees" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar este empleado?');">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<%= u.getId() %>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="bi bi-trash"></i></button>
                                 </form>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -198,6 +200,10 @@
                       <option value="4">Cajero</option>
                       <option value="6">Mecanico</option>
                   </select>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small fw-semibold">Nueva Contraseña (Dejar en blanco para no cambiar)</label>
+                  <input type="password" name="password" id="editPassword" class="form-control" placeholder="Opcional">
               </div>
               <div class="mb-3">
                   <label class="form-label text-secondary small fw-semibold">Actualizar Foto (Opcional)</label>

@@ -12,62 +12,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras - Asama Moto Parts</title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
-        .cart-container { background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
-        .table { color: var(--text-color); }
-        .table td, .table th { border-color: rgba(255,255,255,0.1); background-color: transparent; vertical-align: middle; }
-        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 10px 25px; font-weight: 600; transition: 0.3s; }
-        .btn-moto:hover { background-color: #E55A2B; color: white;}
-        .qty-btn { background: #2D3436; color: white; border: none; width: 30px; height: 30px; border-radius: 5px; }
-        .text-orange { color: var(--accent-orange) !important; }
+        /* --- LEGIBILIDAD EXTREMA --- */
+        .text-secondary, .text-muted { 
+            color: rgba(255, 255, 255, 0.85) !important; 
+            font-weight: 500;
+        }
+        body.light-mode .text-secondary, body.light-mode .text-muted { 
+            color: rgba(0, 0, 0, 0.75) !important; 
+            font-weight: 600;
+        }
+
+        /* Botones de Cantidad Interactivos */
+        .qty-btn { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: var(--text-color); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 10px; 
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:hover { 
+            background: var(--accent-orange); 
+            color: #121417; 
+            border-color: var(--accent-orange); 
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        
+        body.light-mode .qty-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Tablas: Forzar contraste sobreescribiendo Bootstrap */
+        .table { 
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--text-color);
+            color: var(--text-color) !important; 
+        }
+        .table th { 
+            font-weight: 700 !important; 
+            letter-spacing: 0.5px; 
+            font-size: 0.85rem; 
+            border-bottom: 2px solid var(--card-border) !important; 
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        body.light-mode .table th {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+        .table td { 
+            font-weight: 600 !important; 
+            font-size: 1.05rem !important; 
+            border-bottom: 1px solid var(--card-border) !important; 
+            vertical-align: middle; 
+            color: var(--text-color) !important; 
+        }
+        .table tbody tr:hover td { 
+            background-color: rgba(255, 255, 255, 0.05) !important; 
+        }
+        body.light-mode .table tbody tr:hover td { 
+            background-color: rgba(0, 0, 0, 0.03) !important; 
+        }
     </style>
 </head>
 <body>
+<script src="resources/theme.js"></script>
 
     <%@ include file="navbar.jsp" %>
 
-    <div class="container" style="margin-top: 50px; margin-bottom: 50px;">
-        <div class="cart-container">
-            <h3 class="fw-bold mb-4"><i class="bi bi-cart3 text-orange me-2"></i> Tu Carrito</h3>
+    <div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px; max-width: 1200px;">
+        <div class="action-card h-100 d-flex flex-column p-4 p-md-5">
+            <div class="border-bottom border-secondary pb-3 mb-4 d-flex align-items-center">
+                <div class="brand-icon me-3" style="width: 55px; height: 55px; font-size: 26px; background-color: var(--accent-orange); color: #121417; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px var(--accent-glow);">
+                    <i class="bi bi-cart3"></i>
+                </div>
+                <h3 class="fw-bold mb-0 text-accent">Tu Carrito de Compras</h3>
+            </div>
             
-            <div id="cartContent">
-                <table class="table table-hover table-dark">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Precio</th>
-                            <th class="text-center">Cantidad</th>
-                            <th>Subtotal</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="cartItems">
-                        <!-- Items rendered by JS -->
-                    </tbody>
-                </table>
+            <div id="cartContent" class="flex-grow-1">
+                <div class="table-responsive pe-2" style="max-height: 55vh; overflow-y: auto;">
+                    <table class="table table-hover align-middle table-borderless mb-0">
+                        <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
+                            <tr>
+                                <th class="text-uppercase pb-3">Producto</th>
+                                <th class="text-uppercase pb-3">Precio</th>
+                                <th class="text-uppercase pb-3 text-center">Cantidad</th>
+                                <th class="text-uppercase pb-3 text-end">Subtotal</th>
+                                <th class="text-uppercase pb-3 text-center">Remover</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartItems">
+                            </tbody>
+                    </table>
+                </div>
                 
-                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                    <h4 class="fw-bold m-0">Total: <span class="text-orange" id="cartTotal">$0.00</span></h4>
-                    <button class="btn btn-moto" onclick="processCheckout()">Proceder al Pago <i class="bi bi-arrow-right ms-1"></i></button>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-5 pt-4 border-top border-secondary border-opacity-50">
+                    <div class="mb-4 mb-md-0">
+                        <p class="text-secondary fw-bold mb-1 fs-5">Total a Pagar:</p>
+                        <h2 class="fw-bolder mb-0 text-accent" style="font-size: 2.5rem; letter-spacing: -1px;" id="cartTotal">$0.00</h2>
+                    </div>
+                    <button class="btn btn-accent rounded-pill fw-bold px-5 py-3 fs-5 shadow-lg d-flex align-items-center gap-2 transition-all justify-content-center" onclick="processCheckout()">
+                        <i class="bi bi-credit-card-fill"></i> Proceder al Pago
+                    </button>
                 </div>
             </div>
             
-            <div id="emptyCart" style="display: none;" class="text-center py-5">
-                <i class="bi bi-cart-x text-secondary" style="font-size: 4rem;"></i>
-                <h4 class="mt-3 text-secondary">Tu carrito está vacío</h4>
-                <a href="catalog.jsp" class="btn btn-outline-light mt-3" style="border-radius: 20px;">Volver al Catálogo</a>
+            <div id="emptyCart" style="display: none;" class="text-center py-5 my-4">
+                <div class="mx-auto mb-4" style="width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.2);">
+                    <i class="bi bi-cart-x text-secondary" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Tu carrito esta vacio</h3>
+                <p class="text-secondary fs-5 mb-5 fw-medium">Parece que aun no has agregado ningun repuesto a tu orden.</p>
+                <a href="catalog.jsp" class="btn btn-moto-outline rounded-pill px-5 py-3 fw-bold fs-5">
+                    <i class="bi bi-search me-2"></i> Explorar Catalogo
+                </a>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let cart = JSON.parse(localStorage.getItem('asama_cart')) || [];
         let isLoggedIn = <%= isLoggedIn %>;
         let roleId = <%= roleId %>;
+        let currentUserId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getId() : -1 %>;
+        if (!isLoggedIn) {
+            window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+ver+tu+carrito";
+        }
+        let cartKey = 'asama_cart_' + currentUserId;
+        let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
+
+        // Set Light/Dark colors for SweetAlert
+        const getSwalBg = () => document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24';
+        const getSwalColor = () => document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa';
 
         function renderCart() {
             let tbody = document.getElementById('cartItems');
@@ -93,37 +179,40 @@
                 
                 let tr = document.createElement('tr');
                 tr.innerHTML = 
-                    '<td class="fw-bold">' + item.name + '</td>' +
-                    '<td>$' + item.price.toFixed(2) + '</td>' +
+                    '<td class="fw-bold text-wrap" style="max-width: 250px;">' + item.name + '</td>' +
+                    '<td class="fw-medium">$' + item.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
                     '<td class="text-center">' +
-                        '<button class="qty-btn" onclick="updateQty(' + index + ', -1)">-</button>' +
-                        '<span class="mx-3 fw-bold">' + item.qty + '</span>' +
-                        '<button class="qty-btn" onclick="updateQty(' + index + ', 1)">+</button>' +
+                        '<div class="d-inline-flex align-items-center bg-dark bg-opacity-25 rounded-3 p-1 border border-secondary border-opacity-25">' +
+                            '<button class="qty-btn" onclick="updateQty(' + index + ', -1)">-</button>' +
+                            '<span class="mx-3 fw-bolder fs-5 text-accent" style="min-width: 20px;">' + item.qty + '</span>' +
+                            '<button class="qty-btn" onclick="updateQty(' + index + ', 1)">+</button>' +
+                        '</div>' +
                     '</td>' +
-                    '<td class="fw-bold">$' + subtotal.toFixed(2) + '</td>' +
-                    '<td class="text-end">' +
-                        '<button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(' + index + ')" style="border-radius: 5px;">' +
-                            '<i class="bi bi-trash"></i>' +
+                    '<td class="fw-bolder text-accent fs-5 text-end">$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td class="text-center">' +
+                        '<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" onclick="removeFromCart(' + index + ')" title="Eliminar">' +
+                            '<i class="bi bi-trash-fill"></i>' +
                         '</button>' +
                     '</td>';
                 tbody.appendChild(tr);
             });
             
-            totalSpan.innerText = '$' + total.toFixed(2);
+            totalSpan.innerText = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         function updateQty(index, change) {
             cart[index].qty += change;
             if(cart[index].qty <= 0) {
-                cart.splice(index, 1);
+                removeFromCart(index);
+                return;
             }
-            localStorage.setItem('asama_cart', JSON.stringify(cart));
+            localStorage.setItem(cartKey, JSON.stringify(cart));
             renderCart();
         }
 
         function removeFromCart(index) {
             cart.splice(index, 1);
-            localStorage.setItem('asama_cart', JSON.stringify(cart));
+            localStorage.setItem(cartKey, JSON.stringify(cart));
             renderCart();
         }
 
@@ -133,12 +222,20 @@
                 return;
             }
             if(roleId !== 5) {
-                alert("Solo los Clientes pueden realizar compras online.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acceso Restringido',
+                    text: 'Solo los clientes pueden realizar compras online.',
+                    confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#FF6B35',
+                    background: getSwalBg(),
+                    color: getSwalColor()
+                });
                 return;
             }
             window.location.href = 'checkout.jsp';
         }
 
+        // Renderizado inicial
         renderCart();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

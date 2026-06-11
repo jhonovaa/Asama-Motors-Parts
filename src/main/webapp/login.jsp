@@ -77,7 +77,7 @@
             </div>
         <% } %>
 
-        <!-- SweetAlert2 for Registration Success -->
+        <!-- SweetAlert2 for Registration Success & System Messages -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <% if("1".equals(request.getParameter("success"))) { %>
             <script>
@@ -96,6 +96,38 @@
                     if(window.history.replaceState) {
                         const url = new URL(window.location);
                         url.searchParams.delete('success');
+                        window.history.replaceState({path:url.href}, '', url.href);
+                    }
+                });
+            </script>
+        <% } %>
+
+        <% String sysMsg = request.getParameter("msg"); 
+           if(sysMsg != null && !sysMsg.trim().isEmpty()) { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const isLight = document.body.classList.contains('light-mode');
+                    let titleText = 'Información';
+                    let iconType = 'info';
+                    
+                    if ('<%= sysMsg %>'.toLowerCase().includes('inactividad')) {
+                        titleText = 'Seguridad Asama';
+                        iconType = 'warning';
+                    }
+                    
+                    Swal.fire({
+                        icon: iconType,
+                        title: titleText,
+                        text: '<%= sysMsg %>',
+                        confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ff6b00',
+                        background: isLight ? '#ffffff' : '#1e1e24',
+                        color: isLight ? '#333333' : '#f8f9fa',
+                        customClass: { popup: 'rounded-4 border border-secondary border-opacity-25' }
+                    });
+                    
+                    if(window.history.replaceState) {
+                        const url = new URL(window.location);
+                        url.searchParams.delete('msg');
                         window.history.replaceState({path:url.href}, '', url.href);
                     }
                 });

@@ -48,6 +48,14 @@ public class LoginServlet extends HttpServlet {
             SecureRandom random = new SecureRandom();
             int otp = 100000 + random.nextInt(900000);
             session.setAttribute("otp", String.valueOf(otp));
+            // Send email
+            try {
+                com.adso.cheng.utils.EmailUtil.sendOtpEmail(user.getEmail(), String.valueOf(otp));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Don't block login, just warn (useful for local testing or when Gmail blocks standard passwords)
+                session.setAttribute("emailWarning", "Google bloqueó el inicio de sesión. Revisa la consola (System.out) para ver el OTP.");
+            }
             
             // Redirect to OTP verification page
             response.sendRedirect("otp.jsp");

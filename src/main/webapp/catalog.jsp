@@ -75,19 +75,63 @@
         </div>
     </div>
 
+    <!-- Botón Flotante del Carrito -->
+    <a href="cart.jsp" class="btn btn-moto shadow-lg d-flex align-items-center justify-content-center" style="position: fixed; bottom: 30px; right: 30px; border-radius: 50%; width: 65px; height: 65px; font-size: 28px; z-index: 1000; transition: transform 0.3s;">
+        <i class="bi bi-cart3"></i>
+        <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.85rem; display: none;">
+            0
+        </span>
+    </a>
+
     <script>
-        let cart = JSON.parse(localStorage.getItem('asama_cart')) || [];
+        let isLoggedIn = <%= session.getAttribute("user") != null %>;
+        let roleId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getRoleId() : 0 %>;
+        let currentUserId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getId() : -1 %>;
+        let cartKey = 'asama_cart_' + currentUserId;
+        let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
+
+        function updateCartBadge() {
+            let badge = document.getElementById('cartBadge');
+            let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            if(totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
         function addToCart(id, name, price) {
+            if (!isLoggedIn) {
+                window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+añadir+al+carrito";
+                return;
+            }
             let item = cart.find(i => i.id === id);
             if(item) {
                 item.qty++;
             } else {
                 cart.push({id, name, price, qty: 1});
             }
-            localStorage.setItem('asama_cart', JSON.stringify(cart));
-            alert(name + " añadido al carrito");
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            updateCartBadge();
+            
+            // Show a tiny toast or alert
+            if(typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true, position: 'bottom-end', icon: 'success',
+                    title: name + ' añadido al carrito',
+                    showConfirmButton: false, timer: 1500,
+                    background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24',
+                    color: document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa'
+                });
+            } else {
+                alert(name + " añadido al carrito");
+            }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateCartBadge();
+        });
 
         function filterProducts() {
             let input = document.getElementById('searchInput').value.toLowerCase();
