@@ -142,9 +142,33 @@
                             <input type="text" name="name" class="form-control" placeholder="Ej. Filtro de Aceite" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Marca</label>
+                            <label class="form-label">Marca (Repuesto)</label>
                             <input type="text" name="brand" class="form-control" placeholder="Ej. Yamaha" required>
                         </div>
+                        
+                        <!-- NUEVOS CAMPOS: Filtro por Moto y Categoria -->
+                        <div class="mb-3">
+                            <label class="form-label text-warning">Categoría de Repuesto</label>
+                            <select name="part_category" id="partCategoryNew" class="form-control" required>
+                                <option value="">Seleccione una categoría...</option>
+                            </select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-warning">Marca de Moto</label>
+                                <select name="motorcycle_brand" id="motoBrandNew" class="form-control" onchange="updateModels('motoBrandNew', 'motoModelNew')" required>
+                                    <option value="">Seleccione marca...</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-warning">Modelo de Moto</label>
+                                <select name="motorcycle_model" id="motoModelNew" class="form-control" required>
+                                    <option value="">Seleccione modelo...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- FIN NUEVOS CAMPOS -->
+
                         <div class="mb-3">
                             <label class="form-label">Descripcion (Opcional)</label>
                             <textarea name="description" class="form-control" rows="2" placeholder="Detalles del producto..."></textarea>
@@ -232,8 +256,15 @@
                                 <td class="fw-bolder fs-5 text-wrap" style="max-width: 250px;"><%= p.getName() %></td>
                                 <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-2 px-3 fw-bold fs-6"><%= p.getBrand() %></span></td>
                                 <td class="text-center">
+<<<<<<< HEAD
                                     <% if(p.getStock() <= p.getMinimoProgramado()) { %>
                                         <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-2 fs-5 fw-bolder"><%= p.getStock() %></span>
+=======
+                                    <% if(p.getStock() <= 20) { %>
+                                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
+                                    <% } else if(p.getStock() <= 50) { %>
+                                        <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
+>>>>>>> d12be534688c72b470c478df696ab4faeb6c7a28
                                     <% } else { %>
                                         <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 fs-5 fw-bolder"><%= p.getStock() %></span>
                                     <% } %>
@@ -260,9 +291,15 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
+<<<<<<< HEAD
                                     <div class="d-flex justify-content-center gap-3">
                                         <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>)" title="Editar">
                                             <i class="bi bi-pencil-fill fs-5"></i>
+=======
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')">
+                                            <i class="bi bi-pencil"></i>
+>>>>>>> d12be534688c72b470c478df696ab4faeb6c7a28
                                         </button>
                                         <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
                                             <input type="hidden" name="action" value="delete">
@@ -301,9 +338,33 @@
                   <input type="text" name="name" id="editName" class="form-control" required>
               </div>
               <div class="mb-3">
-                  <label class="form-label">Marca</label>
+                  <label class="form-label">Marca (Repuesto)</label>
                   <input type="text" name="brand" id="editBrand" class="form-control" required>
               </div>
+
+              <!-- EDITAR CAMPOS: Filtro por Moto y Categoria -->
+              <div class="mb-3">
+                  <label class="form-label text-warning">Categoría de Repuesto</label>
+                  <select name="part_category" id="partCategoryEdit" class="form-control" required>
+                      <option value="">Seleccione una categoría...</option>
+                  </select>
+              </div>
+              <div class="row g-2 mb-3">
+                  <div class="col-6">
+                      <label class="form-label text-warning">Marca de Moto</label>
+                      <select name="motorcycle_brand" id="motoBrandEdit" class="form-control" onchange="updateModels('motoBrandEdit', 'motoModelEdit')" required>
+                          <option value="">Seleccione marca...</option>
+                      </select>
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label text-warning">Modelo de Moto</label>
+                      <select name="motorcycle_model" id="motoModelEdit" class="form-control" required>
+                          <option value="">Seleccione modelo...</option>
+                      </select>
+                  </div>
+              </div>
+              <!-- FIN EDITAR CAMPOS -->
+
               <div class="mb-3">
                   <label class="form-label">Descripcion</label>
                   <textarea name="description" id="editDesc" class="form-control" rows="2"></textarea>
@@ -403,7 +464,63 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado) {
+    const motoData = {
+        'Suzuki': ['gn125', 'gixxer 150', 'gixxer 250', 'dr150', 'v-strom 250', 'v-strom 650', 'gsx-r150', 'burgman 125', 'address'],
+        'Yamaha': ['fz25', 'fz-s 3.0', 'mt-15', 'mt-03', 'mt-09', 'r15', 'r3', 'xtz 125', 'xtz 150', 'nmax', 'aerox', 'crypton'],
+        'Honda': ['cb125f', 'cb160f', 'cb190r', 'cbf150', 'xr150l', 'xr190l', 'xre300', 'pcx150', 'wave110', 'navi'],
+        'Kawasaki': ['ninja 300', 'ninja 400', 'z400', 'z650', 'z900', 'versys-x 300', 'versys 650', 'klx 150'],
+        'KTM': ['duke 200', 'duke 250', 'duke 390', 'rc 200', 'rc 390', 'adventure 250', 'adventure 390'],
+        'Bajaj': ['pulsar ns200', 'pulsar ns160', 'pulsar n250', 'dominar 400', 'dominar 250', 'boxer ct100', 'discover 125'],
+        'Hero': ['eco deluxe', 'ignitor 125', 'hunk 160r', 'xpulse 200', 'thriller 200r', 'dash 125'],
+        'AKT': ['nkd 125', 'cr4 125', 'cr4 162', 'rtx 150', 'flex 125', 'dynamic pro', 'adventure 250']
+    };
+
+    const categoriesData = [
+        'Llantas', 'Partes Carburador', 'Inyección', 'Bujes y Rodamientos', 
+        'Frenos', 'Motor', 'Suspensión', 'Eléctrico', 'Transmisión', 
+        'Chasis y Plásticos', 'Accesorios', 'Aceites y Líquidos', 'General/Otras'
+    ];
+
+    function populateSelects(brandId, catId) {
+        const brandSelect = document.getElementById(brandId);
+        const catSelect = document.getElementById(catId);
+        
+        if (brandSelect.options.length <= 1) {
+            Object.keys(motoData).forEach(brand => {
+                let opt = document.createElement('option');
+                opt.value = brand; opt.textContent = brand;
+                brandSelect.appendChild(opt);
+            });
+        }
+        
+        if (catSelect.options.length <= 1) {
+            categoriesData.forEach(cat => {
+                let opt = document.createElement('option');
+                opt.value = cat; opt.textContent = cat;
+                catSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function updateModels(brandId, modelId, selectedModel = '') {
+        const brand = document.getElementById(brandId).value;
+        const modelSelect = document.getElementById(modelId);
+        modelSelect.innerHTML = '<option value="">Seleccione modelo...</option>';
+        if (brand && motoData[brand]) {
+            motoData[brand].forEach(mod => {
+                let opt = document.createElement('option');
+                opt.value = mod; opt.textContent = mod;
+                if (mod === selectedModel) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+            let genOpt = document.createElement('option');
+            genOpt.value = 'Genérico / Todos'; genOpt.textContent = 'Genérico / Todos';
+            if ('Genérico / Todos' === selectedModel) genOpt.selected = true;
+            modelSelect.appendChild(genOpt);
+        }
+    }
+
+    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado, motoBrand, motoModel, partCat) {
         document.getElementById('editId').value = id;
         document.getElementById('editName').value = name;
         document.getElementById('editBrand').value = brand;
@@ -413,6 +530,11 @@
         document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
         document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
         document.getElementById('editMinimoProgramado').value = minimoProgramado;
+        
+        document.getElementById('motoBrandEdit').value = motoBrand || '';
+        updateModels('motoBrandEdit', 'motoModelEdit', motoModel);
+        document.getElementById('partCategoryEdit').value = partCat || '';
+
         new bootstrap.Modal(document.getElementById('editModal')).show();
     }
     
@@ -477,6 +599,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
+        populateSelects('motoBrandNew', 'partCategoryNew');
+        populateSelects('motoBrandEdit', 'partCategoryEdit');
+
         const isLight = document.body.classList.contains('light-mode');
         document.documentElement.style.setProperty('--close-btn-filter', isLight ? 'none' : 'invert(1) grayscale(100%) brightness(200%)');
     });

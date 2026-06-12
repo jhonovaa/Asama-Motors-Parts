@@ -50,6 +50,9 @@ CREATE TABLE products (
     estante VARCHAR(50),
     fila VARCHAR(50),
     minimo_programado INT DEFAULT 5,
+    motorcycle_brand VARCHAR(100),
+    motorcycle_model VARCHAR(100),
+    part_category VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
