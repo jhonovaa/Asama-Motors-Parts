@@ -358,9 +358,17 @@
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
+                        <i class="bi bi-shield-lock fs-2 text-accent mb-3 d-block"></i>
+                        <h6 class="fw-bold mb-2">Auditoría</h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Actividades del personal y activos.</p>
+                        <a href="admin_logs.jsp" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold">Auditar</a>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-journal-richtext fs-2 text-accent mb-3 d-block"></i>
                         <h6 class="fw-bold mb-2">Historiales</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Auditoria de ventas y sistema.</p>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Reportes y ventas de la tienda.</p>
                         <a href="sales_history.jsp" class="btn btn-sm btn-moto w-100 rounded-pill fw-bold">Revisar</a>
                     </div>
                 </div>

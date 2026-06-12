@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.adso.cheng.models.User;
+import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
 import com.adso.cheng.utils.HashUtil;
 
@@ -129,6 +130,8 @@ public class EmployeeServlet extends HttpServlet {
                         updateStmt.executeUpdate();
                     }
                 }
+                
+                AuditLogger.logAction(user.getId(), "PERSONAL", "Empleado Registrado", "Registró al empleado: " + fullName + " con Rol ID: " + roleId);
             }
             
         } catch (Exception e) {

@@ -29,6 +29,16 @@ public class OtpServlet extends HttpServlet {
             session.removeAttribute("otp");
             session.removeAttribute("pendingUser");
             session.setAttribute("user", pendingUser);
+            
+            // Set user as online
+            try (java.sql.Connection conn = com.adso.cheng.utils.DbConnection.getConnection();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement("UPDATE users SET is_online = TRUE WHERE id = ?")) {
+                stmt.setInt(1, pendingUser.getId());
+                stmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             response.sendRedirect("dashboard.jsp");
         } else {
             request.setAttribute("error", "Código OTP incorrecto. Intenta de nuevo.");

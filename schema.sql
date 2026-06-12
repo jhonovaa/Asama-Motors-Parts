@@ -145,3 +145,13 @@ CREATE TABLE accountant_reports (
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 11. Audit Logs Table (Auditoría de Operaciones del Personal)
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    module VARCHAR(50) NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    details TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

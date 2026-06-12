@@ -1,6 +1,7 @@
 package com.adso.cheng.controllers;
 
 import com.adso.cheng.models.User;
+import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
 import com.adso.cheng.utils.UploadUtil;
 import com.google.gson.Gson;
@@ -143,6 +144,8 @@ public class AdminRequestsServlet extends HttpServlet {
                     }
                 }
             }
+            
+            AuditLogger.logAction(user.getId(), "GARANTIAS", "Resolución de Solicitud", "Cambió la solicitud ID: " + reqId + " a estado: " + status);
 
             response.sendRedirect("adminRequests?msg=Resolucion%20guardada%20correctamente.");
 

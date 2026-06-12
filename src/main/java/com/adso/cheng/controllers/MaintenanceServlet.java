@@ -2,6 +2,7 @@ package com.adso.cheng.controllers;
 
 import com.adso.cheng.dao.MaintenanceDAO;
 import com.adso.cheng.models.User;
+import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -76,18 +77,21 @@ public class MaintenanceServlet extends HttpServlet {
             String model = request.getParameter("model");
             int year = Integer.parseInt(request.getParameter("year"));
             maintenanceDAO.addMotorcycle(customerId, plate, brand, model, year);
+            AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Moto Registrada", "Registró moto placa: " + plate + " para el cliente ID: " + customerId);
 
         } else if ("addJob".equals(action)) {
             int motorcycleId = Integer.parseInt(request.getParameter("motorcycleId"));
             int mechanicId = Integer.parseInt(request.getParameter("mechanicId"));
             String description = request.getParameter("description");
             maintenanceDAO.addJob(motorcycleId, mechanicId, description);
+            AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Orden Creada", "Asignó orden al mecánico ID: " + mechanicId + " para la moto ID: " + motorcycleId);
 
         } else if ("updateStatus".equals(action)) {
             int jobId = Integer.parseInt(request.getParameter("jobId"));
             String status = request.getParameter("status");
             double cost = Double.parseDouble(request.getParameter("cost"));
             maintenanceDAO.updateJobStatus(jobId, status, cost);
+            AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Orden Actualizada", "Cambió estado a: " + status + " en orden ID: " + jobId + " con costo: $" + cost);
         }
 
         response.sendRedirect("maintenance");

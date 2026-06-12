@@ -14,6 +14,16 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session != null) {
+            com.adso.cheng.models.User user = (com.adso.cheng.models.User) session.getAttribute("user");
+            if (user != null) {
+                try (java.sql.Connection conn = com.adso.cheng.utils.DbConnection.getConnection();
+                     java.sql.PreparedStatement stmt = conn.prepareStatement("UPDATE users SET is_online = FALSE WHERE id = ?")) {
+                    stmt.setInt(1, user.getId());
+                    stmt.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             session.invalidate();
         }
         

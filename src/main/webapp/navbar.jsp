@@ -74,6 +74,7 @@
                         <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> Personal</a></li>
                         <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
                         <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="admin_logs.jsp"><i class="bi bi-shield-lock me-1"></i> Auditoría</a></li>
                         <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historiales</a></li>
                     <% } %>
                 <% } else if(navRole == 2) { // Contador %>

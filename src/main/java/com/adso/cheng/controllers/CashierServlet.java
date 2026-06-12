@@ -3,6 +3,7 @@ package com.adso.cheng.controllers;
 import com.adso.cheng.dao.ProductDAO;
 import com.adso.cheng.models.Product;
 import com.adso.cheng.models.User;
+import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -70,6 +71,9 @@ public class CashierServlet extends HttpServlet {
                 stmt.setInt(3, qty);
                 stmt.setDouble(4, total);
                 stmt.executeUpdate();
+                
+                AuditLogger.logAction(user.getId(), "VENTAS", "Venta Procesada en Tienda", "Vendió cantidad: " + qty + " del producto ID: " + productId + " por un total de $" + total);
+                
                 out.print("{\"success\": true}");
             } catch (Exception e) {
                 e.printStackTrace();

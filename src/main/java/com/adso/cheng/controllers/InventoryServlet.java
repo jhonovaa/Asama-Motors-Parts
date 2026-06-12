@@ -3,6 +3,7 @@ package com.adso.cheng.controllers;
 import com.adso.cheng.dao.ProductDAO;
 import com.adso.cheng.models.Product;
 import com.adso.cheng.models.User;
+import com.adso.cheng.utils.AuditLogger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -54,6 +55,7 @@ public class InventoryServlet extends HttpServlet {
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             productDAO.deleteProduct(id);
+            AuditLogger.logAction(user.getId(), "INVENTARIO", "Producto Eliminado", "Eliminó el producto ID: " + id);
         } else if ("edit".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             Product oldProduct = productDAO.getAllProducts().stream().filter(pr -> pr.getId() == id).findFirst().orElse(null);
@@ -76,6 +78,7 @@ public class InventoryServlet extends HttpServlet {
             }
             
             if (productDAO.updateProduct(p)) {
+                AuditLogger.logAction(user.getId(), "INVENTARIO", "Producto Actualizado", "Editó el producto ID: " + id + " (" + p.getName() + ")");
                 if (oldProduct != null && newStock > oldProduct.getStock()) {
                     productDAO.logInventory(p.getId(), user.getId(), newStock - oldProduct.getStock());
                 }
@@ -104,8 +107,11 @@ public class InventoryServlet extends HttpServlet {
             }
             p.setBarcode(barcode);
             int newId = productDAO.addProduct(p);
-            if (newId > 0 && stock > 0) {
-                productDAO.logInventory(newId, user.getId(), stock);
+            if (newId > 0) {
+                AuditLogger.logAction(user.getId(), "INVENTARIO", "Producto Agregado", "Añadió nuevo producto: " + p.getName() + " con stock inicial: " + stock);
+                if (stock > 0) {
+                    productDAO.logInventory(newId, user.getId(), stock);
+                }
             }
         }
         
