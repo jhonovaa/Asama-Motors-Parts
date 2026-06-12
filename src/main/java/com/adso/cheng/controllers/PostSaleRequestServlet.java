@@ -53,15 +53,27 @@ public class PostSaleRequestServlet extends HttpServlet {
             if (filePart != null && filePart.getSize() > 0) {
                 // Determine folder based on request type
                 String folderName = "GARANTIA".equals(requestType) ? "garantias" : "devoluciones";
-                String uploadPath = request.getServletContext().getRealPath("") + File.separator + "resources" + File.separator + "fotos" + File.separator + folderName;
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
+                
+                String baseWebapp = com.adso.cheng.utils.UploadUtil.getSourceWebappPath(request);
+                String baseUploadPath = baseWebapp + File.separator + "resources" + File.separator + "fotos" + File.separator + folderName;
+                File uploadDir = new File(baseUploadPath);
+                if (!uploadDir.exists()) uploadDir.mkdirs();
 
                 // Generate a unique filename
                 String fileName = UUID.randomUUID().toString() + getExtension(filePart);
-                filePart.write(uploadPath + File.separator + fileName);
+                filePart.write(baseUploadPath + File.separator + fileName);
+                
+                // Also write to deployed directory for immediate UI access
+                String deployUploadPath = request.getServletContext().getRealPath("/resources/fotos/" + folderName);
+                if (deployUploadPath != null) {
+                    File deployDir = new File(deployUploadPath);
+                    if (!deployDir.exists()) deployDir.mkdirs();
+                    java.nio.file.Files.copy(
+                        new java.io.File(baseUploadPath + File.separator + fileName).toPath(),
+                        new java.io.File(deployUploadPath + File.separator + fileName).toPath(),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                    );
+                }
                 
                 imagePath = "resources/fotos/" + folderName + "/" + fileName;
             }
