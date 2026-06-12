@@ -109,6 +109,11 @@
             </div>
 
         <% } else if(user.getRoleId() == 5) { // Cliente %>
+            <!-- Importar DAO y Modelos para el Cliente -->
+            <%@ page import="com.adso.cheng.dao.MotorcycleDAO" %>
+            <%@ page import="com.adso.cheng.models.Motorcycle" %>
+            <%@ page import="java.util.List" %>
+            
             <div class="col-lg-4 col-md-5">
                 <div class="action-card p-4 h-100">
                     <h5 class="text-accent fw-bold border-bottom border-secondary pb-3 mb-4">
@@ -153,6 +158,7 @@
                 </div>
             </div>
             
+            <!-- Historial de Compras original -->
             <div class="col-lg-8 col-md-7">
                 <div class="action-card p-4 h-100 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
@@ -172,16 +178,16 @@
                             </thead>
                             <tbody>
                                 <%
-                                try (Connection conn = DbConnection.getConnection();
-                                     PreparedStatement stmt = conn.prepareStatement(
-                                         "SELECT s.id, s.sale_date, p.name, s.quantity, s.total_price " +
-                                         "FROM sales s JOIN products p ON s.product_id = p.id " +
-                                         "WHERE s.customer_id = ? ORDER BY s.sale_date DESC")) {
-                                    stmt.setInt(1, user.getId());
-                                    ResultSet rs = stmt.executeQuery();
-                                    boolean hasPurchases = false;
-                                    while(rs.next()) {
-                                        hasPurchases = true;
+                                    try (Connection conn = DbConnection.getConnection();
+                                         PreparedStatement stmt = conn.prepareStatement(
+                                             "SELECT s.id, s.sale_date, p.name, s.quantity, s.total_price " +
+                                             "FROM sales s JOIN products p ON s.product_id = p.id " +
+                                             "WHERE s.customer_id = ? ORDER BY s.sale_date DESC")) {
+                                        stmt.setInt(1, user.getId());
+                                        ResultSet rs = stmt.executeQuery();
+                                        boolean hasPurchases = false;
+                                        while(rs.next()) {
+                                            hasPurchases = true;
                                 %>
                                 <tr>
                                     <td class="text-muted small"><%= rs.getTimestamp("sale_date").toString().substring(0, 16) %></td>
@@ -195,11 +201,70 @@
                                     </td>
                                 </tr>
                                 <%
+                                        }
+                                        if(!hasPurchases) {
+                                            out.print("<tr><td colspan='5' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-2'></i>No has realizado compras aun.</td></tr>");
+                                        }
+                                    } catch(Exception e) { e.printStackTrace(); }
+                                %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nueva Seccion: Mis Motos -->
+            <div class="col-12 mt-4">
+                <div class="action-card p-4 h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+                        <h5 class="text-accent fw-bold mb-0"><i class="bi bi-bicycle me-2"></i>Mis Motocicletas</h5>
+                        <button type="button" class="btn btn-sm btn-moto-outline rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#motoModal">Registrar Moto</button>
+                    </div>
+                    <% if(request.getParameter("msgMoto") != null) { %>
+                        <div class="alert alert-success py-2 small rounded-3 bg-opacity-10 border-success text-success fw-bold">
+                            <i class="bi bi-check-circle me-1"></i><%= request.getParameter("msgMoto") %>
+                        </div>
+                    <% } %>
+                    <% if(request.getParameter("errorMoto") != null) { %>
+                        <div class="alert alert-danger py-2 small rounded-3 bg-opacity-10 border-danger text-danger fw-bold">
+                            <i class="bi bi-exclamation-triangle me-1"></i><%= request.getParameter("errorMoto") %>
+                        </div>
+                    <% } %>
+                    <div class="table-responsive flex-grow-1" style="max-height: 250px; overflow-y: auto;">
+                        <table class="table table-hover align-middle table-borderless">
+                            <thead class="sticky-top" style="background: var(--card-bg);">
+                                <tr>
+                                    <th class="text-secondary small text-uppercase">Placa</th>
+                                    <th class="text-secondary small text-uppercase">Marca</th>
+                                    <th class="text-secondary small text-uppercase">Modelo</th>
+                                    <th class="text-secondary small text-uppercase text-center">Año</th>
+                                    <th class="text-secondary small text-uppercase text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    MotorcycleDAO mDao = new MotorcycleDAO();
+                                    List<Motorcycle> myMotos = mDao.getMotorcyclesByCustomer(user.getId());
+                                    if(!myMotos.isEmpty()) {
+                                        for(Motorcycle m : myMotos) {
+                                %>
+                                <tr>
+                                    <td class="fw-bold fs-6"><%= m.getPlate() %></td>
+                                    <td><%= m.getBrand() %></td>
+                                    <td><%= m.getModel() %></td>
+                                    <td class="text-center"><%= m.getYear() %></td>
+                                    <td class="text-end">
+                                        <form action="motorcycle" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar esta moto?');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<%= m.getId() %>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <%      }
+                                    } else {
+                                        out.print("<tr><td colspan='5' class='text-center text-secondary py-4 fw-bold'><i class='bi bi-inbox fs-2 d-block mb-2'></i>No tienes motocicletas registradas.</td></tr>");
                                     }
-                                    if(!hasPurchases) {
-                                        out.print("<tr><td colspan='4' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-2'></i>No has realizado compras aun.</td></tr>");
-                                    }
-                                } catch(Exception e) { e.printStackTrace(); }
                                 %>
                             </tbody>
                         </table>
@@ -492,5 +557,90 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 <% } %>
+
+<!-- Modal Registrar Moto -->
+<div class="modal fade" id="motoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-secondary shadow-lg">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-accent fw-bold"><i class="bi bi-plus-circle me-2"></i>Registrar Motocicleta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
+      </div>
+      <form action="motorcycle" method="POST">
+          <div class="modal-body p-4">
+              <input type="hidden" name="action" value="add">
+              <div class="mb-3">
+                  <label class="form-label">Placa</label>
+                  <input type="text" name="plate" class="form-control text-uppercase" placeholder="Ej. ABC-12D" required maxlength="20">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Marca de Moto</label>
+                  <select name="brand" id="clientMotoBrand" class="form-control" onchange="updateClientModels()" required>
+                      <option value="">Seleccione marca...</option>
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Modelo</label>
+                  <select name="model" id="clientMotoModel" class="form-control" required>
+                      <option value="">Seleccione modelo...</option>
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Año</label>
+                  <input type="number" name="year" class="form-control" placeholder="Ej. 2022" required min="1950" max="2030">
+              </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bold">Registrar</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    const motoData = {
+        'Suzuki': ['gn125', 'gixxer 150', 'gixxer 250', 'dr150', 'v-strom 250', 'v-strom 650', 'gsx-r150', 'burgman 125', 'address'],
+        'Yamaha': ['fz25', 'fz-s 3.0', 'mt-15', 'mt-03', 'mt-09', 'r15', 'r3', 'xtz 125', 'xtz 150', 'nmax', 'aerox', 'crypton'],
+        'Honda': ['cb125f', 'cb160f', 'cb190r', 'cbf150', 'xr150l', 'xr190l', 'xre300', 'pcx150', 'wave110', 'navi'],
+        'Kawasaki': ['ninja 300', 'ninja 400', 'z400', 'z650', 'z900', 'versys-x 300', 'versys 650', 'klx 150'],
+        'KTM': ['duke 200', 'duke 250', 'duke 390', 'rc 200', 'rc 390', 'adventure 250', 'adventure 390'],
+        'Bajaj': ['pulsar ns200', 'pulsar ns160', 'pulsar n250', 'dominar 400', 'dominar 250', 'boxer ct100', 'discover 125'],
+        'Hero': ['eco deluxe', 'ignitor 125', 'hunk 160r', 'xpulse 200', 'thriller 200r', 'dash 125'],
+        'AKT': ['nkd 125', 'cr4 125', 'cr4 162', 'rtx 150', 'flex 125', 'dynamic pro', 'adventure 250']
+    };
+
+    function updateClientModels() {
+        const brand = document.getElementById('clientMotoBrand').value;
+        const modelSelect = document.getElementById('clientMotoModel');
+        modelSelect.innerHTML = '<option value="">Seleccione modelo...</option>';
+        if (brand && motoData[brand]) {
+            motoData[brand].forEach(mod => {
+                let opt = document.createElement('option');
+                opt.value = mod; opt.textContent = mod;
+                modelSelect.appendChild(opt);
+            });
+            let genOpt = document.createElement('option');
+            genOpt.value = 'Otro / No lista'; genOpt.textContent = 'Otro / No lista';
+            modelSelect.appendChild(genOpt);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const isLight = document.body.classList.contains('light-mode');
+        document.documentElement.style.setProperty('--close-btn-filter', isLight ? 'none' : 'invert(1) grayscale(100%) brightness(200%)');
+        
+        const brandSelect = document.getElementById('clientMotoBrand');
+        if (brandSelect) {
+            Object.keys(motoData).forEach(brand => {
+                let opt = document.createElement('option');
+                opt.value = brand; opt.textContent = brand;
+                brandSelect.appendChild(opt);
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

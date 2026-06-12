@@ -1,7 +1,14 @@
 package com.adso.cheng.controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.UUID;
+
 import com.adso.cheng.models.User;
 import com.adso.cheng.utils.DbConnection;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,13 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.util.UUID;
 
 @WebServlet("/postSaleRequest")
 @MultipartConfig(
@@ -51,7 +51,7 @@ public class PostSaleRequestServlet extends HttpServlet {
             String imagePath = null;
             
             if (filePart != null && filePart.getSize() > 0) {
-                // Determine folder based on request type
+
                 String folderName = "GARANTIA".equals(requestType) ? "garantias" : "devoluciones";
                 
                 String baseWebapp = com.adso.cheng.utils.UploadUtil.getSourceWebappPath(request);
@@ -59,11 +59,9 @@ public class PostSaleRequestServlet extends HttpServlet {
                 File uploadDir = new File(baseUploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
 
-                // Generate a unique filename
                 String fileName = UUID.randomUUID().toString() + getExtension(filePart);
                 filePart.write(baseUploadPath + File.separator + fileName);
-                
-                // Also write to deployed directory for immediate UI access
+
                 String deployUploadPath = request.getServletContext().getRealPath("/resources/fotos/" + folderName);
                 if (deployUploadPath != null) {
                     File deployDir = new File(deployUploadPath);

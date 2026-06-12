@@ -12,6 +12,9 @@ public class Product {
     private String estante;
     private String fila;
     private int minimoProgramado = 5;
+    private String motorcycleBrand;
+    private String motorcycleModel;
+    private String partCategory;
 
     
     // Default constructor
@@ -50,4 +53,13 @@ public class Product {
 
     public int getMinimoProgramado() { return minimoProgramado; }
     public void setMinimoProgramado(int minimoProgramado) { this.minimoProgramado = minimoProgramado; }
+
+    public String getMotorcycleBrand() { return motorcycleBrand; }
+    public void setMotorcycleBrand(String motorcycleBrand) { this.motorcycleBrand = motorcycleBrand; }
+
+    public String getMotorcycleModel() { return motorcycleModel; }
+    public void setMotorcycleModel(String motorcycleModel) { this.motorcycleModel = motorcycleModel; }
+
+    public String getPartCategory() { return partCategory; }
+    public void setPartCategory(String partCategory) { this.partCategory = partCategory; }
 }

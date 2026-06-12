@@ -71,6 +71,9 @@ public class InventoryServlet extends HttpServlet {
             p.setEstante(request.getParameter("estante"));
             p.setFila(request.getParameter("fila"));
             p.setMinimoProgramado(Integer.parseInt(request.getParameter("minimo_programado")));
+            p.setMotorcycleBrand(request.getParameter("motorcycle_brand"));
+            p.setMotorcycleModel(request.getParameter("motorcycle_model"));
+            p.setPartCategory(request.getParameter("part_category"));
             
             Part filePart = request.getPart("image");
             if (filePart != null && filePart.getSize() > 0) {
@@ -95,6 +98,9 @@ public class InventoryServlet extends HttpServlet {
             p.setEstante(request.getParameter("estante"));
             p.setFila(request.getParameter("fila"));
             p.setMinimoProgramado(Integer.parseInt(request.getParameter("minimo_programado")));
+            p.setMotorcycleBrand(request.getParameter("motorcycle_brand"));
+            p.setMotorcycleModel(request.getParameter("motorcycle_model"));
+            p.setPartCategory(request.getParameter("part_category"));
             
             Part filePart = request.getPart("image");
             if (filePart != null && filePart.getSize() > 0) {
