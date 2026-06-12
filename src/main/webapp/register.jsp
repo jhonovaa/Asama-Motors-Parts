@@ -54,10 +54,15 @@
             <div class="mb-3">
                 <input type="email" name="email" class="form-control" placeholder="Correo Electrónico" required>
             </div>
-            <div class="mb-4">
-                <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+            <div class="mb-3">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
+                <div id="passwordStrength" class="form-text mt-1" style="font-size: 0.8rem;"></div>
             </div>
-            <button type="submit" class="btn-moto">Registrarme</button>
+            <div class="mb-4">
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar Contraseña" required>
+                <div id="passwordMatchError" class="text-danger mt-1" style="display: none; font-size: 0.8rem;">Las contraseñas no coinciden.</div>
+            </div>
+            <button type="submit" id="submitBtn" class="btn-moto" disabled>Registrarme</button>
         </form>
 
         <div class="text-center mt-4">
@@ -66,5 +71,62 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const strengthText = document.getElementById('passwordStrength');
+            const matchError = document.getElementById('passwordMatchError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function checkPasswordStrength(pass) {
+                if (pass.length === 0) return { text: '', color: '' };
+                if (pass.length < 6) return { text: 'Muy corta', color: 'text-danger' };
+                if (pass.length > 20) return { text: 'Muy larga', color: 'text-danger' };
+                
+                let strength = 0;
+                if (pass.match(/[a-z]+/)) strength += 1;
+                if (pass.match(/[A-Z]+/)) strength += 1;
+                if (pass.match(/[0-9]+/)) strength += 1;
+                if (pass.match(/[\W]+/)) strength += 1;
+
+                if (strength <= 2) return { text: 'Insegura', color: 'text-warning' };
+                if (strength === 3) return { text: 'Buena', color: 'text-primary' };
+                return { text: 'Fuerte', color: 'text-success' };
+            }
+
+            function validateForm() {
+                const passValue = password.value;
+                const confirmValue = confirmPassword.value;
+                
+                const strength = checkPasswordStrength(passValue);
+                strengthText.textContent = strength.text;
+                strengthText.className = 'form-text mt-1 fw-bold ' + strength.color;
+
+                let isValid = true;
+
+                if (passValue.length < 6 || passValue.length > 20) {
+                    isValid = false;
+                }
+
+                if (confirmValue.length > 0) {
+                    if (passValue !== confirmValue) {
+                        matchError.style.display = 'block';
+                        isValid = false;
+                    } else {
+                        matchError.style.display = 'none';
+                    }
+                } else {
+                    matchError.style.display = 'none';
+                    isValid = false;
+                }
+
+                submitBtn.disabled = !isValid;
+            }
+
+            password.addEventListener('input', validateForm);
+            confirmPassword.addEventListener('input', validateForm);
+        });
+    </script>
 </body>
 </html>
