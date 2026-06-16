@@ -256,17 +256,12 @@
                                 <td class="fw-bolder fs-5 text-wrap" style="max-width: 250px;"><%= p.getName() %></td>
                                 <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-2 px-3 fw-bold fs-6"><%= p.getBrand() %></span></td>
                                 <td class="text-center">
-<<<<<<< HEAD
-                                    <% if(p.getStock() <= p.getMinimoProgramado()) { %>
-                                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-2 fs-5 fw-bolder"><%= p.getStock() %></span>
-=======
                                     <% if(p.getStock() <= 20) { %>
                                         <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
                                     <% } else if(p.getStock() <= 50) { %>
                                         <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
->>>>>>> d12be534688c72b470c478df696ab4faeb6c7a28
                                     <% } else { %>
-                                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 fs-5 fw-bolder"><%= p.getStock() %></span>
+                                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
                                     <% } %>
                                 </td>
                                 <td class="text-center fw-bolder fs-6 text-secondary">
@@ -291,15 +286,10 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-<<<<<<< HEAD
+
                                     <div class="d-flex justify-content-center gap-3">
-                                        <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>)" title="Editar">
+                                        <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
                                             <i class="bi bi-pencil-fill fs-5"></i>
-=======
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')">
-                                            <i class="bi bi-pencil"></i>
->>>>>>> d12be534688c72b470c478df696ab4faeb6c7a28
                                         </button>
                                         <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
                                             <input type="hidden" name="action" value="delete">
