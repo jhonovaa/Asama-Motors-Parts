@@ -1,5 +1,8 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+
 <%
     User navUser = (User) session.getAttribute("user");
     boolean navLoggedIn = navUser != null;
@@ -60,55 +63,65 @@
         <div class="collapse navbar-collapse" id="asamaNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
                 <% if(!navLoggedIn) { %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i>Catalogo</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i><fmt:message key="nav.catalog"/></a></li>
                 <% } else if(navRole == 1) { // Admin %>
                     <% if(isApp) { %>
-                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Estadisticas</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historial</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.stats"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
                     <% } else { %>
-                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> Personal</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> Asistencia</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="admin_logs.jsp"><i class="bi bi-shield-lock me-1"></i> Auditoría</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> Historiales</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="employees"><i class="bi bi-people me-1"></i> <fmt:message key="nav.staff"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="admin_logs.jsp"><i class="bi bi-shield-lock me-1"></i> <fmt:message key="nav.audit"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
                     <% } %>
                 <% } else if(navRole == 2) { // Contador %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> Contabilidad</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> <fmt:message key="nav.accounting"/></a></li>
                 <% } else if(navRole == 3) { // Bodeguero %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> Inventario</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
                 <% } else if(navRole == 4) { // Cajero %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> Ventas</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
                 <% } else if(navRole == 5) { // Cliente %>
                     <% if(isApp) { %>
-                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Pedido</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.order"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
                     <% } else { %>
-                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> Mi Panel</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> Catalogo</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> Carrito</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
-                        <li class="nav-item"><a class="nav-link custom-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> Escaner IA</a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> <fmt:message key="nav.my_dashboard"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.cart"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> <fmt:message key="nav.scanner"/></a></li>
                     <% } %>
                 <% } else if(navRole == 6) { // Mecanico %>
-                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> Panel</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> Taller</a></li>
-                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> Buscar</a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
                 <% } %>
             </ul>
             
             <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
-                <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all" title="Cambiar tema">
+                <div class="dropdown">
+                    <button class="btn btn-icon rounded-circle transition-all dropdown-toggle d-flex align-items-center justify-content-center" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="<fmt:message key='nav.lang_title'/>">
+                        <i class="bi bi-globe fs-5"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item d-flex align-items-center" href="<%= currentPage %>?lang=es"><img src="https://flagcdn.com/w20/es.png" alt="ES" class="me-2" style="width: 20px;"> Español</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center" href="<%= currentPage %>?lang=en"><img src="https://flagcdn.com/w20/us.png" alt="EN" class="me-2" style="width: 20px;"> English</a></li>
+                    </ul>
+                </div>
+                
+                <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all" title="<fmt:message key='nav.theme_title'/>">
                     <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
                 </button>
                 
@@ -116,20 +129,20 @@
                     <div class="d-flex align-items-center gap-3">
                         <span class="badge rounded-pill role-badge px-3 py-2 fw-semibold d-flex align-items-center shadow-sm">
                             <i class="bi bi-shield-check me-2"></i>
-                            <% if(navRole==1) out.print("Admin");
-                               else if(navRole==2) out.print("Contador");
-                               else if(navRole==3) out.print("Bodeguero");
-                               else if(navRole==4) out.print("Cajero");
-                               else if(navRole==5) out.print("Cliente");
-                               else if(navRole==6) out.print("Mecanico"); %>
+                            <% if(navRole==1) out.print("<fmt:message key='role.admin'/>");
+                               else if(navRole==2) out.print("<fmt:message key='role.accountant'/>");
+                               else if(navRole==3) out.print("<fmt:message key='role.warehouse'/>");
+                               else if(navRole==4) out.print("<fmt:message key='role.cashier'/>");
+                               else if(navRole==5) out.print("<fmt:message key='role.customer'/>");
+                               else if(navRole==6) out.print("<fmt:message key='role.mechanic'/>"); %>
                         </span>
                         <a class="btn btn-outline-danger btn-sm px-4 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center gap-2 transition-all" href="logout">
-                            <span>Salir</span> <i class="bi bi-box-arrow-right"></i>
+                            <span><fmt:message key="nav.logout"/></span> <i class="bi bi-box-arrow-right"></i>
                         </a>
                     </div>
                 <% } else { %>
                     <a class="btn btn-accent px-4 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center gap-2 transition-all" href="login.jsp">
-                        <i class="bi bi-person-circle"></i> Iniciar Sesion
+                        <i class="bi bi-person-circle"></i> <fmt:message key="nav.login"/>
                     </a>
                 <% } %>
             </div>

@@ -1,5 +1,6 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null || user.getRoleId() != 1) {
@@ -12,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Ventas - Asama Moto Parts</title>
+    <title><fmt:message key="sales_history.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -43,28 +44,28 @@
 <div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px;">
     
     <div class="d-flex align-items-center mb-4">
-        <h2 class="fw-bold mb-0 text-accent"><i class="bi bi-journal-text me-2"></i>Historial de Ventas</h2>
-        <span class="badge bg-secondary bg-opacity-25 text-light ms-3 px-3 py-2 rounded-pill fs-6 fw-normal border border-secondary border-opacity-25">Ultimos 30 dias</span>
+        <h2 class="fw-bold mb-0 text-accent"><i class="bi bi-journal-text me-2"></i><fmt:message key="sales_history.header" /></h2>
+        <span class="badge bg-secondary bg-opacity-25 text-light ms-3 px-3 py-2 rounded-pill fs-6 fw-normal border border-secondary border-opacity-25"><fmt:message key="sales_history.last_30_days" /></span>
     </div>
     
     <div class="row g-4 align-items-stretch">
         <div class="col-lg-6">
             <div class="action-card h-100 d-flex flex-column p-4">
                 <div class="border-bottom border-secondary pb-3 mb-3">
-                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-person-badge me-2"></i>Ventas por Cajero</h5>
+                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-person-badge me-2"></i><fmt:message key="sales_history.cashier_sales" /></h5>
                 </div>
                 <div class="table-responsive flex-grow-1 pe-2" style="max-height: 50vh; overflow-y: auto;">
                     <table class="table table-borderless align-middle mb-0">
                         <thead class="sticky-top" style="background: var(--card-bg);">
                             <tr>
-                                <th class="text-secondary text-uppercase pb-2">Fecha</th>
-                                <th class="text-secondary text-uppercase pb-2">Cajero</th>
-                                <th class="text-secondary text-uppercase pb-2 text-center">Transacciones</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">Ingresos</th>
+                                <th class="text-secondary text-uppercase pb-2"><fmt:message key="sales_history.date" /></th>
+                                <th class="text-secondary text-uppercase pb-2"><fmt:message key="sales_history.cashier" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-center"><fmt:message key="sales_history.transactions" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="sales_history.revenue" /></th>
                             </tr>
                         </thead>
                         <tbody id="cashierHistoryTable">
-                            <tr><td colspan="4" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div>Cargando datos...</td></tr>
+                            <tr><td colspan="4" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div><fmt:message key="sales_history.loading" /></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -74,19 +75,19 @@
         <div class="col-lg-6">
             <div class="action-card h-100 d-flex flex-column p-4">
                 <div class="border-bottom border-secondary pb-3 mb-3">
-                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-globe me-2"></i>Ventas Online</h5>
+                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-globe me-2"></i><fmt:message key="sales_history.online_sales" /></h5>
                 </div>
                 <div class="table-responsive flex-grow-1 pe-2" style="max-height: 50vh; overflow-y: auto;">
                     <table class="table table-borderless align-middle mb-0">
                         <thead class="sticky-top" style="background: var(--card-bg);">
                             <tr>
-                                <th class="text-secondary text-uppercase pb-2">Fecha</th>
-                                <th class="text-secondary text-uppercase pb-2 text-center">Transacciones</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">Ingresos</th>
+                                <th class="text-secondary text-uppercase pb-2"><fmt:message key="sales_history.date" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-center"><fmt:message key="sales_history.transactions" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="sales_history.revenue" /></th>
                             </tr>
                         </thead>
                         <tbody id="onlineHistoryTable">
-                            <tr><td colspan="3" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div>Cargando datos...</td></tr>
+                            <tr><td colspan="3" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div><fmt:message key="sales_history.loading" /></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -99,22 +100,22 @@
         <div class="col-12">
             <div class="action-card d-flex flex-column p-4">
                 <div class="border-bottom border-secondary pb-3 mb-3 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-calendar-check me-2"></i>Ventas por Día</h5>
+                    <h5 class="fw-bold mb-0 text-accent"><i class="bi bi-calendar-check me-2"></i><fmt:message key="sales_history.daily_sales" /></h5>
                 </div>
                 <div class="table-responsive flex-grow-1 pe-2" style="max-height: 50vh; overflow-y: auto;">
                     <table class="table table-borderless align-middle mb-0">
                         <thead class="sticky-top" style="background: var(--card-bg);">
                             <tr>
-                                <th class="text-secondary text-uppercase pb-2">Fecha</th>
-                                <th class="text-secondary text-uppercase pb-2 text-center">Transacciones Cajero</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">Ingresos Cajero</th>
-                                <th class="text-secondary text-uppercase pb-2 text-center">Transacciones Online</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">Ingresos Online</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end text-accent">Total General</th>
+                                <th class="text-secondary text-uppercase pb-2"><fmt:message key="sales_history.date" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-center"><fmt:message key="sales_history.cashier_tx" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="sales_history.cashier_rev" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-center"><fmt:message key="sales_history.online_tx" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="sales_history.online_rev" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end text-accent"><fmt:message key="sales_history.total" /></th>
                             </tr>
                         </thead>
                         <tbody id="dailySummaryTable">
-                            <tr><td colspan="6" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div>Cargando datos...</td></tr>
+                            <tr><td colspan="6" class="text-center text-secondary py-5"><div class="spinner-border spinner-border-sm me-2"></div><fmt:message key="sales_history.loading" /></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -127,11 +128,11 @@
         <div class="col-12">
             <div class="action-card p-4">
                 <div class="border-bottom border-secondary pb-3 mb-4">
-                    <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-file-earmark-pdf me-2"></i>Reportes Diarios PDF</h5>
-                    <p class="text-secondary small mb-0">Descarga el reporte detallado de ventas por día.</p>
+                    <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-file-earmark-pdf me-2"></i><fmt:message key="sales_history.pdf_reports" /></h5>
+                    <p class="text-secondary small mb-0"><fmt:message key="sales_history.pdf_desc" /></p>
                 </div>
                 <div id="historyDaysContainer" class="d-flex flex-wrap gap-3">
-                    <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium">Cargando reportes disponibles...</span>
+                    <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium"><fmt:message key="sales_history.loading_reports" /></span>
                 </div>
             </div>
         </div>
@@ -150,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
             tbody.innerHTML = '';
             
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No hay registros recientes.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i><fmt:message key="sales_history.no_records" /></td></tr>';
             } else {
                 data.forEach(row => {
                     tbody.innerHTML += 
@@ -163,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         }).catch(err => {
-            document.getElementById('cashierHistoryTable').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Error al cargar los datos.</td></tr>';
+            document.getElementById('cashierHistoryTable').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4"><fmt:message key="sales_history.error_data" /></td></tr>';
         });
 
     // Fetch Online History
@@ -174,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function() {
             tbody.innerHTML = '';
             
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No hay registros recientes.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i><fmt:message key="sales_history.no_records" /></td></tr>';
             } else {
                 data.forEach(row => {
                     tbody.innerHTML += 
@@ -186,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         }).catch(err => {
-            document.getElementById('onlineHistoryTable').innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4">Error al cargar los datos.</td></tr>';
+            document.getElementById('onlineHistoryTable').innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4"><fmt:message key="sales_history.error_data" /></td></tr>';
         });
 
     // Fetch Daily Summary
@@ -199,8 +200,8 @@ document.addEventListener("DOMContentLoaded", function() {
             container.innerHTML = '';
             
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No hay registros recientes.</td></tr>';
-                container.innerHTML = '<span class="text-secondary small">No hay historial disponible.</span>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i><fmt:message key="sales_history.no_records" /></td></tr>';
+                container.innerHTML = '<span class="text-secondary small"><fmt:message key="sales_history.no_records" /></span>';
             } else {
                 data.forEach(row => {
                     tbody.innerHTML += 
@@ -221,8 +222,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         }).catch(err => {
-            document.getElementById('dailySummaryTable').innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Error al cargar los datos.</td></tr>';
-            document.getElementById('historyDaysContainer').innerHTML = '<span class="text-danger small">Error al cargar historial.</span>';
+            document.getElementById('dailySummaryTable').innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4"><fmt:message key="sales_history.error_data" /></td></tr>';
+            document.getElementById('historyDaysContainer').innerHTML = '<span class="text-danger small"><fmt:message key="sales_history.error_history" /></span>';
         });
 });
 
@@ -231,8 +232,8 @@ const getSwalColor = () => document.body.classList.contains('light-mode') ? '#33
 
 function downloadPdfForDate(date) {
     Swal.fire({
-        title: 'Generando PDF...',
-        text: 'Obteniendo registros de ' + date,
+        title: '<fmt:message key="sales_history.generating_pdf" />',
+        text: '<fmt:message key="sales_history.getting_records" /> ' + date,
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); },
         background: getSwalBg(),
@@ -246,8 +247,8 @@ function downloadPdfForDate(date) {
         if(data.length === 0) {
             Swal.fire({
                 icon: 'info',
-                title: 'Sin registros',
-                text: 'No hay transacciones para este día.',
+                title: '<fmt:message key="sales_history.no_records_title" />',
+                text: '<fmt:message key="sales_history.no_tx_day" />',
                 background: getSwalBg(),
                 color: getSwalColor()
             });
@@ -258,7 +259,7 @@ function downloadPdfForDate(date) {
         const doc = new jsPDF();
 
         doc.setFontSize(18);
-        doc.text('Reporte de Ventas - ' + date, 14, 22);
+        doc.text('<fmt:message key="sales_history.report_title" />' + date, 14, 22);
         doc.setFontSize(11);
         doc.setTextColor(100);
         doc.text('Asama Moto Parts', 14, 30);
@@ -297,7 +298,7 @@ function downloadPdfForDate(date) {
 
         doc.autoTable({
             startY: 40,
-            head: [['Hora', 'Tipo', 'Cajero', 'Producto', 'Cant.', 'Total']],
+            head: [['<fmt:message key="sales_history.time" />', '<fmt:message key="sales_history.type" />', '<fmt:message key="sales_history.cashier" />', '<fmt:message key="sales_history.product" />', '<fmt:message key="sales_history.qty" />', '<fmt:message key="sales_history.total_col" />']],
             body: tableData,
             theme: 'striped',
             headStyles: { fillColor: hexColor },
@@ -311,10 +312,10 @@ function downloadPdfForDate(date) {
         let finalY = doc.lastAutoTable.finalY || 40;
         doc.setFontSize(11);
         doc.setTextColor(0);
-        doc.text('Total Cajero: $' + totalCashier.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 10);
-        doc.text('Total Online: $' + totalOnline.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 16);
+        doc.text('<fmt:message key="sales_history.total_cashier" /> $' + totalCashier.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 10);
+        doc.text('<fmt:message key="sales_history.total_online" /> $' + totalOnline.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 16);
         doc.setFont(undefined, 'bold');
-        doc.text('Total del Día: $' + (totalCashier + totalOnline).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 24);
+        doc.text('<fmt:message key="sales_history.total_day" /> $' + (totalCashier + totalOnline).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 14, finalY + 24);
 
         doc.save('Reporte_Ventas_' + date + '.pdf');
     })
@@ -322,8 +323,8 @@ function downloadPdfForDate(date) {
         console.error(err);
         Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'No se pudo generar el reporte.',
+            title: '<fmt:message key="sales_history.error" />',
+            text: '<fmt:message key="sales_history.error_report" />',
             background: getSwalBg(),
             color: getSwalColor()
         });

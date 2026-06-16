@@ -2,6 +2,7 @@
 <%@ page import="com.adso.cheng.utils.DbConnection" %>
 <%@ page import="java.sql.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null) {
@@ -10,11 +11,11 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<fmt:message key='app.lang' />">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - Asama Moto Parts</title>
+    <title><fmt:message key="dashboard.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -75,18 +76,18 @@
         <div class="col-12">
             <div class="welcome-card p-4 p-md-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
                 <div>
-                    <h2 class="fw-bold mb-2">Bienvenido, <span class="text-accent"><%= user.getFullName() %></span></h2>
-                    <p class="text-secondary mb-0 fs-5">Selecciona el modulo al que deseas acceder segun tus permisos.</p>
+                    <h2 class="fw-bold mb-2"><fmt:message key="dashboard.welcome" /><span class="text-accent"><%= user.getFullName() %></span></h2>
+                    <p class="text-secondary mb-0 fs-5"><fmt:message key="dashboard.select_module" /></p>
                 </div>
                 <div class="text-md-end">
                     <span class="badge role-badge px-4 py-2 fs-6 fw-bold">
                         <i class="bi bi-shield-check me-2"></i>
-                        <% if(user.getRoleId() == 1) out.print("Administrador");
-                           else if(user.getRoleId() == 2) out.print("Contador");
-                           else if(user.getRoleId() == 3) out.print("Bodeguero");
-                           else if(user.getRoleId() == 4) out.print("Cajero");
-                           else if(user.getRoleId() == 5) out.print("Cliente");
-                           else if(user.getRoleId() == 6) out.print("Mecanico"); %>
+                        <% if(user.getRoleId() == 1) out.print("<fmt:message key='role.admin' />");
+                           else if(user.getRoleId() == 2) out.print("<fmt:message key='role.accountant' />");
+                           else if(user.getRoleId() == 3) out.print("<fmt:message key='role.warehouse' />");
+                           else if(user.getRoleId() == 4) out.print("<fmt:message key='role.cashier' />");
+                           else if(user.getRoleId() == 5) out.print("<fmt:message key='role.customer' />");
+                           else if(user.getRoleId() == 6) out.print("<fmt:message key='role.mechanic' />"); %>
                     </span>
                     <p class="text-secondary small mt-2 mb-0 fw-bold"><i class="bi bi-person-vcard me-1"></i> ID: <%= user.getDocumentId() %></p>
                 </div>
@@ -102,9 +103,9 @@
                     <div class="brand-icon-wrapper mb-4">
                         <i class="bi bi-graph-up-arrow fs-1 text-accent"></i>
                     </div>
-                    <h4 class="fw-bold mb-3">Modulo de Contabilidad</h4>
-                    <p class="text-secondary mb-4 fs-6">Revisa las ventas, transacciones registradas y genera reportes financieros.</p>
-                    <a href="accountant.jsp" class="btn btn-accent px-5 py-2 rounded-pill fw-bold">Ver Reportes Financieros</a>
+                    <h4 class="fw-bold mb-3"><fmt:message key="dashboard.acc_module" /></h4>
+                    <p class="text-secondary mb-4 fs-6"><fmt:message key="dashboard.acc_desc" /></p>
+                    <a href="accountant.jsp" class="btn btn-accent px-5 py-2 rounded-pill fw-bold"><fmt:message key="dashboard.acc_btn" /></a>
                 </div>
             </div>
 
@@ -117,7 +118,7 @@
             <div class="col-lg-4 col-md-5">
                 <div class="action-card p-4 h-100">
                     <h5 class="text-accent fw-bold border-bottom border-secondary pb-3 mb-4">
-                        <i class="bi bi-person-circle me-2"></i>Editar Perfil
+                        <i class="bi bi-person-circle me-2"></i><fmt:message key="dashboard.edit_profile" />
                     </h5>
                     <% if(request.getParameter("msg") != null) { %>
                         <div class="alert alert-success py-2 small rounded-3 bg-opacity-10 border-success text-success fw-bold">
@@ -126,34 +127,34 @@
                     <% } %>
                     <form action="profile" method="POST">
                         <div class="mb-3">
-                            <label class="form-label small">Nombre Completo</label>
+                            <label class="form-label small"><fmt:message key="dashboard.full_name" /></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="bi bi-person text-secondary"></i></span>
                                 <input type="text" name="fullName" class="form-control border-start-0 ps-0" value="<%= user.getFullName() %>" required>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small">Cedula</label>
+                            <label class="form-label small"><fmt:message key="dashboard.document_id" /></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="bi bi-card-text text-secondary"></i></span>
                                 <input type="text" name="documentId" class="form-control border-start-0 ps-0" value="<%= user.getDocumentId() %>" required>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small">Correo Electronico</label>
+                            <label class="form-label small"><fmt:message key="dashboard.email" /></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="bi bi-envelope text-secondary"></i></span>
                                 <input type="email" name="email" class="form-control border-start-0 ps-0" value="<%= user.getEmail() %>" required>
                             </div>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label small">Nueva Contrasena</label>
+                            <label class="form-label small"><fmt:message key="dashboard.new_password" /></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="bi bi-lock text-secondary"></i></span>
-                                <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="Dejar en blanco para omitir">
+                                <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="<fmt:message key='dashboard.password_placeholder' />">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-accent w-100 rounded-pill py-2 fw-bold">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-accent w-100 rounded-pill py-2 fw-bold"><fmt:message key="dashboard.save_changes" /></button>
                     </form>
                 </div>
             </div>
@@ -162,18 +163,18 @@
             <div class="col-lg-8 col-md-7">
                 <div class="action-card p-4 h-100 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
-                        <h5 class="text-accent fw-bold mb-0"><i class="bi bi-bag-check me-2"></i>Historial de Compras</h5>
-                        <a href="catalog.jsp" class="btn btn-sm btn-moto-outline rounded-pill px-3 fw-bold">Ir a Tienda</a>
+                        <h5 class="text-accent fw-bold mb-0"><i class="bi bi-bag-check me-2"></i><fmt:message key="dashboard.purchase_history" /></h5>
+                        <a href="catalog.jsp" class="btn btn-sm btn-moto-outline rounded-pill px-3 fw-bold"><fmt:message key="dashboard.go_store" /></a>
                     </div>
                     <div class="table-responsive flex-grow-1" style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-hover align-middle table-borderless">
                             <thead class="sticky-top" style="background: var(--card-bg);">
                                 <tr>
-                                    <th class="text-secondary small text-uppercase">Fecha</th>
-                                    <th class="text-secondary small text-uppercase">Repuesto</th>
-                                    <th class="text-secondary small text-uppercase text-center">Cant.</th>
-                                    <th class="text-secondary small text-uppercase text-end">Total</th>
-                                    <th class="text-secondary small text-uppercase text-center">Acciones</th>
+                                    <th class="text-secondary small text-uppercase"><fmt:message key="dashboard.date" /></th>
+                                    <th class="text-secondary small text-uppercase"><fmt:message key="dashboard.part" /></th>
+                                    <th class="text-secondary small text-uppercase text-center"><fmt:message key="dashboard.qty" /></th>
+                                    <th class="text-secondary small text-uppercase text-end"><fmt:message key="dashboard.total" /></th>
+                                    <th class="text-secondary small text-uppercase text-center"><fmt:message key="dashboard.actions" /></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,15 +196,15 @@
                                     <td class="text-center"><span class="badge bg-secondary bg-opacity-25 text-light px-2"><%= rs.getInt("quantity") %></span></td>
                                     <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
                                     <td class="text-center">
-                                        <a href="post_sale_request.jsp?sale_id=<%= rs.getInt("id") %>" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="Solicitar Garantía o Devolución">
-                                            <i class="bi bi-shield-exclamation me-1"></i>Reclamo
+                                        <a href="post_sale_request.jsp?sale_id=<%= rs.getInt("id") %>" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="<fmt:message key='dashboard.claim_title' />">
+                                            <i class="bi bi-shield-exclamation me-1"></i><fmt:message key="dashboard.claim" />
                                         </a>
                                     </td>
                                 </tr>
                                 <%
                                         }
                                         if(!hasPurchases) {
-                                            out.print("<tr><td colspan='5' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-2'></i>No has realizado compras aun.</td></tr>");
+                                            out.print("<tr><td colspan='5' class='text-center text-secondary py-5 fw-bold'><i class='bi bi-inbox fs-1 d-block mb-2'></i><fmt:message key='dashboard.no_purchases' /></td></tr>");
                                         }
                                     } catch(Exception e) { e.printStackTrace(); }
                                 %>
@@ -217,8 +218,8 @@
             <div class="col-12 mt-4">
                 <div class="action-card p-4 h-100 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
-                        <h5 class="text-accent fw-bold mb-0"><i class="bi bi-bicycle me-2"></i>Mis Motocicletas</h5>
-                        <button type="button" class="btn btn-sm btn-moto-outline rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#motoModal">Registrar Moto</button>
+                        <h5 class="text-accent fw-bold mb-0"><i class="bi bi-bicycle me-2"></i><fmt:message key="dashboard.my_motorcycles" /></h5>
+                        <button type="button" class="btn btn-sm btn-moto-outline rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#motoModal"><fmt:message key="dashboard.register_moto" /></button>
                     </div>
                     <% if(request.getParameter("msgMoto") != null) { %>
                         <div class="alert alert-success py-2 small rounded-3 bg-opacity-10 border-success text-success fw-bold">
@@ -234,11 +235,11 @@
                         <table class="table table-hover align-middle table-borderless">
                             <thead class="sticky-top" style="background: var(--card-bg);">
                                 <tr>
-                                    <th class="text-secondary small text-uppercase">Placa</th>
-                                    <th class="text-secondary small text-uppercase">Marca</th>
-                                    <th class="text-secondary small text-uppercase">Modelo</th>
-                                    <th class="text-secondary small text-uppercase text-center">Año</th>
-                                    <th class="text-secondary small text-uppercase text-end">Acciones</th>
+                                    <th class="text-secondary small text-uppercase"><fmt:message key="dashboard.plate" /></th>
+                                    <th class="text-secondary small text-uppercase"><fmt:message key="dashboard.brand" /></th>
+                                    <th class="text-secondary small text-uppercase"><fmt:message key="dashboard.model" /></th>
+                                    <th class="text-secondary small text-uppercase text-center"><fmt:message key="dashboard.year" /></th>
+                                    <th class="text-secondary small text-uppercase text-end"><fmt:message key="dashboard.actions" /></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -254,7 +255,7 @@
                                     <td><%= m.getModel() %></td>
                                     <td class="text-center"><%= m.getYear() %></td>
                                     <td class="text-end">
-                                        <form action="motorcycle" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar esta moto?');">
+                                        <form action="motorcycle" method="POST" class="d-inline" onsubmit="return confirm('<fmt:message key="dashboard.delete_confirm" />');">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="<%= m.getId() %>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2"><i class="bi bi-trash"></i></button>
@@ -263,7 +264,7 @@
                                 </tr>
                                 <%      }
                                     } else {
-                                        out.print("<tr><td colspan='5' class='text-center text-secondary py-4 fw-bold'><i class='bi bi-inbox fs-2 d-block mb-2'></i>No tienes motocicletas registradas.</td></tr>");
+                                        out.print("<tr><td colspan='5' class='text-center text-secondary py-4 fw-bold'><i class='bi bi-inbox fs-2 d-block mb-2'></i><fmt:message key='dashboard.no_motos' /></td></tr>");
                                     }
                                 %>
                             </tbody>
@@ -275,17 +276,17 @@
             <div class="col-md-6">
                 <div class="action-card p-4 text-center h-100 d-flex flex-column justify-content-center transition-all">
                     <i class="bi bi-search fs-1 text-accent mb-3"></i>
-                    <h5 class="fw-bold">Buscar Repuesto</h5>
-                    <p class="text-secondary small mb-4">Escanea codigos de barras con tu camara para buscar piezas rapidamente.</p>
-                    <a href="search_product.jsp" class="btn btn-moto rounded-pill px-4 mx-auto mt-auto fw-bold">Abrir Escaner</a>
+                    <h5 class="fw-bold"><fmt:message key="dashboard.search_part" /></h5>
+                    <p class="text-secondary small mb-4"><fmt:message key="dashboard.search_part_desc" /></p>
+                    <a href="search_product.jsp" class="btn btn-moto rounded-pill px-4 mx-auto mt-auto fw-bold"><fmt:message key="dashboard.open_scanner" /></a>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="action-card p-4 text-center h-100 d-flex flex-column justify-content-center transition-all">
                     <i class="bi bi-camera-viewfinder fs-1 text-accent mb-3"></i>
-                    <h5 class="fw-bold">Escaner Visual IA</h5>
-                    <p class="text-secondary small mb-4">Toma una foto del repuesto y deja que nuestra Inteligencia Artificial lo identifique.</p>
-                    <a href="visual_scanner.jsp" class="btn btn-moto-outline rounded-pill px-4 mx-auto mt-auto fw-bold">Identificar Pieza</a>
+                    <h5 class="fw-bold"><fmt:message key="dashboard.ai_scanner" /></h5>
+                    <p class="text-secondary small mb-4"><fmt:message key="dashboard.ai_scanner_desc" /></p>
+                    <a href="visual_scanner.jsp" class="btn btn-moto-outline rounded-pill px-4 mx-auto mt-auto fw-bold"><fmt:message key="dashboard.identify_part" /></a>
                 </div>
             </div>
 
@@ -293,17 +294,17 @@
             <div class="col-md-6">
                 <div class="action-card p-5 text-center h-100 d-flex flex-column justify-content-center transition-all">
                     <i class="bi bi-wrench-adjustable fs-1 text-accent mb-3"></i>
-                    <h4 class="fw-bold mb-3">Taller de Mantenimiento</h4>
-                    <p class="text-secondary mb-4 fs-6">Gestiona las ordenes de trabajo asignadas a ti y actualiza su estado.</p>
-                    <a href="maintenance" class="btn btn-accent rounded-pill px-5 py-2 mt-auto mx-auto fw-bold">Ingresar al Taller</a>
+                    <h4 class="fw-bold mb-3"><fmt:message key="dashboard.mechanic_shop" /></h4>
+                    <p class="text-secondary mb-4 fs-6"><fmt:message key="dashboard.mechanic_shop_desc" /></p>
+                    <a href="maintenance" class="btn btn-accent rounded-pill px-5 py-2 mt-auto mx-auto fw-bold"><fmt:message key="dashboard.enter_shop" /></a>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="action-card p-5 text-center h-100 d-flex flex-column justify-content-center transition-all">
                     <i class="bi bi-upc-scan fs-1 text-accent mb-3"></i>
-                    <h4 class="fw-bold mb-3">Buscar Repuesto</h4>
-                    <p class="text-secondary mb-4 fs-6">Verifica disponibilidad de inventario escaneando codigos de barras.</p>
-                    <a href="search_product.jsp" class="btn btn-moto-outline rounded-pill px-5 py-2 mt-auto mx-auto fw-bold">Abrir Escaner</a>
+                    <h4 class="fw-bold mb-3"><fmt:message key="dashboard.search_part" /></h4>
+                    <p class="text-secondary mb-4 fs-6"><fmt:message key="dashboard.mechanic_search_desc" /></p>
+                    <a href="search_product.jsp" class="btn btn-moto-outline rounded-pill px-5 py-2 mt-auto mx-auto fw-bold"><fmt:message key="dashboard.open_scanner" /></a>
                 </div>
             </div>
 
@@ -313,7 +314,7 @@
             <div class="col-12 mb-5">
                 <div class="d-flex align-items-center mb-4">
                     <i class="bi bi-bar-chart-line-fill fs-3 text-accent me-3"></i>
-                    <h4 class="fw-bold mb-0">Estadisticas de Sistema <span class="badge bg-secondary bg-opacity-25 text-light ms-2 fs-6 fw-normal">Ultimos 30 dias</span></h4>
+                    <h4 class="fw-bold mb-0"><fmt:message key="dashboard.sys_stats" /> <span class="badge bg-secondary bg-opacity-25 text-light ms-2 fs-6 fw-normal"><fmt:message key="dashboard.last_30_days" /></span></h4>
                 </div>
                 
                 <div class="row g-4">
@@ -321,15 +322,15 @@
                         <div class="action-card p-4 h-100 d-flex flex-column text-center position-relative overflow-hidden">
                             <div class="position-absolute top-0 start-50 translate-middle-x w-100 h-100 bg-gradient-to-b from-accent to-transparent opacity-10 pointer-events-none" style="background: linear-gradient(180deg, var(--accent-glow) 0%, transparent 100%);"></div>
                             
-                            <h6 class="text-secondary text-uppercase fw-bold letter-spacing-1 mb-4 z-1">Rendimiento en Ventas</h6>
+                            <h6 class="text-secondary text-uppercase fw-bold letter-spacing-1 mb-4 z-1"><fmt:message key="dashboard.sales_performance" /></h6>
                             <i class="bi bi-trophy-fill text-warning fs-1 mb-2 z-1" style="filter: drop-shadow(0 0 10px rgba(255,193,7,0.5));"></i>
                             
-                            <h3 id="topCashierName" class="fw-bolder mb-1 z-1">Cargando...</h3>
-                            <p class="text-accent small mb-4 z-1 fw-bold">Mejor Cajero del Mes</p>
+                            <h3 id="topCashierName" class="fw-bolder mb-1 z-1"><fmt:message key="dashboard.loading" /></h3>
+                            <p class="text-accent small mb-4 z-1 fw-bold"><fmt:message key="dashboard.top_cashier" /></p>
                             
                             <div class="mt-auto bg-dark bg-opacity-25 p-3 rounded-3 z-1 border border-secondary border-opacity-25">
                                 <h4 id="topCashierRevenue" class="text-success fw-bold mb-1">$0.00</h4>
-                                <p class="text-secondary small mb-0 fw-bold"><i class="bi bi-box-seam me-1"></i><span id="topCashierSales">0</span> articulos vendidos</p>
+                                <p class="text-secondary small mb-0 fw-bold"><i class="bi bi-box-seam me-1"></i><span id="topCashierSales">0</span> <fmt:message key="dashboard.items_sold" /></p>
                             </div>
                         </div>
                     </div>
@@ -337,7 +338,7 @@
                     <div class="col-xl-8 col-lg-7">
                         <div class="action-card p-4 h-100">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h6 class="text-secondary text-uppercase fw-bold letter-spacing-1 mb-0">Flujo de Inventario vs Ventas</h6>
+                                <h6 class="text-secondary text-uppercase fw-bold letter-spacing-1 mb-0"><fmt:message key="dashboard.inventory_flow" /></h6>
                                 <button class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-three-dots"></i></button>
                             </div>
                             <div class="chart-container position-relative" style="height: 250px; width: 100%;">
@@ -351,7 +352,7 @@
             
             <div class="col-12 mt-2">
                 <h5 class="fw-bold mb-3 d-flex align-items-center">
-                    <i class="bi bi-shop me-2 text-accent fs-4"></i>Operaciones de Tienda
+                    <i class="bi bi-shop me-2 text-accent fs-4"></i><fmt:message key="dashboard.store_ops" />
                 </h5>
                 <hr class="border-secondary mt-0 mb-4 opacity-25">
             </div>
@@ -361,9 +362,9 @@
                 <div class="col-md-4">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-box-seam fs-1 text-accent mb-3 d-block"></i>
-                        <h5 class="fw-bold mb-2">Inventario</h5>
-                        <p class="text-secondary small mb-4 fw-medium">Administra el stock y catalogo de repuestos.</p>
-                        <a href="inventory" class="btn btn-moto-outline rounded-pill w-100 mt-auto fw-bold">Gestionar</a>
+                        <h5 class="fw-bold mb-2"><fmt:message key="dashboard.inventory" /></h5>
+                        <p class="text-secondary small mb-4 fw-medium"><fmt:message key="dashboard.inventory_desc" /></p>
+                        <a href="inventory" class="btn btn-moto-outline rounded-pill w-100 mt-auto fw-bold"><fmt:message key="dashboard.manage" /></a>
                     </div>
                 </div>
                 <% } %>
@@ -372,17 +373,17 @@
                 <div class="col-md-4">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-cart-check fs-1 text-accent mb-3 d-block"></i>
-                        <h5 class="fw-bold mb-2">Punto de Venta</h5>
-                        <p class="text-secondary small mb-4 fw-medium">Caja registradora con soporte de escaner.</p>
-                        <a href="cashier" class="btn btn-accent rounded-pill w-100 mt-auto text-dark fw-bold">Abrir Caja</a>
+                        <h5 class="fw-bold mb-2"><fmt:message key="dashboard.pos" /></h5>
+                        <p class="text-secondary small mb-4 fw-medium"><fmt:message key="dashboard.pos_desc" /></p>
+                        <a href="cashier" class="btn btn-accent rounded-pill w-100 mt-auto text-dark fw-bold"><fmt:message key="dashboard.open_register" /></a>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-upc-scan fs-1 text-accent mb-3 d-block"></i>
-                        <h5 class="fw-bold mb-2">Consultar Repuesto</h5>
-                        <p class="text-secondary small mb-4 fw-medium">Escanea o busca articulos rapidamente.</p>
-                        <a href="search_product.jsp" class="btn btn-moto-outline rounded-pill w-100 mt-auto fw-bold">Consultar</a>
+                        <h5 class="fw-bold mb-2"><fmt:message key="dashboard.consult_part" /></h5>
+                        <p class="text-secondary small mb-4 fw-medium"><fmt:message key="dashboard.consult_part_desc" /></p>
+                        <a href="search_product.jsp" class="btn btn-moto-outline rounded-pill w-100 mt-auto fw-bold"><fmt:message key="dashboard.consult" /></a>
                     </div>
                 </div>
                 <% } %>
@@ -391,7 +392,7 @@
             <% if(user.getRoleId() == 1) { %>
             <div class="col-12 mt-5">
                 <h5 class="fw-bold mb-3 d-flex align-items-center">
-                    <i class="bi bi-gear-wide-connected me-2 text-accent fs-4"></i>Administracion General
+                    <i class="bi bi-gear-wide-connected me-2 text-accent fs-4"></i><fmt:message key="dashboard.gen_admin" />
                 </h5>
                 <hr class="border-secondary mt-0 mb-4 opacity-25">
             </div>
@@ -400,49 +401,49 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-wrench-adjustable fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Taller</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Control de ordenes de trabajo.</p>
-                        <a href="maintenance" class="btn btn-sm btn-moto w-100 rounded-pill fw-bold">Ingresar</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.shop" /></h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;"><fmt:message key="dashboard.shop_desc" /></p>
+                        <a href="maintenance" class="btn btn-sm btn-moto w-100 rounded-pill fw-bold"><fmt:message key="dashboard.enter" /></a>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-people fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Personal</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Usuarios y carnets QR.</p>
-                        <a href="employees" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold">Gestionar</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.staff" /></h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;"><fmt:message key="dashboard.staff_desc" /></p>
+                        <a href="employees" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold"><fmt:message key="dashboard.manage" /></a>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-clock-history fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Asistencia</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Terminal de fichaje de empleados.</p>
-                        <a href="time_tracking.jsp" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold">Terminal</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.attendance" /></h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;"><fmt:message key="dashboard.attendance_desc" /></p>
+                        <a href="time_tracking.jsp" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold"><fmt:message key="dashboard.terminal" /></a>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-shield-lock fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Auditoría</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Actividades del personal y activos.</p>
-                        <a href="admin_logs.jsp" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold">Auditar</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.audit" /></h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;"><fmt:message key="dashboard.audit_desc" /></p>
+                        <a href="admin_logs.jsp" class="btn btn-sm btn-moto-outline w-100 rounded-pill fw-bold"><fmt:message key="dashboard.do_audit" /></a>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-journal-richtext fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Historiales</h6>
-                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;">Reportes y ventas de la tienda.</p>
-                        <a href="sales_history.jsp" class="btn btn-sm btn-moto w-100 rounded-pill fw-bold">Revisar</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.histories" /></h6>
+                        <p class="text-secondary small mb-4 fw-medium" style="font-size: 0.8rem;"><fmt:message key="dashboard.histories_desc" /></p>
+                        <a href="sales_history.jsp" class="btn btn-sm btn-moto w-100 rounded-pill fw-bold"><fmt:message key="dashboard.review" /></a>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class="action-card p-4 text-center h-100 transition-all">
                         <i class="bi bi-shield-check fs-2 text-accent mb-3 d-block"></i>
-                        <h6 class="fw-bold mb-2">Garantías</h6>
-                        <p class="text-secondary small mb-4" style="font-size: 0.8rem;">Reclamos y devoluciones.</p>
-                        <a href="adminRequests" class="btn btn-sm btn-moto w-100 rounded-pill">Revisar</a>
+                        <h6 class="fw-bold mb-2"><fmt:message key="dashboard.warranties" /></h6>
+                        <p class="text-secondary small mb-4" style="font-size: 0.8rem;"><fmt:message key="dashboard.warranties_desc" /></p>
+                        <a href="adminRequests" class="btn btn-sm btn-moto w-100 rounded-pill"><fmt:message key="dashboard.review" /></a>
                     </div>
                 </div>
             </div>
@@ -464,10 +465,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('topCashierRevenue').textContent = '$' + data.total_revenue.toLocaleString('es-CO', {minimumFractionDigits: 2});
                 document.getElementById('topCashierSales').textContent = data.total_products;
             } else {
-                document.getElementById('topCashierName').textContent = 'Sin Datos';
+                document.getElementById('topCashierName').textContent = '<fmt:message key="dashboard.no_data" />';
             }
         }).catch(err => {
-            document.getElementById('topCashierName').textContent = 'Error';
+            document.getElementById('topCashierName').textContent = '<fmt:message key="dashboard.error" />';
         });
 
     fetch('dashboardData?action=graphData')
@@ -492,7 +493,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     labels: data.labels,
                     datasets: [
                         {
-                            label: 'Repuestos Ingresados',
+                            label: '<fmt:message key="dashboard.parts_entered" />',
                             data: data.entered,
                             borderColor: secondaryColor,
                             backgroundColor: secondaryBg,
@@ -504,7 +505,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             fill: true
                         },
                         {
-                            label: 'Repuestos Vendidos',
+                            label: '<fmt:message key="dashboard.parts_sold" />',
                             data: data.sold,
                             borderColor: accentColor,
                             backgroundColor: accentGlow,
@@ -563,36 +564,36 @@ document.addEventListener("DOMContentLoaded", function() {
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-secondary shadow-lg">
       <div class="modal-header border-secondary">
-        <h5 class="modal-title text-accent fw-bold"><i class="bi bi-plus-circle me-2"></i>Registrar Motocicleta</h5>
+        <h5 class="modal-title text-accent fw-bold"><i class="bi bi-plus-circle me-2"></i><fmt:message key="dashboard.register_moto_modal" /></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
       </div>
       <form action="motorcycle" method="POST">
           <div class="modal-body p-4">
               <input type="hidden" name="action" value="add">
               <div class="mb-3">
-                  <label class="form-label">Placa</label>
-                  <input type="text" name="plate" class="form-control text-uppercase" placeholder="Ej. ABC-12D" required maxlength="20">
+                  <label class="form-label"><fmt:message key="dashboard.plate" /></label>
+                  <input type="text" name="plate" class="form-control text-uppercase" placeholder="<fmt:message key='dashboard.ex_plate' />" required maxlength="20">
               </div>
               <div class="mb-3">
-                  <label class="form-label">Marca de Moto</label>
+                  <label class="form-label"><fmt:message key="dashboard.moto_brand" /></label>
                   <select name="brand" id="clientMotoBrand" class="form-control" onchange="updateClientModels()" required>
-                      <option value="">Seleccione marca...</option>
+                      <option value=""><fmt:message key="dashboard.sel_brand" /></option>
                   </select>
               </div>
               <div class="mb-3">
-                  <label class="form-label">Modelo</label>
+                  <label class="form-label"><fmt:message key="dashboard.model" /></label>
                   <select name="model" id="clientMotoModel" class="form-control" required>
-                      <option value="">Seleccione modelo...</option>
+                      <option value=""><fmt:message key="dashboard.sel_model" /></option>
                   </select>
               </div>
               <div class="mb-3">
-                  <label class="form-label">Año</label>
-                  <input type="number" name="year" class="form-control" placeholder="Ej. 2022" required min="1950" max="2030">
+                  <label class="form-label"><fmt:message key="dashboard.year" /></label>
+                  <input type="number" name="year" class="form-control" placeholder="<fmt:message key='dashboard.ex_year' />" required min="1950" max="2030">
               </div>
           </div>
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-accent rounded-pill fw-bold">Registrar</button>
+            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold" data-bs-dismiss="modal"><fmt:message key="dashboard.cancel" /></button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bold"><fmt:message key="dashboard.register" /></button>
           </div>
       </form>
     </div>
@@ -622,7 +623,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 modelSelect.appendChild(opt);
             });
             let genOpt = document.createElement('option');
-            genOpt.value = 'Otro / No lista'; genOpt.textContent = 'Otro / No lista';
+            genOpt.value = 'Otro / No lista'; genOpt.textContent = '<fmt:message key="dashboard.other_not_listed" />';
             modelSelect.appendChild(genOpt);
         }
     }
