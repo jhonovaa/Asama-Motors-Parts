@@ -1,5 +1,6 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     // Roles permitidos: Admin(1), Bodeguero(3), Cajero(4), Cliente(5), Mecánico(6)
@@ -13,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Repuesto - Asama Moto Parts</title>
+    <title><fmt:message key="search_product.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,40 +29,40 @@
 
     <div class="container main-container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold m-0"><i class="bi bi-search text-orange me-2"></i> Buscar Repuesto</h2>
+            <h2 class="fw-bold m-0"><i class="bi bi-search text-orange me-2"></i> <fmt:message key="search_product.header" /></h2>
         </div>
 
         <div class="card-custom">
             <ul class="nav nav-tabs" id="searchTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="camera-tab" data-bs-toggle="tab" data-bs-target="#camera-pane" type="button" role="tab"><i class="bi bi-camera me-1"></i> Cámara</button>
+                    <button class="nav-link active" id="camera-tab" data-bs-toggle="tab" data-bs-target="#camera-pane" type="button" role="tab"><i class="bi bi-camera me-1"></i> <fmt:message key="search_product.camera" /></button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-pane" type="button" role="tab"><i class="bi bi-keyboard me-1"></i> Código Manual</button>
+                    <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-pane" type="button" role="tab"><i class="bi bi-keyboard me-1"></i> <fmt:message key="search_product.manual_code" /></button>
                 </li>
             </ul>
 
             <div class="tab-content" id="searchTabsContent">
                 <!-- Camera Tab -->
                 <div class="tab-pane fade show active" id="camera-pane" role="tabpanel">
-                    <div class="text-center mb-3 text-secondary small">Apunta la cámara al código de barras del producto</div>
+                    <div class="text-center mb-3 text-secondary small"><fmt:message key="search_product.camera_hint" /></div>
                     <div id="reader"></div>
                 </div>
 
                 <!-- Manual Tab -->
                 <div class="tab-pane fade" id="manual-pane" role="tabpanel">
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Ingresa el código de barras</label>
-                        <input type="text" id="manualBarcode" class="form-control" placeholder="Ej. ASAMA-1001">
+                        <label class="form-label text-secondary"><fmt:message key="search_product.enter_barcode" /></label>
+                        <input type="text" id="manualBarcode" class="form-control" placeholder="<fmt:message key='search_product.barcode_placeholder'/>">
                     </div>
-                    <button class="btn btn-moto" onclick="searchManual()">Buscar Repuesto</button>
+                    <button class="btn btn-moto" onclick="searchManual()"><fmt:message key="search_product.search_btn" /></button>
                 </div>
             </div>
 
             <!-- Result Section -->
             <div id="loadingIndicator" class="text-center my-4" style="display: none;">
                 <div class="spinner-border text-orange" role="status"></div>
-                <div class="mt-2 text-secondary small">Buscando...</div>
+                <div class="mt-2 text-secondary small"><fmt:message key="search_product.searching" /></div>
             </div>
 
             <div id="resultCard" class="result-card">
@@ -71,16 +72,16 @@
                     </div>
                     <div class="col-md-8">
                         <h4 id="resName" class="fw-bold mb-1"></h4>
-                        <div class="text-secondary small mb-2"><i class="bi bi-tag-fill me-1"></i> <span id="resBrand"></span> | Código: <span id="resBarcode"></span></div>
+                        <div class="text-secondary small mb-2"><i class="bi bi-tag-fill me-1"></i> <span id="resBrand"></span> | <fmt:message key="search_product.code_prefix" /><span id="resBarcode"></span></div>
                         <p id="resDesc" class="text-light small mb-3"></p>
                         
                         <div class="d-flex justify-content-between align-items-end mt-3 border-top border-secondary pt-3">
                             <div>
-                                <div class="text-secondary small">Precio Unitario</div>
+                                <div class="text-secondary small"><fmt:message key="search_product.unit_price" /></div>
                                 <h3 class="text-orange fw-bold m-0" id="resPrice"></h3>
                             </div>
                             <div class="text-end">
-                                <div class="text-secondary small">Inventario</div>
+                                <div class="text-secondary small"><fmt:message key="search_product.inventory" /></div>
                                 <h5 class="m-0" id="resStock"></h5>
                             </div>
                         </div>
@@ -89,7 +90,7 @@
             </div>
             
             <div id="errorCard" class="alert alert-danger mt-4" style="display:none;">
-                <i class="bi bi-exclamation-triangle me-2"></i> No se encontró ningún repuesto con ese código.
+                <i class="bi bi-exclamation-triangle me-2"></i> <fmt:message key="search_product.not_found" />
             </div>
 
         </div>
@@ -159,13 +160,13 @@
                     } else {
                         // Populate results
                         document.getElementById('resName').innerText = data.name;
-                        document.getElementById('resBrand').innerText = data.brand || 'Genérico';
+                        document.getElementById('resBrand').innerText = data.brand || '<fmt:message key="search_product.generic"/>';
                         document.getElementById('resBarcode').innerText = data.barcode;
-                        document.getElementById('resDesc').innerText = data.description || 'Sin descripción';
+                        document.getElementById('resDesc').innerText = data.description || '<fmt:message key="search_product.no_desc"/>';
                         document.getElementById('resPrice').innerText = '$' + data.price.toFixed(2);
                         
                         let stockEl = document.getElementById('resStock');
-                        stockEl.innerText = data.stock + ' uds';
+                        stockEl.innerText = data.stock + '<fmt:message key="search_product.units"/>';
                         stockEl.className = data.stock > 0 ? 'm-0 text-success' : 'm-0 text-danger';
 
                         let imgContainer = document.getElementById('resultImgContainer');

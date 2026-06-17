@@ -28,8 +28,8 @@ public class DashboardDataServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Security Check: Only Admin (1)
-        if (user == null || user.getRoleId() != 1) {
+        // Security Check: Admin (1), Bodeguero (3), Cajero (4)
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 3 && user.getRoleId() != 4)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
         }

@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Terminal de Asistencia - Asama Moto Parts</title>
+    <title><fmt:message key="time_tracking.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -128,9 +129,9 @@
 
     <div class="d-flex justify-content-between align-items-center w-100 p-4 position-absolute top-0 start-0" style="z-index: 100;">
         <a href="dashboard.jsp" class="btn btn-moto-outline rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">
-            <i class="bi bi-arrow-left"></i> Volver al Panel
+            <i class="bi bi-arrow-left"></i> <fmt:message key="time_tracking.back_dashboard" />
         </a>
-        <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-sm" title="Cambiar tema">
+        <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-sm" title="<fmt:message key='time_tracking.theme_toggle' />">
             <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
         </button>
     </div>
@@ -140,18 +141,18 @@
             
             <div class="col-lg-5 col-xl-4">
                 <div class="action-card h-100 p-4 p-xl-5 d-flex flex-column text-center">
-                    <h3 class="fw-bold mb-1 text-accent">Terminal de Asistencia</h3>
+                    <h3 class="fw-bold mb-1 text-accent"><fmt:message key="time_tracking.heading" /></h3>
                     <p class="text-secondary fw-medium mb-4" id="clock" style="font-size: 1rem;"></p>
 
                     <ul class="nav nav-tabs custom-tabs justify-content-center w-100" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="face-tab" data-bs-toggle="tab" data-bs-target="#face-pane" type="button" role="tab">
-                                <i class="bi bi-person-bounding-box me-1"></i> Facial
+                                <i class="bi bi-person-bounding-box me-1"></i> <fmt:message key="time_tracking.tab_facial" />
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="barcode-tab" data-bs-toggle="tab" data-bs-target="#barcode-pane" type="button" role="tab">
-                                <i class="bi bi-upc-scan me-1"></i> Carnet
+                                <i class="bi bi-upc-scan me-1"></i> <fmt:message key="time_tracking.tab_card" />
                             </button>
                         </li>
                     </ul>
@@ -162,11 +163,11 @@
                                 <video id="video" autoplay muted playsinline></video>
                                 <div id="modelLoading" class="loading-overlay">
                                     <div class="spinner-border text-warning mb-3" style="width: 3rem; height: 3rem;"></div>
-                                    <span class="fw-bold text-warning" id="loadingText">Cargando modelos...</span>
+                                    <span class="fw-bold text-warning" id="loadingText"><fmt:message key="time_tracking.loading_models" /></span>
                                 </div>
                             </div>
                             <p class="text-secondary small fw-medium mb-0">
-                                <i class="bi bi-info-circle me-1"></i> Mira a la camara fijamente. Limite de deteccion: 5 segs.
+                                <i class="bi bi-info-circle me-1"></i> <fmt:message key="time_tracking.camera_instruction" />
                             </p>
                         </div>
 
@@ -174,8 +175,8 @@
                             <div class="pulse-icon-wrapper my-5">
                                 <i class="bi bi-upc-scan"></i>
                             </div>
-                            <h5 class="fw-bold mb-4">Escanea tu Carnet</h5>
-                            <input type="text" id="manualInput" class="form-control form-control-lg" placeholder="Escribe o escanea tu ID..." autocomplete="off">
+                            <h5 class="fw-bold mb-4"><fmt:message key="time_tracking.scan_card" /></h5>
+                            <input type="text" id="manualInput" class="form-control form-control-lg" placeholder="<fmt:message key='time_tracking.id_placeholder' />" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -185,8 +186,8 @@
                 <div class="action-card flex-grow-1 p-4 p-xl-5 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
                         <div>
-                            <h4 class="fw-bold mb-1 text-accent"><i class="bi bi-clock-history me-2"></i>Asistencia de Hoy</h4>
-                            <p class="text-secondary small mb-0">Historial en vivo del personal que ha interactuado el dia de hoy.</p>
+                            <h4 class="fw-bold mb-1 text-accent"><i class="bi bi-clock-history me-2"></i><fmt:message key="time_tracking.today_attendance" /></h4>
+                            <p class="text-secondary small mb-0"><fmt:message key="time_tracking.live_history" /></p>
                         </div>
                         <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="loadAttendanceTable()"><i class="bi bi-arrow-clockwise"></i></button>
                     </div>
@@ -195,15 +196,15 @@
                         <table class="table table-hover table-borderless history-table align-middle" id="attendanceTable">
                             <thead class="sticky-top" style="background: var(--card-bg);">
                                 <tr>
-                                    <th class="text-uppercase small pb-3">Empleado</th>
-                                    <th class="text-uppercase small pb-3 text-center">Estado</th>
-                                    <th class="text-uppercase small pb-3 text-end">Hora</th>
+                                    <th class="text-uppercase small pb-3"><fmt:message key="time_tracking.col_employee" /></th>
+                                    <th class="text-uppercase small pb-3 text-center"><fmt:message key="time_tracking.col_status" /></th>
+                                    <th class="text-uppercase small pb-3 text-end"><fmt:message key="time_tracking.col_time" /></th>
                                 </tr>
                             </thead>
                             <tbody id="attendanceTbody">
                                 <tr>
                                     <td colspan="3" class="text-center text-secondary py-5">
-                                        <div class="spinner-border spinner-border-sm me-2"></div> Cargando historial...
+                                        <div class="spinner-border spinner-border-sm me-2"></div> <fmt:message key="time_tracking.loading_history" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -213,11 +214,11 @@
                 
                 <div class="action-card p-4">
                     <div class="border-bottom border-secondary pb-3 mb-4">
-                        <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-calendar-check me-2"></i>Reportes Diarios PDF</h5>
-                        <p class="text-secondary small mb-0">Descarga el reporte de asistencias completas (entrada y salida) por dia.</p>
+                        <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-calendar-check me-2"></i><fmt:message key="time_tracking.daily_reports" /></h5>
+                        <p class="text-secondary small mb-0"><fmt:message key="time_tracking.download_reports" /></p>
                     </div>
                     <div id="historyDaysContainer" class="d-flex flex-wrap gap-3">
-                        <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium">Cargando reportes disponibles...</span>
+                        <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium"><fmt:message key="time_tracking.loading_reports" /></span>
                     </div>
                 </div>
             </div>
@@ -245,15 +246,15 @@
                 tbody.innerHTML = '';
                 
                 if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No hay asistencias registradas hoy.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i><fmt:message key="time_tracking.no_attendance" /></td></tr>';
                     return;
                 }
                 
                 data.forEach(row => {
                     const hasExit = row.exit && row.exit.trim() !== "";
                     const statusHtml = hasExit 
-                        ? '<span class="badge-salida"><i class="bi bi-box-arrow-right me-1"></i> Salida</span>'
-                        : '<span class="badge-entrada"><i class="bi bi-box-arrow-in-right me-1"></i> Entrada</span>';
+                        ? '<span class="badge-salida"><i class="bi bi-box-arrow-right me-1"></i> <fmt:message key="time_tracking.exit" /></span>'
+                        : '<span class="badge-entrada"><i class="bi bi-box-arrow-in-right me-1"></i> <fmt:message key="time_tracking.entry" /></span>';
                     
                     let timeDisplay = "";
                     if (row.entry) {
@@ -297,7 +298,7 @@
                     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
                 ]);
 
-                document.getElementById('loadingText').innerText = "Cargando rostros autorizados...";
+                document.getElementById('loadingText').innerText = "<fmt:message key='time_tracking.loading_faces'/>";
 
                 const response = await fetch('faceData');
                 const employees = await response.json();
@@ -318,7 +319,7 @@
                 }
 
                 if(loadedCount === 0) {
-                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-exclamation-triangle d-block fs-1 mb-2'></i>No hay personal con foto para escaneo facial.</span>";
+                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-exclamation-triangle d-block fs-1 mb-2'></i><fmt:message key='time_tracking.no_photos'/></span>";
                     return; 
                 }
 
@@ -331,7 +332,7 @@
 
             } catch(e) {
                 console.error("Face API Error:", e);
-                document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i>Error en modulo facial. Usa el Carnet.</span>";
+                document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i><fmt:message key='time_tracking.facial_error'/></span>";
             }
         }
 
@@ -343,7 +344,7 @@
                 })
                 .catch(err => {
                     document.getElementById('modelLoading').style.display = 'flex';
-                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i>No se pudo acceder a la camara.</span>";
+                    document.getElementById('modelLoading').innerHTML = "<span class='text-danger fw-bold text-center p-3'><i class='bi bi-camera-video-off d-block fs-1 mb-2'></i><fmt:message key='time_tracking.camera_error'/></span>";
                 });
         }
 
@@ -404,8 +405,8 @@
                             
                             Swal.fire({
                                 icon: 'warning',
-                                title: 'Rostro no reconocido',
-                                text: 'Si eres empleado, puede que no tengas una foto de perfil registrada para el escaneo.',
+                                title: '<fmt:message key="time_tracking.unrecognized_face"/>',
+                                text: '<fmt:message key="time_tracking.unrecognized_desc"/>',
                                 confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#00E5FF',
                                 background: getSwalBg(),
                                 color: getSwalColor(),
@@ -449,7 +450,7 @@
                 const container = document.getElementById('historyDaysContainer');
                 container.innerHTML = '';
                 if(dates.length === 0) {
-                    container.innerHTML = '<span class="text-secondary small">No hay historial disponible.</span>';
+                    container.innerHTML = '<span class="text-secondary small"><fmt:message key="time_tracking.no_history"/></span>';
                     return;
                 }
                 dates.forEach(date => {
@@ -461,15 +462,15 @@
                 });
             })
             .catch(err => {
-                document.getElementById('historyDaysContainer').innerHTML = '<span class="text-danger small">Error al cargar historial.</span>';
+                document.getElementById('historyDaysContainer').innerHTML = '<span class="text-danger small"><fmt:message key="time_tracking.history_error"/></span>';
                 console.error("Error loading dates:", err);
             });
         }
 
         function downloadPdfForDate(date) {
             Swal.fire({
-                title: 'Generando PDF...',
-                text: 'Obteniendo registros de ' + date,
+                title: '<fmt:message key="time_tracking.generating_pdf"/>',
+                text: '<fmt:message key="time_tracking.getting_records"/> ' + date,
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); },
                 background: getSwalBg(),
@@ -483,8 +484,8 @@
                 if(data.length === 0) {
                     Swal.fire({
                         icon: 'info',
-                        title: 'Sin registros',
-                        text: 'No hay asistencias completas (entrada y salida) para este dia.',
+                        title: '<fmt:message key="time_tracking.no_records"/>',
+                        text: '<fmt:message key="time_tracking.no_complete_attendance"/>',
                         background: getSwalBg(),
                         color: getSwalColor()
                     });
@@ -495,7 +496,7 @@
                 const doc = new jsPDF();
 
                 doc.setFontSize(18);
-                doc.text('Reporte de Asistencia - ' + date, 14, 22);
+                doc.text('<fmt:message key="time_tracking.attendance_report"/> ' + date, 14, 22);
                 doc.setFontSize(11);
                 doc.setTextColor(100);
                 doc.text('Asama Moto Parts', 14, 30);
@@ -519,7 +520,7 @@
 
                 doc.autoTable({
                     startY: 40,
-                    head: [['Empleado', 'Hora Entrada', 'Hora Salida']],
+                    head: [['<fmt:message key="time_tracking.pdf_employee"/>', '<fmt:message key="time_tracking.pdf_entry_time"/>', '<fmt:message key="time_tracking.pdf_exit_time"/>']],
                     body: tableData,
                     theme: 'striped',
                     headStyles: { fillColor: hexColor },
@@ -532,8 +533,8 @@
                 console.error(err);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo generar el reporte.',
+                    title: '<fmt:message key="time_tracking.error"/>',
+                    text: '<fmt:message key="time_tracking.report_error"/>',
                     background: getSwalBg(),
                     color: getSwalColor()
                 });
@@ -583,8 +584,8 @@
                 if(data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: data.type === 'Entrada' ? '¡Bienvenido!' : '¡Hasta pronto!',
-                        html: data.type + ' registrada para:<br><strong class="fs-4 mt-2 d-block">' + data.name + '</strong>',
+                        title: data.type === 'Entrada' ? '<fmt:message key="time_tracking.welcome"/>' : '<fmt:message key="time_tracking.see_you"/>',
+                        html: data.type + ' <fmt:message key="time_tracking.registered_for"/><br><strong class="fs-4 mt-2 d-block">' + data.name + '</strong>',
                         timer: 3500,
                         showConfirmButton: false,
                         background: getSwalBg(),
@@ -595,8 +596,8 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: data.error || 'Error al registrar asistencia',
+                        title: '<fmt:message key="time_tracking.oops"/>',
+                        text: data.error || '<fmt:message key="time_tracking.error_registering"/>',
                         confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#00E5FF',
                         background: getSwalBg(),
                         color: getSwalColor()

@@ -1,5 +1,6 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
@@ -10,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrito de Compras - Asama Moto Parts</title>
+    <title><fmt:message key="cart.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -96,7 +97,7 @@
                 <div class="brand-icon me-3" style="width: 55px; height: 55px; font-size: 26px; background-color: var(--accent-orange); color: #121417; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px var(--accent-glow);">
                     <i class="bi bi-cart3"></i>
                 </div>
-                <h3 class="fw-bold mb-0 text-accent">Tu Carrito de Compras</h3>
+                <h3 class="fw-bold mb-0 text-accent"><fmt:message key="cart.header" /></h3>
             </div>
             
             <div id="cartContent" class="flex-grow-1">
@@ -104,11 +105,11 @@
                     <table class="table table-hover align-middle table-borderless mb-0">
                         <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
                             <tr>
-                                <th class="text-uppercase pb-3">Producto</th>
-                                <th class="text-uppercase pb-3">Precio</th>
-                                <th class="text-uppercase pb-3 text-center">Cantidad</th>
-                                <th class="text-uppercase pb-3 text-end">Subtotal</th>
-                                <th class="text-uppercase pb-3 text-center">Remover</th>
+                                <th class="text-uppercase pb-3"><fmt:message key="cart.th.product" /></th>
+                                <th class="text-uppercase pb-3"><fmt:message key="cart.th.price" /></th>
+                                <th class="text-uppercase pb-3 text-center"><fmt:message key="cart.th.quantity" /></th>
+                                <th class="text-uppercase pb-3 text-end"><fmt:message key="cart.th.subtotal" /></th>
+                                <th class="text-uppercase pb-3 text-center"><fmt:message key="cart.th.remove" /></th>
                             </tr>
                         </thead>
                         <tbody id="cartItems">
@@ -118,11 +119,11 @@
                 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-5 pt-4 border-top border-secondary border-opacity-50">
                     <div class="mb-4 mb-md-0">
-                        <p class="text-secondary fw-bold mb-1 fs-5">Total a Pagar:</p>
+                        <p class="text-secondary fw-bold mb-1 fs-5"><fmt:message key="cart.total_to_pay" /></p>
                         <h2 class="fw-bolder mb-0 text-accent" style="font-size: 2.5rem; letter-spacing: -1px;" id="cartTotal">$0.00</h2>
                     </div>
                     <button class="btn btn-accent rounded-pill fw-bold px-5 py-3 fs-5 shadow-lg d-flex align-items-center gap-2 transition-all justify-content-center" onclick="processCheckout()">
-                        <i class="bi bi-credit-card-fill"></i> Proceder al Pago
+                        <i class="bi bi-credit-card-fill"></i> <fmt:message key="cart.proceed_checkout" />
                     </button>
                 </div>
             </div>
@@ -131,10 +132,10 @@
                 <div class="mx-auto mb-4" style="width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.2);">
                     <i class="bi bi-cart-x text-secondary" style="font-size: 4rem;"></i>
                 </div>
-                <h3 class="fw-bold mb-3">Tu carrito esta vacio</h3>
-                <p class="text-secondary fs-5 mb-5 fw-medium">Parece que aun no has agregado ningun repuesto a tu orden.</p>
+                <h3 class="fw-bold mb-3"><fmt:message key="cart.empty_title" /></h3>
+                <p class="text-secondary fs-5 mb-5 fw-medium"><fmt:message key="cart.empty_text" /></p>
                 <a href="catalog.jsp" class="btn btn-moto-outline rounded-pill px-5 py-3 fw-bold fs-5">
-                    <i class="bi bi-search me-2"></i> Explorar Catalogo
+                    <i class="bi bi-search me-2"></i> <fmt:message key="cart.explore_catalog" />
                 </a>
             </div>
         </div>
@@ -146,7 +147,7 @@
         let roleId = <%= roleId %>;
         let currentUserId = <%= session.getAttribute("user") != null ? ((com.adso.cheng.models.User)session.getAttribute("user")).getId() : -1 %>;
         if (!isLoggedIn) {
-            window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+ver+tu+carrito";
+            window.location.href = "login.jsp?msg=" + encodeURIComponent("<fmt:message key='cart.login_required' />");
         }
         let cartKey = 'asama_cart_' + currentUserId;
         let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
@@ -190,7 +191,7 @@
                     '</td>' +
                     '<td class="fw-bolder text-accent fs-5 text-end">$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
                     '<td class="text-center">' +
-                        '<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" onclick="removeFromCart(' + index + ')" title="Eliminar">' +
+                        '<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" onclick="removeFromCart(' + index + ')" title="<fmt:message key="cart.remove" />">' +
                             '<i class="bi bi-trash-fill"></i>' +
                         '</button>' +
                     '</td>';
@@ -224,8 +225,8 @@
             if(roleId !== 5) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Acceso Restringido',
-                    text: 'Solo los clientes pueden realizar compras online.',
+                    title: '<fmt:message key="cart.restricted_access_title" />',
+                    text: '<fmt:message key="cart.restricted_access_text" />',
                     confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#FF6B35',
                     background: getSwalBg(),
                     color: getSwalColor()

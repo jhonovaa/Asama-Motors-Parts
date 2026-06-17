@@ -3,12 +3,13 @@
 <%@ page import="com.adso.cheng.dao.ProductDAO" %>
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - Asama Moto Parts</title>
+    <title><fmt:message key="catalog.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -40,11 +41,11 @@
 
     <div class="container" style="margin-top: 40px; margin-bottom: 50px;">
         <div class="text-center mb-4">
-            <h2 class="fw-bold">Catálogo de Repuestos</h2>
-            <p class="text-secondary">Encuentra todo lo que necesitas para tu moto</p>
+            <h2 class="fw-bold"><fmt:message key="catalog.header" /></h2>
+            <p class="text-secondary"><fmt:message key="catalog.subtitle" /></p>
         </div>
         
-        <input type="text" id="searchInput" class="search-bar mb-5" placeholder="Buscar por nombre o marca..." onkeyup="filterProducts()">
+        <input type="text" id="searchInput" class="search-bar mb-5" placeholder="<fmt:message key='catalog.search' />" onkeyup="filterProducts()">
 
         <div class="row g-4" id="productGrid">
             <%
@@ -62,12 +63,12 @@
                         </div>
                     <% } %>
                     <h5 class="fw-bold mb-1"><%= p.getName() %></h5>
-                    <p class="text-secondary small mb-2"><%= p.getBrand() != null ? p.getBrand() : "Genérico" %></p>
+                    <p class="text-secondary small mb-2"><%= p.getBrand() != null ? p.getBrand() : "<fmt:message key='catalog.generic' />" %></p>
                     <h4 class="text-orange fw-bold mb-3">$<%= String.format("%.2f", p.getPrice()) %></h4>
                     <% if(p.getStock() > 0) { %>
-                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName() %>', <%= p.getPrice() %>)">Añadir al Carrito</button>
+                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName() %>', <%= p.getPrice() %>)"><fmt:message key="catalog.add_cart" /></button>
                     <% } else { %>
-                        <button class="btn btn-secondary w-100" disabled>Agotado</button>
+                        <button class="btn btn-secondary w-100" disabled><fmt:message key="catalog.out_of_stock" /></button>
                     <% } %>
                 </div>
             </div>
@@ -103,7 +104,7 @@
 
         function addToCart(id, name, price) {
             if (!isLoggedIn) {
-                window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+añadir+al+carrito";
+                window.location.href = "login.jsp?msg=" + encodeURIComponent("<fmt:message key='catalog.login_required' />");
                 return;
             }
             let item = cart.find(i => i.id === id);
@@ -119,13 +120,13 @@
             if(typeof Swal !== 'undefined') {
                 Swal.fire({
                     toast: true, position: 'bottom-end', icon: 'success',
-                    title: name + ' añadido al carrito',
+                    title: name + ' <fmt:message key="catalog.added" />',
                     showConfirmButton: false, timer: 1500,
                     background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24',
                     color: document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa'
                 });
             } else {
-                alert(name + " añadido al carrito");
+                alert(name + " <fmt:message key='catalog.added' />");
             }
         }
 

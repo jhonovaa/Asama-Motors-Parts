@@ -1,0 +1,28 @@
+import com.adso.cheng.utils.DbConnection;
+import java.sql.Connection;
+import java.sql.Statement;
+
+public class Migration {
+    public static void main(String[] args) {
+        try (Connection conn = DbConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+             
+             String sql = "CREATE TABLE IF NOT EXISTS online_orders (" +
+                          "id SERIAL PRIMARY KEY, " +
+                          "customer_id INT NOT NULL REFERENCES users(id), " +
+                          "total_amount DECIMAL(10, 2) NOT NULL, " +
+                          "shipping_cost DECIMAL(10, 2) DEFAULT 0.00, " +
+                          "items_json TEXT NOT NULL, " +
+                          "status VARCHAR(50) DEFAULT 'PENDIENTE', " +
+                          "is_read_admin BOOLEAN DEFAULT FALSE, " +
+                          "is_read_cashier BOOLEAN DEFAULT FALSE, " +
+                          "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                          ");";
+             
+             stmt.executeUpdate(sql);
+             System.out.println("MIGRATION_SUCCESS: online_orders table created.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

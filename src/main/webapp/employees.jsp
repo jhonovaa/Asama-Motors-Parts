@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
     if (sessionUser == null || sessionUser.getRoleId() != 1) {
@@ -9,10 +10,10 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<fmt:message key='app.lang' />">
 <head>
     <meta charset="UTF-8">
-    <title>Gestion de Empleados - Asama Moto Parts</title>
+    <title><fmt:message key="employees.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,43 +49,43 @@
         <div class="col-lg-4 col-md-5">
             <div class="action-card h-100">
                 <div class="card-header border-bottom border-secondary pb-3 mb-3">
-                    <h5 class="text-accent fw-bold mb-0"><i class="bi bi-person-plus me-2"></i>Registrar Empleado</h5>
+                    <h5 class="text-accent fw-bold mb-0"><i class="bi bi-person-plus me-2"></i><fmt:message key="employees.register" /></h5>
                 </div>
                 <div class="card-body px-4 pb-4">
                     <form action="employees" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold">Nombre Completo</label>
-                            <input type="text" name="fullName" class="form-control" placeholder="Ej. Carlos Perez" required>
+                            <label class="form-label small text-secondary fw-semibold"><fmt:message key="employees.full_name" /></label>
+                            <input type="text" name="fullName" class="form-control" placeholder="<fmt:message key='employees.full_name_ph' />" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold">Cedula / Documento</label>
-                            <input type="text" name="documentId" class="form-control" placeholder="Numero de identificacion" required>
+                            <label class="form-label small text-secondary fw-semibold"><fmt:message key="employees.document" /></label>
+                            <input type="text" name="documentId" class="form-control" placeholder="<fmt:message key='employees.document_ph' />" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold">Correo Electronico</label>
-                            <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com" required>
+                            <label class="form-label small text-secondary fw-semibold"><fmt:message key="employees.email" /></label>
+                            <input type="email" name="email" class="form-control" placeholder="<fmt:message key='employees.email_ph' />" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold">Contrasena Temporal</label>
-                            <input type="password" name="password" class="form-control" placeholder="Asigna una contrasena" required>
+                            <label class="form-label small text-secondary fw-semibold"><fmt:message key="employees.temp_password" /></label>
+                            <input type="password" name="password" class="form-control" placeholder="<fmt:message key='employees.temp_password_ph' />" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-semibold">Rol del Empleado</label>
+                            <label class="form-label small text-secondary fw-semibold"><fmt:message key="employees.role" /></label>
                             <select name="roleId" class="form-select" required>
-                                <option value="" disabled selected>Seleccione el Rol</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Contador</option>
-                                <option value="3">Bodeguero</option>
-                                <option value="4">Cajero</option>
-                                <option value="6">Mecanico</option>
+                                <option value="" disabled selected><fmt:message key="employees.sel_role" /></option>
+                                <option value="1"><fmt:message key="role.admin" /></option>
+                                <option value="2"><fmt:message key="role.accountant" /></option>
+                                <option value="3"><fmt:message key="role.warehouse" /></option>
+                                <option value="4"><fmt:message key="role.cashier" /></option>
+                                <option value="6"><fmt:message key="role.mechanic" /></option>
                             </select>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-secondary small fw-semibold">Foto de Perfil (Para Carnet)</label>
+                            <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.photo" /></label>
                             <input type="file" name="photo" class="form-control" accept="image/jpeg, image/png" required>
                         </div>
                         <button type="submit" class="btn btn-accent w-100 rounded-pill fw-bold py-2">
-                            <i class="bi bi-check2-circle me-1"></i> Registrar y Generar
+                            <i class="bi bi-check2-circle me-1"></i> <fmt:message key="employees.btn_register" />
                         </button>
                     </form>
                 </div>
@@ -93,9 +94,9 @@
 
         <div class="col-lg-8 col-md-7">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
-                <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-person-badge me-2"></i>Carnets Generados</h4>
+                <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-person-badge me-2"></i><fmt:message key="employees.generated" /></h4>
                 <button class="btn btn-moto-outline btn-sm rounded-pill px-3" onclick="window.print()">
-                    <i class="bi bi-printer me-1"></i> Imprimir Carnets
+                    <i class="bi bi-printer me-1"></i> <fmt:message key="employees.print" />
                 </button>
             </div>
             
@@ -118,12 +119,12 @@
                         <p class="mb-3 text-secondary small">ID: <%= u.getDocumentId() %></p>
                         
                         <% 
-                            String role = "Empleado";
-                            if(u.getRoleId() == 1) role = "Administrador";
-                            else if(u.getRoleId() == 2) role = "Contador";
-                            else if(u.getRoleId() == 3) role = "Bodeguero";
-                            else if(u.getRoleId() == 4) role = "Cajero";
-                            else if(u.getRoleId() == 6) role = "Mecanico";
+                            String role = "<fmt:message key='employees.role_employee' />";
+                            if(u.getRoleId() == 1) role = "<fmt:message key='role.admin' />";
+                            else if(u.getRoleId() == 2) role = "<fmt:message key='role.accountant' />";
+                            else if(u.getRoleId() == 3) role = "<fmt:message key='role.warehouse' />";
+                            else if(u.getRoleId() == 4) role = "<fmt:message key='role.cashier' />";
+                            else if(u.getRoleId() == 6) role = "<fmt:message key='role.mechanic' />";
                         %>
                         <div class="mt-auto">
                             <span class="badge role-badge px-3 py-2 fs-6 mb-2"><%= role %></span>
@@ -145,10 +146,10 @@
                             
                             <div class="d-flex justify-content-center gap-2 mt-4 d-print-none">
                                 <button class="btn btn-sm btn-outline-warning rounded-pill px-3" onclick="openEditModal(<%= u.getId() %>, '<%= u.getFullName().replace("'", "\\'") %>', '<%= u.getDocumentId() %>', '<%= u.getEmail() %>', <%= u.getRoleId() %>)">
-                                    <i class="bi bi-pencil"></i> Editar
+                                    <i class="bi bi-pencil"></i> <fmt:message key="employees.btn_edit" />
                                 </button>
                                 <% if(u.getId() != 1) { %>
-                                <form action="employees" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar este empleado?');">
+                                <form action="employees" method="POST" class="d-inline" onsubmit="return confirm('<fmt:message key="employees.del_confirm" />');">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<%= u.getId() %>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="bi bi-trash"></i></button>
@@ -160,7 +161,7 @@
                 </div>
                 <%      }
                     } else {
-                        out.print("<div class='col-12 text-center text-secondary py-5'><i class='bi bi-people fs-1 d-block mb-3'></i>No hay empleados registrados.</div>");
+                        out.print("<div class='col-12 text-center text-secondary py-5'><i class='bi bi-people fs-1 d-block mb-3'></i><fmt:message key='employees.empty' /></div>");
                     }
                 %>
             </div>
@@ -172,7 +173,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-secondary">
       <div class="modal-header border-secondary">
-        <h5 class="modal-title text-accent fw-bold"><i class="bi bi-person-lines-fill me-2"></i>Editar Empleado</h5>
+        <h5 class="modal-title text-accent fw-bold"><i class="bi bi-person-lines-fill me-2"></i><fmt:message key="employees.edit_title" /></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
       </div>
       <form action="employees" method="POST" enctype="multipart/form-data">
@@ -180,39 +181,39 @@
               <input type="hidden" name="action" value="edit">
               <input type="hidden" name="id" id="editId">
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Nombre Completo</label>
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.full_name" /></label>
                   <input type="text" name="fullName" id="editName" class="form-control" required>
               </div>
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Cedula</label>
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.edit_doc" /></label>
                   <input type="text" name="documentId" id="editDoc" class="form-control" required>
               </div>
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Email</label>
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.edit_email" /></label>
                   <input type="email" name="email" id="editEmail" class="form-control" required>
               </div>
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Rol</label>
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.edit_role" /></label>
                   <select name="roleId" id="editRole" class="form-select" required>
-                      <option value="1">Administrador</option>
-                      <option value="2">Contador</option>
-                      <option value="3">Bodeguero</option>
-                      <option value="4">Cajero</option>
-                      <option value="6">Mecanico</option>
+                      <option value="1"><fmt:message key="role.admin" /></option>
+                      <option value="2"><fmt:message key="role.accountant" /></option>
+                      <option value="3"><fmt:message key="role.warehouse" /></option>
+                      <option value="4"><fmt:message key="role.cashier" /></option>
+                      <option value="6"><fmt:message key="role.mechanic" /></option>
                   </select>
               </div>
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Nueva Contraseña (Dejar en blanco para no cambiar)</label>
-                  <input type="password" name="password" id="editPassword" class="form-control" placeholder="Opcional">
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.edit_pwd" /></label>
+                  <input type="password" name="password" id="editPassword" class="form-control" placeholder="<fmt:message key='employees.edit_pwd_ph' />">
               </div>
               <div class="mb-3">
-                  <label class="form-label text-secondary small fw-semibold">Actualizar Foto (Opcional)</label>
+                  <label class="form-label text-secondary small fw-semibold"><fmt:message key="employees.upd_photo" /></label>
                   <input type="file" name="photo" class="form-control" accept="image/jpeg, image/png">
               </div>
           </div>
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-accent rounded-pill fw-bold">Guardar Cambios</button>
+            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal"><fmt:message key="employees.cancel" /></button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bold"><fmt:message key="employees.save" /></button>
           </div>
       </form>
     </div>

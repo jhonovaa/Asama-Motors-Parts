@@ -2,6 +2,7 @@
 <%@ page import="com.adso.cheng.models.Product" %>
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
     if (sessionUser == null || (sessionUser.getRoleId() != 1 && sessionUser.getRoleId() != 3)) {
@@ -35,10 +36,10 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<fmt:message key='app.lang' />">
 <head>
     <meta charset="UTF-8">
-    <title>Inventario - Asama Moto Parts</title>
+    <title><fmt:message key="inventory.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -146,6 +147,27 @@
         }
         .inventory-barcode-container svg { height: 38px; width: auto; }
 
+        /* Estilo para los Codigos de Barras de las Tarjetas */
+        .card-barcode-container {
+            background: #ffffff !important;
+            padding: 8px 14px;
+            border-radius: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+            max-width: 90%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .card-barcode-container svg {
+            display: block;
+            height: 25px !important;
+            width: auto !important;
+            max-width: 100%;
+        }
+
         /* Estilos de Stock Personalizados */
         .badge-stock-zero {
             background-color: rgba(108, 117, 125, 0.15) !important;
@@ -238,108 +260,25 @@
 <%@ include file="navbar.jsp" %>
 
 <div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px;">
-    <div class="row g-4">
+    <div class="row">
         
-        <div class="col-lg-3 col-md-4">
-            <div class="action-card h-100">
-                <div class="card-header border-bottom border-secondary pb-3 mb-3 px-4 pt-4">
-                    <h5 class="text-accent fw-bolder mb-0 fs-4"><i class="bi bi-box-seam me-2"></i>Nuevo Producto</h5>
-                </div>
-                <div class="card-body px-4 pb-4">
-                    <form action="inventory" method="POST" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre del Repuesto</label>
-                            <input type="text" name="name" class="form-control" placeholder="Ej. Filtro de Aceite" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Marca (Repuesto)</label>
-                            <input type="text" name="brand" class="form-control" placeholder="Ej. Yamaha" required>
-                        </div>
-                        
-                        <!-- NUEVOS CAMPOS: Filtro por Moto y Categoria -->
-                        <div class="mb-3">
-                            <label class="form-label text-warning">Categoría de Repuesto</label>
-                            <select name="part_category" id="partCategoryNew" class="form-control" required>
-                                <option value="">Seleccione una categoría...</option>
-                            </select>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label text-warning">Marca de Moto</label>
-                                <select name="motorcycle_brand" id="motoBrandNew" class="form-control" onchange="updateModels('motoBrandNew', 'motoModelNew')" required>
-                                    <option value="">Seleccione marca...</option>
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label text-warning">Modelo de Moto</label>
-                                <select name="motorcycle_model" id="motoModelNew" class="form-control" required>
-                                    <option value="">Seleccione modelo...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- FIN NUEVOS CAMPOS -->
-
-                        <div class="mb-3">
-                            <label class="form-label">Descripcion (Opcional)</label>
-                            <textarea name="description" class="form-control" rows="2" placeholder="Detalles del producto..."></textarea>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label">Precio ($)</label>
-                                <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label">Stock Inicial</label>
-                                <input type="number" name="stock" class="form-control" placeholder="0" required>
-                            </div>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label">Estante</label>
-                                <input type="text" name="estante" class="form-control" placeholder="Ej. A">
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label">Fila</label>
-                                <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Minimo Programado</label>
-                            <input type="number" name="minimo_programado" class="form-control" value="5" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Codigo de Barras</label>
-                            <input type="text" name="barcode" class="form-control" placeholder="Vacio para autogenerar">
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label">Imagen del Repuesto</label>
-                            <input type="file" name="image" class="form-control" accept=".jpg,.jpeg">
-                            <small class="text-muted mt-2 d-block fw-bold" style="font-size: 0.85rem;">Solo formatos: JPG, JPEG.</small>
-                        </div>
-                        <button type="submit" class="btn btn-accent w-100 rounded-pill fw-bolder py-3 fs-5 shadow-sm">
-                            <i class="bi bi-plus-circle-fill me-2"></i> Guardar Producto
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-            <%
-                int countZero = 0;
-                int countLow = 0;
-                int countMedium = 0;
-                int countHigh = 0;
-                List<Product> productsList = (List<Product>) request.getAttribute("products");
-                if (productsList != null) {
-                    for (Product p : productsList) {
-                        if (p.getStock() == 0) countZero++;
-                        else if (p.getStock() <= 20) countLow++;
-                        else if (p.getStock() <= 50) countMedium++;
-                        else countHigh++;
-                    }
+        <%
+            int countZero = 0;
+            int countLow = 0;
+            int countMedium = 0;
+            int countHigh = 0;
+            List<Product> productsList = (List<Product>) request.getAttribute("products");
+            if (productsList != null) {
+                for (Product p : productsList) {
+                    if (p.getStock() == 0) countZero++;
+                    else if (p.getStock() <= 20) countLow++;
+                    else if (p.getStock() <= 50) countMedium++;
+                    else countHigh++;
                 }
-            %>
-        <div class="col-lg-9 col-md-8">
+            }
+        %>
+        
+        <div class="col-12">
             <div class="action-card h-100 d-flex flex-column">
                 <div class="card-header border-bottom border-secondary pb-3 mb-3 px-4 pt-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <ul class="nav nav-pills nav-tabs-custom gap-2 mb-2 mb-md-0" id="inventoryTabs" role="tablist">
@@ -347,25 +286,21 @@
                             <button class="nav-link active px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="tracker-tab" data-bs-toggle="tab" data-bs-target="#tracker-tab-pane" type="button" role="tab" 
                                     aria-controls="tracker-tab-pane" aria-selected="true">
-                                <i class="bi bi-grid-3x3-gap-fill"></i> Inventory Tracker
+                                <i class="bi bi-grid-3x3-gap-fill"></i> Control de Inventario
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="alert-tab" data-bs-toggle="tab" data-bs-target="#alert-tab-pane" type="button" role="tab" 
                                     aria-controls="alert-tab-pane" aria-selected="false">
-                                <i class="bi bi-columns-gap"></i> Stock Alert
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
-                                    id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery-tab-pane" type="button" role="tab" 
-                                    aria-controls="delivery-tab-pane" aria-selected="false">
-                                <i class="bi bi-truck"></i> Expected Delivery
+                                <i class="bi bi-columns-gap"></i> Alerta de Stock
                             </button>
                         </li>
                     </ul>
                     <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-accent rounded-pill px-4 py-2 fw-bolder d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newProductModal">
+                            <i class="bi bi-plus-circle-fill fs-5"></i> Nuevo Producto
+                        </button>
                         <button class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
                             <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> Carga Masiva
                         </button>
@@ -376,7 +311,7 @@
                 </div>
                 
                 <div class="tab-content flex-grow-1" id="inventoryTabContent">
-                    <!-- TAB 1: Inventory Tracker -->
+                    <!-- TAB 1: Control de Inventario -->
                     <div class="tab-pane fade show active px-3" id="tracker-tab-pane" role="tabpanel" aria-labelledby="tracker-tab" tabindex="0">
                         <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
                             <table class="table align-middle table-borderless table-hover">
@@ -455,7 +390,7 @@
                         </div>
                     </div>
                     
-                    <!-- TAB 2: Stock Alert -->
+                    <!-- TAB 2: Alerta de Stock -->
                     <div class="tab-pane fade p-3" id="alert-tab-pane" role="tabpanel" aria-labelledby="alert-tab" tabindex="0">
                         <div class="row g-3">
                             <!-- Columna Gris: Sin Stock -->
@@ -477,29 +412,32 @@
                                                         String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
                                         %>
                                                         <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #888888 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
-                                                            <div class="d-flex align-items-start gap-3">
-                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
-                                                                <div class="flex-grow-1 min-w-0">
+                                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                                <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
+                                                                <div class="min-w-0">
                                                                     <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
-                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                    <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-muted" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
                                                                     </div>
-                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
-                                                                        <svg id="barcode-card-zero-<%= p.getId() %>"></svg>
-                                                                        <script>
-                                                                            JsBarcode("#barcode-card-zero-<%= p.getId() %>", "<%= p.getBarcode() %>", {
-                                                                                format: "CODE128",
-                                                                                displayValue: true,
-                                                                                height: 18,
-                                                                                fontSize: 10,
-                                                                                fontOptions: "bold",
-                                                                                margin: 0,
-                                                                                background: "#ffffff",
-                                                                                lineColor: "#000000"
-                                                                            });
-                                                                        </script>
-                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center mt-2">
+                                                                <div class="card-barcode-container">
+                                                                    <svg id="barcode-card-zero-<%= p.getId() %>"></svg>
+                                                                    <script>
+                                                                        JsBarcode("#barcode-card-zero-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                            format: "CODE128",
+                                                                            displayValue: true,
+                                                                            height: 25,
+                                                                            width: 1.1,
+                                                                            fontSize: 10,
+                                                                            fontOptions: "bold",
+                                                                            margin: 0,
+                                                                            background: "#ffffff",
+                                                                            lineColor: "#000000"
+                                                                        });
+                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -534,29 +472,32 @@
                                                         String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
                                         %>
                                                         <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #ff4d4d !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
-                                                            <div class="d-flex align-items-start gap-3">
-                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
-                                                                <div class="flex-grow-1 min-w-0">
+                                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                                <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
+                                                                <div class="min-w-0">
                                                                     <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
-                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                    <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-danger" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
                                                                     </div>
-                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
-                                                                        <svg id="barcode-card-low-<%= p.getId() %>"></svg>
-                                                                        <script>
-                                                                            JsBarcode("#barcode-card-low-<%= p.getId() %>", "<%= p.getBarcode() %>", {
-                                                                                format: "CODE128",
-                                                                                displayValue: true,
-                                                                                height: 18,
-                                                                                fontSize: 10,
-                                                                                fontOptions: "bold",
-                                                                                margin: 0,
-                                                                                background: "#ffffff",
-                                                                                lineColor: "#000000"
-                                                                            });
-                                                                        </script>
-                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center mt-2">
+                                                                <div class="card-barcode-container">
+                                                                    <svg id="barcode-card-low-<%= p.getId() %>"></svg>
+                                                                    <script>
+                                                                        JsBarcode("#barcode-card-low-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                            format: "CODE128",
+                                                                            displayValue: true,
+                                                                            height: 25,
+                                                                            width: 1.1,
+                                                                            fontSize: 10,
+                                                                            fontOptions: "bold",
+                                                                            margin: 0,
+                                                                            background: "#ffffff",
+                                                                            lineColor: "#000000"
+                                                                        });
+                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -591,29 +532,32 @@
                                                         String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
                                         %>
                                                         <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #ff8c00 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
-                                                            <div class="d-flex align-items-start gap-3">
-                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
-                                                                <div class="flex-grow-1 min-w-0">
+                                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                                <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
+                                                                <div class="min-w-0">
                                                                     <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
-                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                    <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-warning" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
                                                                     </div>
-                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
-                                                                        <svg id="barcode-card-med-<%= p.getId() %>"></svg>
-                                                                        <script>
-                                                                            JsBarcode("#barcode-card-med-<%= p.getId() %>", "<%= p.getBarcode() %>", {
-                                                                                format: "CODE128",
-                                                                                displayValue: true,
-                                                                                height: 18,
-                                                                                fontSize: 10,
-                                                                                fontOptions: "bold",
-                                                                                margin: 0,
-                                                                                background: "#ffffff",
-                                                                                lineColor: "#000000"
-                                                                            });
-                                                                        </script>
-                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center mt-2">
+                                                                <div class="card-barcode-container">
+                                                                    <svg id="barcode-card-med-<%= p.getId() %>"></svg>
+                                                                    <script>
+                                                                        JsBarcode("#barcode-card-med-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                            format: "CODE128",
+                                                                            displayValue: true,
+                                                                            height: 25,
+                                                                            width: 1.1,
+                                                                            fontSize: 10,
+                                                                            fontOptions: "bold",
+                                                                            margin: 0,
+                                                                            background: "#ffffff",
+                                                                            lineColor: "#000000"
+                                                                        });
+                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -648,29 +592,32 @@
                                                         String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
                                         %>
                                                         <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #28a745 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
-                                                            <div class="d-flex align-items-start gap-3">
-                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
-                                                                <div class="flex-grow-1 min-w-0">
+                                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                                <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
+                                                                <div class="min-w-0">
                                                                     <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
-                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                    <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-success" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
                                                                     </div>
-                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
-                                                                        <svg id="barcode-card-high-<%= p.getId() %>"></svg>
-                                                                        <script>
-                                                                            JsBarcode("#barcode-card-high-<%= p.getId() %>", "<%= p.getBarcode() %>", {
-                                                                                format: "CODE128",
-                                                                                displayValue: true,
-                                                                                height: 18,
-                                                                                fontSize: 10,
-                                                                                fontOptions: "bold",
-                                                                                margin: 0,
-                                                                                background: "#ffffff",
-                                                                                lineColor: "#000000"
-                                                                            });
-                                                                        </script>
-                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center mt-2">
+                                                                <div class="card-barcode-container">
+                                                                    <svg id="barcode-card-high-<%= p.getId() %>"></svg>
+                                                                    <script>
+                                                                        JsBarcode("#barcode-card-high-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                            format: "CODE128",
+                                                                            displayValue: true,
+                                                                            height: 25,
+                                                                            width: 1.1,
+                                                                            fontSize: 10,
+                                                                            fontOptions: "bold",
+                                                                            margin: 0,
+                                                                            background: "#ffffff",
+                                                                            lineColor: "#000000"
+                                                                        });
+                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -687,80 +634,111 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- TAB 3: Expected Delivery -->
-                    <div class="tab-pane fade p-3" id="delivery-tab-pane" role="tabpanel" aria-labelledby="delivery-tab" tabindex="0">
-                        <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
-                            <table class="table align-middle table-borderless table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-uppercase pb-3 pt-3">Producto</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Stock Actual</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Cant. Solicitada</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Estado</th>
-                                        <th class="text-uppercase pb-3 pt-3">Proveedor</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Fecha Esperada</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% 
-                                        int deliveryCount = 0;
-                                        if(productsList != null) {
-                                            for(Product p : productsList) {
-                                                if(p.getStock() <= p.getMinimoProgramado() || p.getStock() <= 20) {
-                                                    deliveryCount++;
-                                                    String supplier = p.getBrand().equalsIgnoreCase("Yamaha") ? "Yamaha Motors Co." : 
-                                                                      p.getBrand().equalsIgnoreCase("Suzuki") ? "Suzuki Autopartes" : 
-                                                                      p.getBrand().equalsIgnoreCase("Honda") ? "Honda Repuestos" : "Distribuidor Asama";
-                                                    int requestedQty = (p.getMinimoProgramado() * 5);
-                                                    if (requestedQty < 50) requestedQty = 50;
-                                                    String status = (p.getId() % 3 == 0) ? "En Tránsito" : 
-                                                                    (p.getId() % 3 == 1) ? "Pendiente Aprobación" : "En Preparación";
-                                                    String statusClass = (p.getId() % 3 == 0) ? "badge-stock-medium" : 
-                                                                         (p.getId() % 3 == 1) ? "badge-stock-low" : "badge-stock-high";
-                                                    String etaDate = "24/06/2026"; 
-                                    %>
-                                                    <tr>
-                                                        <td class="fw-bolder fs-6 py-3"><%= p.getName() %></td>
-                                                        <td class="text-center">
-                                                            <%= getStockBadgeHTML(p.getStock()) %>
-                                                        </td>
-                                                        <td class="text-center fw-bold text-accent fs-5"><%= requestedQty %></td>
-                                                        <td class="text-center">
-                                                            <span class="badge <%= statusClass %> border px-3 py-2 rounded-pill fw-bold fs-6">
-                                                                <%= status %>
-                                                            </span>
-                                                        </td>
-                                                        <td class="fw-bold"><%= supplier %></td>
-                                                        <td class="text-center fw-bold"><%= etaDate %></td>
-                                                    </tr>
-                                    <% 
-                                                }
-                                            }
-                                        }
-                                        if (deliveryCount == 0) {
-                                    %>
-                                        <tr>
-                                            <td colspan="6" class="text-center text-secondary py-5 fw-bolder fs-5">
-                                                <i class="bi bi-truck fs-1 d-block mb-3"></i>No hay entregas pendientes. Todo el stock está al día.
-                                            </td>
-                                        </tr>
-                                    <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+    </div></div>
+</div>
+<!-- Modal Nuevo Producto -->
+<div class="modal fade" id="newProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-secondary shadow-lg">
+      <div class="modal-header border-secondary pb-3">
+        <h5 class="modal-title text-accent fw-bolder fs-4" id="newProductModalLabel">
+            <i class="bi bi-plus-circle-fill me-2"></i> Nuevo Producto
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
+      </div>
+      <form action="inventory" method="POST" enctype="multipart/form-data">
+          <div class="modal-body p-4">
+              <div class="mb-3">
+                  <label class="form-label">Nombre del Repuesto</label>
+                  <input type="text" name="name" class="form-control" placeholder="Ej. Filtro de Aceite" required>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Marca (Repuesto)</label>
+                  <input type="text" name="brand" class="form-control" placeholder="Ej. Yamaha" required>
+              </div>
+              
+              <!-- Categoría y Moto -->
+              <div class="mb-3">
+                  <label class="form-label text-warning">Categoría de Repuesto</label>
+                  <select name="part_category" id="partCategoryNew" class="form-control" required>
+                      <option value="">Seleccione una categoría...</option>
+                  </select>
+              </div>
+              <div class="row g-2 mb-3">
+                  <div class="col-6">
+                      <label class="form-label text-warning">Marca de Moto</label>
+                      <select name="motorcycle_brand" id="motoBrandNew" class="form-control" onchange="updateModels('motoBrandNew', 'motoModelNew')" required>
+                          <option value="">Seleccione marca...</option>
+                      </select>
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label text-warning">Modelo de Moto</label>
+                      <select name="motorcycle_model" id="motoModelNew" class="form-control" required>
+                          <option value="">Seleccione modelo...</option>
+                      </select>
+                  </div>
+              </div>
+
+              <div class="mb-3">
+                  <label class="form-label">Descripción (Opcional)</label>
+                  <textarea name="description" class="form-control" rows="2" placeholder="Detalles del producto..."></textarea>
+              </div>
+              
+              <div class="row g-2 mb-3">
+                  <div class="col-6">
+                      <label class="form-label">Precio ($)</label>
+                      <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label">Stock Inicial</label>
+                      <input type="number" name="stock" class="form-control" placeholder="0" required>
+                  </div>
+              </div>
+              
+              <div class="row g-2 mb-3">
+                  <div class="col-6">
+                      <label class="form-label">Estante</label>
+                      <input type="text" name="estante" class="form-control" placeholder="Ej. A">
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label">Fila</label>
+                      <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
+                  </div>
+              </div>
+              
+              <div class="mb-3">
+                  <label class="form-label">Mínimo Programado</label>
+                  <input type="number" name="minimo_programado" class="form-control" value="5" required>
+              </div>
+              
+              <div class="mb-3">
+                  <label class="form-label">Código de Barras</label>
+                  <input type="text" name="barcode" class="form-control" placeholder="Vacío para autogenerar">
+              </div>
+              
+              <div class="mb-4">
+                  <label class="form-label">Imagen del Repuesto</label>
+                  <input type="file" name="image" class="form-control" accept=".jpg,.jpeg">
+                  <small class="text-muted mt-2 d-block fw-bold" style="font-size: 0.85rem;">Solo formatos: JPG, JPEG.</small>
+              </div>
+          </div>
+          <div class="modal-footer border-secondary pt-3">
+            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold px-4 py-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bolder px-4 py-2">Guardar Producto</button>
+          </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-secondary shadow-lg">
       <div class="modal-header border-secondary pb-3">
-        <h5 class="modal-title text-accent fw-bolder fs-4"><i class="bi bi-pencil-square me-2"></i>Editar Producto</h5>
+        <h5 class="modal-title text-accent fw-bolder fs-4"><i class="bi bi-pencil-square me-2"></i><fmt:message key="inventory.edit_title" /></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
       </div>
       <form action="inventory" method="POST" enctype="multipart/form-data">
@@ -768,73 +746,73 @@
               <input type="hidden" name="action" value="edit">
               <input type="hidden" name="id" id="editId">
               <div class="mb-3">
-                  <label class="form-label">Nombre del Repuesto</label>
+                  <label class="form-label"><fmt:message key="inventory.part_name" /></label>
                   <input type="text" name="name" id="editName" class="form-control" required>
               </div>
               <div class="mb-3">
-                  <label class="form-label">Marca (Repuesto)</label>
+                  <label class="form-label"><fmt:message key="inventory.part_brand" /></label>
                   <input type="text" name="brand" id="editBrand" class="form-control" required>
               </div>
 
               <!-- EDITAR CAMPOS: Filtro por Moto y Categoria -->
               <div class="mb-3">
-                  <label class="form-label text-warning">Categoría de Repuesto</label>
+                  <label class="form-label text-warning"><fmt:message key="inventory.category" /></label>
                   <select name="part_category" id="partCategoryEdit" class="form-control" required>
-                      <option value="">Seleccione una categoría...</option>
+                      <option value=""><fmt:message key="inventory.sel_category" /></option>
                   </select>
               </div>
               <div class="row g-2 mb-3">
                   <div class="col-6">
-                      <label class="form-label text-warning">Marca de Moto</label>
+                      <label class="form-label text-warning"><fmt:message key="inventory.moto_brand" /></label>
                       <select name="motorcycle_brand" id="motoBrandEdit" class="form-control" onchange="updateModels('motoBrandEdit', 'motoModelEdit')" required>
-                          <option value="">Seleccione marca...</option>
+                          <option value=""><fmt:message key="inventory.sel_moto_brand" /></option>
                       </select>
                   </div>
                   <div class="col-6">
-                      <label class="form-label text-warning">Modelo de Moto</label>
+                      <label class="form-label text-warning"><fmt:message key="inventory.moto_model" /></label>
                       <select name="motorcycle_model" id="motoModelEdit" class="form-control" required>
-                          <option value="">Seleccione modelo...</option>
+                          <option value=""><fmt:message key="inventory.sel_moto_model" /></option>
                       </select>
                   </div>
               </div>
               <!-- FIN EDITAR CAMPOS -->
 
               <div class="mb-3">
-                  <label class="form-label">Descripcion</label>
+                  <label class="form-label"><fmt:message key="inventory.edit_desc" /></label>
                   <textarea name="description" id="editDesc" class="form-control" rows="2"></textarea>
               </div>
               <div class="row g-3 mb-3">
                   <div class="col-6">
-                      <label class="form-label">Precio ($)</label>
+                      <label class="form-label"><fmt:message key="inventory.price" /></label>
                       <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required>
                   </div>
                   <div class="col-6">
-                      <label class="form-label">Stock Actual</label>
+                      <label class="form-label"><fmt:message key="inventory.cur_stock" /></label>
                       <input type="number" name="stock" id="editStock" class="form-control" required>
                   </div>
               </div>
               <div class="row g-3 mb-3">
                   <div class="col-6">
-                      <label class="form-label">Estante</label>
+                      <label class="form-label"><fmt:message key="inventory.shelf" /></label>
                       <input type="text" name="estante" id="editEstante" class="form-control">
                   </div>
                   <div class="col-6">
-                      <label class="form-label">Fila</label>
+                      <label class="form-label"><fmt:message key="inventory.row" /></label>
                       <input type="text" name="fila" id="editFila" class="form-control">
                   </div>
               </div>
               <div class="mb-3">
-                  <label class="form-label">Minimo Programado</label>
+                  <label class="form-label"><fmt:message key="inventory.min_prog" /></label>
                   <input type="number" name="minimo_programado" id="editMinimoProgramado" class="form-control" required>
               </div>
               <div class="mb-4">
-                  <label class="form-label">Actualizar Imagen (Opcional)</label>
+                  <label class="form-label"><fmt:message key="inventory.upd_image" /></label>
                   <input type="file" name="image" class="form-control" accept=".jpg,.jpeg">
               </div>
           </div>
           <div class="modal-footer border-secondary pt-3">
-            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold px-4 py-2" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-accent rounded-pill fw-bolder px-4 py-2">Guardar Cambios</button>
+            <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold px-4 py-2" data-bs-dismiss="modal"><fmt:message key="inventory.cancel" /></button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bolder px-4 py-2"><fmt:message key="inventory.save_changes" /></button>
           </div>
       </form>
     </div>
@@ -845,19 +823,19 @@
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-secondary shadow-lg">
       <div class="modal-header border-secondary pb-3">
-        <h5 class="modal-title text-accent fw-bolder fs-4"><i class="bi bi-file-earmark-spreadsheet-fill me-2"></i>Carga Masiva de Inventario</h5>
+        <h5 class="modal-title text-accent fw-bolder fs-4"><i class="bi bi-file-earmark-spreadsheet-fill me-2"></i><fmt:message key="inventory.mass_title" /></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
       </div>
       <div class="modal-body p-4 p-md-5">
           <div class="alert alert-info bg-opacity-10 border-info border-opacity-25 text-info mb-4 rounded-4 p-4 shadow-sm">
               <div class="d-flex align-items-center mb-3">
                   <i class="bi bi-info-circle-fill fs-3 me-3"></i>
-                  <h5 class="fw-bolder mb-0">Instrucciones de Subida</h5>
+                  <h5 class="fw-bolder mb-0"><fmt:message key="inventory.inst_title" /></h5>
               </div>
-              <p class="fw-medium mb-3 fs-6">Sube un archivo <b>.csv</b> (separado por comas o punto y coma). La primera fila se ignorara si detectamos que es una cabecera.</p>
+              <p class="fw-medium mb-3 fs-6"><fmt:message key="inventory.inst_p1" /></p>
               
               <div class="bg-dark bg-opacity-50 p-3 rounded-3 mb-4 border border-info border-opacity-25">
-                  <span class="d-block fw-bold text-white mb-2 small">ORDEN DE COLUMNAS ESPERADO:</span>
+                  <span class="d-block fw-bold text-white mb-2 small"><fmt:message key="inventory.col_order" /></span>
                   <code class="fs-6" style="color: #00e5ff; font-weight: 700; word-break: break-all;">Nombre, Marca, Descripcion, Precio, Stock, Estante, Fila, MinimoProgramado, CodigoBarras</code>
               </div>
               
@@ -867,29 +845,29 @@
                           <i class="bi bi-filetype-csv fs-2"></i>
                       </div>
                       <div class="text-start">
-                          <h6 class="mb-1 fw-bolder text-white fs-5">Plantilla Base</h6>
-                          <span class="text-secondary fw-medium small">Descarga este archivo para editarlo y subirlo facilmente.</span>
+                          <h6 class="mb-1 fw-bolder text-white fs-5"><fmt:message key="inventory.template_title" /></h6>
+                          <span class="text-secondary fw-medium small"><fmt:message key="inventory.template_desc" /></span>
                       </div>
                   </div>
                   <button type="button" onclick="downloadTemplateCsv()" class="btn btn-outline-info rounded-pill px-4 py-2 fw-bolder shadow-sm w-100 w-md-auto">
-                      <i class="bi bi-download me-2"></i> Descargar CSV
+                      <i class="bi bi-download me-2"></i> <fmt:message key="inventory.download_csv" />
                   </button>
               </div>
               
-              <p class="text-muted fw-bold small mt-4 mb-0 text-center"><i class="bi bi-exclamation-triangle-fill me-1"></i> Los campos Nombre, Marca, Precio y Stock son obligatorios. El codigo de barras se autogenerara si lo dejas vacio.</p>
+              <p class="text-muted fw-bold small mt-4 mb-0 text-center"><i class="bi bi-exclamation-triangle-fill me-1"></i> <fmt:message key="inventory.req_fields" /></p>
           </div>
           
           <form id="massUploadForm">
               <div class="mb-2">
-                  <label class="form-label fs-5">Seleccionar Archivo de Inventario</label>
+                  <label class="form-label fs-5"><fmt:message key="inventory.sel_file" /></label>
                   <input type="file" id="csvFileInput" class="form-control form-control-lg p-3 fw-bold" accept=".csv" required>
               </div>
           </form>
       </div>
       <div class="modal-footer border-secondary pt-3 pb-4 px-4">
-        <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold px-4 py-2" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold px-4 py-2" data-bs-dismiss="modal"><fmt:message key="inventory.cancel" /></button>
         <button type="button" class="btn btn-accent rounded-pill fw-bolder px-5 py-2 fs-6 shadow-sm" onclick="uploadCsv()">
-            <i class="bi bi-cloud-upload-fill me-2"></i> Subir Inventario
+            <i class="bi bi-cloud-upload-fill me-2"></i> <fmt:message key="inventory.upload_btn" />
         </button>
       </div>
     </div>
@@ -948,7 +926,7 @@
                 modelSelect.appendChild(opt);
             });
             let genOpt = document.createElement('option');
-            genOpt.value = 'Genérico / Todos'; genOpt.textContent = 'Genérico / Todos';
+            genOpt.value = 'Genérico / Todos'; genOpt.textContent = '<fmt:message key="inventory.generic_all" />';
             if ('Genérico / Todos' === selectedModel) genOpt.selected = true;
             modelSelect.appendChild(genOpt);
         }
@@ -975,7 +953,7 @@
     function uploadCsv() {
         const fileInput = document.getElementById('csvFileInput');
         if (!fileInput.files.length) {
-            Swal.fire({ icon: 'warning', title: 'Archivo faltante', text: 'Por favor selecciona un archivo CSV.', background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
+            Swal.fire({ icon: 'warning', title: '<fmt:message key="inventory.miss_file" />', text: '<fmt:message key="inventory.miss_file_desc" />', background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
             return;
         }
 
@@ -985,8 +963,8 @@
         bootstrap.Modal.getInstance(document.getElementById('massUploadModal')).hide();
 
         Swal.fire({
-            title: 'Procesando inventario...',
-            text: 'Analizando y guardando registros en la base de datos',
+            title: '<fmt:message key="inventory.processing" />',
+            text: '<fmt:message key="inventory.processing_desc" />',
             allowOutsideClick: false,
             background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24',
             color: document.body.classList.contains('light-mode') ? '#333' : '#fff',
@@ -1000,15 +978,15 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                Swal.fire({ icon: 'success', title: '¡Carga Finalizada!', text: data.message, background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' }).then(() => {
+                Swal.fire({ icon: 'success', title: '<fmt:message key="inventory.upload_success" />', text: data.message, background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' }).then(() => {
                     location.reload();
                 });
             } else {
-                Swal.fire({ icon: 'error', title: 'Error', text: data.message, background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
+                Swal.fire({ icon: 'error', title: '<fmt:message key="inventory.error" />', text: data.message, background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
             }
         })
         .catch(err => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Error de comunicacion con el servidor.', background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
+            Swal.fire({ icon: 'error', title: '<fmt:message key="inventory.error" />', text: '<fmt:message key="inventory.error_comm" />', background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333' : '#fff' });
         });
     }
 
