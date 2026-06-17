@@ -259,7 +259,7 @@ function downloadPdfForDate(date) {
         const doc = new jsPDF();
 
         doc.setFontSize(18);
-        doc.text('<fmt:message key="sales_history.report_title" />' + date, 14, 22);
+        doc.text('<fmt:message key="sales_history.report_title" />' + date, 14, 22); 
         doc.setFontSize(11);
         doc.setTextColor(100);
         doc.text('Asama Moto Parts', 14, 30);

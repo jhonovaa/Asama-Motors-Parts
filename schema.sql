@@ -158,3 +158,17 @@ CREATE TABLE audit_logs (
     details TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 12. Online Orders Table (Historial y Notificaciones de Pedidos Web)
+CREATE TABLE online_orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL REFERENCES users(id),
+    total_amount DECIMAL(10, 2) NOT NULL,
+    shipping_cost DECIMAL(10, 2) DEFAULT 0.00,
+    items_json TEXT NOT NULL,
+    status VARCHAR(50) DEFAULT 'PENDIENTE',
+    is_read_admin BOOLEAN DEFAULT FALSE,
+    is_read_cashier BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

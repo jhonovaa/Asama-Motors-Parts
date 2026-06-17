@@ -44,6 +44,35 @@
             window.history.replaceState({path:url.href}, '', url.href);
         }
     });
+
+    const savedTheme = localStorage.getItem('asama_theme') || 'dark';
+    if(savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeIcon').classList.replace('bi-sun-fill', 'bi-moon-fill');
+    }
+
+    <% if(navRole == 1 || navRole == 4) { %>
+    function checkNotifications() {
+        fetch('api/notifications')
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) return;
+                const badge = document.getElementById('orderNotificationBadge');
+                if(badge) {
+                    if(data.unreadCount > 0) {
+                        badge.innerText = data.unreadCount;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }).catch(console.error);
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        checkNotifications();
+        setInterval(checkNotifications, 15000);
+    });
+    <% } %>
 </script>
 <% } %>
 
@@ -111,6 +140,17 @@
             </ul>
             
             <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
+                <% if(navRole == 1 || navRole == 4) { %>
+                <div class="position-relative">
+                    <a href="online_orders.jsp" class="btn btn-icon rounded-circle transition-all d-flex align-items-center justify-content-center" title="<fmt:message key='nav.online_orders'/>">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                        <span id="orderNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                            0
+                        </span>
+                    </a>
+                </div>
+                <% } %>
+                
                 <div class="dropdown">
                     <button class="btn btn-icon rounded-circle transition-all dropdown-toggle d-flex align-items-center justify-content-center" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="<fmt:message key='nav.lang_title'/>">
                         <i class="bi bi-globe fs-5"></i>
@@ -185,5 +225,28 @@
 
     // Start timer on page load
     resetTimer();
+
+    <% if(navRole == 1 || navRole == 4) { %>
+    function checkNotifications() {
+        fetch('api/notifications')
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) return;
+                const badge = document.getElementById('orderNotificationBadge');
+                if(badge) {
+                    if(data.unreadCount > 0) {
+                        badge.innerText = data.unreadCount;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }).catch(console.error);
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        checkNotifications();
+        setInterval(checkNotifications, 15000);
+    });
+    <% } %>
 </script>
 <% } %>
