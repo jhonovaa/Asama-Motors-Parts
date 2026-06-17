@@ -9,6 +9,31 @@
         return;
     }
 %>
+<%!
+    public String getStockBadgeHTML(int stock) {
+        if (stock == 0) {
+            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6'><i class='bi bi-slash-circle me-1'></i>" + stock + "</span>";
+        } else if (stock <= 20) {
+            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6'><i class='bi bi-exclamation-triangle me-1'></i>" + stock + "</span>";
+        } else if (stock <= 50) {
+            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6'><i class='bi bi-info-circle me-1'></i>" + stock + "</span>";
+        } else {
+            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6'><i class='bi bi-check-circle me-1'></i>" + stock + "</span>";
+        }
+    }
+
+    public String getStockAlertBadgeHTML(int stock) {
+        if (stock == 0) {
+            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-zero me-2'></span>Sin Stock</span>";
+        } else if (stock <= 20) {
+            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-low me-2'></span>Stock Bajo</span>";
+        } else if (stock <= 50) {
+            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-medium me-2'></span>Stock Medio</span>";
+        } else {
+            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-high me-2'></span>Con Stock</span>";
+        }
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -120,6 +145,91 @@
             display: inline-block;
         }
         .inventory-barcode-container svg { height: 38px; width: auto; }
+
+        /* Estilos de Stock Personalizados */
+        .badge-stock-zero {
+            background-color: rgba(108, 117, 125, 0.15) !important;
+            color: #a0a0a0 !important;
+            border: 1px solid rgba(108, 117, 125, 0.3) !important;
+        }
+        body.light-mode .badge-stock-zero {
+            background-color: rgba(108, 117, 125, 0.15) !important;
+            color: #495057 !important;
+            border-color: rgba(108, 117, 125, 0.3) !important;
+        }
+
+        .badge-stock-low {
+            background-color: rgba(220, 53, 69, 0.15) !important;
+            color: #ff4d4d !important;
+            border: 1px solid rgba(220, 53, 69, 0.3) !important;
+        }
+        body.light-mode .badge-stock-low {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            color: #dc3545 !important;
+            border-color: rgba(220, 53, 69, 0.25) !important;
+        }
+
+        .badge-stock-medium {
+            background-color: rgba(255, 140, 0, 0.15) !important;
+            color: #ff8c00 !important;
+            border: 1px solid rgba(255, 140, 0, 0.3) !important;
+        }
+        body.light-mode .badge-stock-medium {
+            background-color: rgba(255, 140, 0, 0.1) !important;
+            color: #fd7e14 !important;
+            border-color: rgba(255, 140, 0, 0.25) !important;
+        }
+
+        .badge-stock-high {
+            background-color: rgba(40, 167, 69, 0.15) !important;
+            color: #28a745 !important;
+            border: 1px solid rgba(40, 167, 69, 0.3) !important;
+        }
+        body.light-mode .badge-stock-high {
+            background-color: rgba(40, 167, 69, 0.1) !important;
+            color: #198754 !important;
+            border-color: rgba(40, 167, 69, 0.25) !important;
+        }
+
+        .stock-dot-zero, .stock-dot-low, .stock-dot-medium, .stock-dot-high {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .stock-dot-zero { background-color: #888888; box-shadow: 0 0 5px rgba(136, 136, 136, 0.5); }
+        .stock-dot-low { background-color: #ff4d4d; box-shadow: 0 0 5px rgba(255, 77, 77, 0.5); }
+        .stock-dot-medium { background-color: #ff8c00; box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
+        .stock-dot-high { background-color: #28a745; box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+
+        /* Estilos para Pestañas Modernas */
+        .nav-tabs-custom .nav-link {
+            color: var(--text-color) !important;
+            border: 2px solid rgba(255, 255, 255, 0.15) !important;
+            background: transparent !important;
+            transition: all 0.3s ease;
+        }
+        body.light-mode .nav-tabs-custom .nav-link {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        .nav-tabs-custom .nav-link.active {
+            background-color: var(--accent-orange) !important;
+            color: #121417 !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        
+        /* Columnas de Alerta de Stock (Grid) */
+        .stock-column-card {
+            background: rgba(30, 32, 36, 0.4);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        body.light-mode .stock-column-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
     </style>
 </head>
 <body>
@@ -214,98 +324,432 @@
             </div>
         </div>
 
+            <%
+                int countZero = 0;
+                int countLow = 0;
+                int countMedium = 0;
+                int countHigh = 0;
+                List<Product> productsList = (List<Product>) request.getAttribute("products");
+                if (productsList != null) {
+                    for (Product p : productsList) {
+                        if (p.getStock() == 0) countZero++;
+                        else if (p.getStock() <= 20) countLow++;
+                        else if (p.getStock() <= 50) countMedium++;
+                        else countHigh++;
+                    }
+                }
+            %>
         <div class="col-lg-9 col-md-8">
             <div class="action-card h-100 d-flex flex-column">
-                <div class="card-header border-bottom border-secondary pb-3 mb-2 px-4 pt-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <h5 class="fw-bolder mb-0 text-accent fs-4"><i class="bi bi-card-list me-2"></i>Inventario Disponible</h5>
+                <div class="card-header border-bottom border-secondary pb-3 mb-3 px-4 pt-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <ul class="nav nav-pills nav-tabs-custom gap-2 mb-2 mb-md-0" id="inventoryTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
+                                    id="tracker-tab" data-bs-toggle="tab" data-bs-target="#tracker-tab-pane" type="button" role="tab" 
+                                    aria-controls="tracker-tab-pane" aria-selected="true">
+                                <i class="bi bi-grid-3x3-gap-fill"></i> Inventory Tracker
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
+                                    id="alert-tab" data-bs-toggle="tab" data-bs-target="#alert-tab-pane" type="button" role="tab" 
+                                    aria-controls="alert-tab-pane" aria-selected="false">
+                                <i class="bi bi-columns-gap"></i> Stock Alert
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
+                                    id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery-tab-pane" type="button" role="tab" 
+                                    aria-controls="delivery-tab-pane" aria-selected="false">
+                                <i class="bi bi-truck"></i> Expected Delivery
+                            </button>
+                        </li>
+                    </ul>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
                             <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> Carga Masiva
                         </button>
                         <span class="badge bg-secondary bg-opacity-25 text-light px-4 py-2 rounded-pill fw-bolder fs-6 border border-secondary border-opacity-50">
-                            Total: <%= request.getAttribute("products") != null ? ((List<Product>)request.getAttribute("products")).size() : 0 %>
+                            Total: <%= productsList != null ? productsList.size() : 0 %>
                         </span>
                     </div>
                 </div>
                 
-                <div class="table-responsive flex-grow-1 px-3" style="max-height: 65vh; overflow-y: auto;">
-                    <table class="table align-middle table-borderless">
-                        <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
-                            <tr>
-                                <th class="text-uppercase pb-3 pt-3">Foto</th>
-                                <th class="text-uppercase pb-3 pt-3">Repuesto</th>
-                                <th class="text-uppercase pb-3 pt-3">Marca</th>
-                                <th class="text-uppercase pb-3 pt-3 text-center">Stock</th>
-                                <th class="text-uppercase pb-3 pt-3 text-center">Ubicacion</th>
-                                <th class="text-uppercase pb-3 pt-3 text-end">Precio</th>
-                                <th class="text-uppercase pb-3 pt-3 text-center">Codigo</th>
-                                <th class="text-uppercase pb-3 pt-3 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% 
-                                List<Product> list = (List<Product>) request.getAttribute("products");
-                                if(list != null && !list.isEmpty()) {
-                                    for(Product p : list) {
-                                        String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
-                            %>
-                            <tr>
-                                <td class="py-3">
-                                    <img src="<%= img %>" width="55" height="55" class="rounded-3 shadow-sm" style="object-fit:cover; border: 2px solid var(--card-border);">
-                                </td>
-                                <td class="fw-bolder fs-5 text-wrap" style="max-width: 250px;"><%= p.getName() %></td>
-                                <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-2 px-3 fw-bold fs-6"><%= p.getBrand() %></span></td>
-                                <td class="text-center">
-                                    <% if(p.getStock() <= 20) { %>
-                                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
-                                    <% } else if(p.getStock() <= 50) { %>
-                                        <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
-                                    <% } else { %>
-                                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-2 py-1 fs-6"><%= p.getStock() %></span>
+                <div class="tab-content flex-grow-1" id="inventoryTabContent">
+                    <!-- TAB 1: Inventory Tracker -->
+                    <div class="tab-pane fade show active px-3" id="tracker-tab-pane" role="tabpanel" aria-labelledby="tracker-tab" tabindex="0">
+                        <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
+                            <table class="table align-middle table-borderless table-hover">
+                                <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
+                                    <tr>
+                                        <th class="text-uppercase pb-3 pt-3">Foto</th>
+                                        <th class="text-uppercase pb-3 pt-3">Repuesto</th>
+                                        <th class="text-uppercase pb-3 pt-3">Marca</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Código de Barras</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Cantidad</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Alerta de Stock</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Ubicación</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-end">Precio</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% 
+                                        if(productsList != null && !productsList.isEmpty()) {
+                                            for(Product p : productsList) {
+                                                String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
+                                    %>
+                                    <tr>
+                                        <td class="py-3">
+                                            <img src="<%= img %>" width="55" height="55" class="rounded-3 shadow-sm" style="object-fit:cover; border: 2px solid var(--card-border);">
+                                        </td>
+                                        <td class="fw-bolder fs-5 text-wrap" style="max-width: 250px;"><%= p.getName() %></td>
+                                        <td><span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-2 px-3 fw-bold fs-6"><%= p.getBrand() %></span></td>
+                                        <td class="text-center">
+                                            <div class="inventory-barcode-container shadow-sm">
+                                                <svg id="barcode-<%= p.getId() %>"></svg>
+                                                <script>
+                                                    JsBarcode("#barcode-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                        format: "CODE128",
+                                                        displayValue: true,
+                                                        height: 30,
+                                                        fontSize: 13,
+                                                        fontOptions: "bold",
+                                                        margin: 0,
+                                                        background: "#ffffff",
+                                                        lineColor: "#000000"
+                                                    });
+                                                </script>
+                                            </div>
+                                        </td>
+                                        <td class="text-center fw-bold fs-5">
+                                            <%= p.getStock() %>
+                                        </td>
+                                        <td class="text-center">
+                                            <%= getStockAlertBadgeHTML(p.getStock()) %>
+                                        </td>
+                                        <td class="text-center fw-bolder fs-6 text-secondary">
+                                            <%= (p.getEstante() != null ? p.getEstante() : "-") %> / <%= (p.getFila() != null ? p.getFila() : "-") %>
+                                        </td>
+                                        <td class="fw-bolder text-end text-accent fs-5">$<%= String.format("%.2f", p.getPrice()) %></td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
+                                                    <i class="bi bi-pencil-fill fs-5"></i>
+                                                </button>
+                                                <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="id" value="<%= p.getId() %>">
+                                                    <button type="submit" class="btn btn-outline-danger rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" title="Eliminar"><i class="bi bi-trash-fill fs-5"></i></button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <%      }
+                                        } else {
+                                            out.print("<tr><td colspan='9' class='text-center text-secondary py-5 fw-bolder fs-5'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario está vacío.</td></tr>");
+                                        }
+                                    %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- TAB 2: Stock Alert -->
+                    <div class="tab-pane fade p-3" id="alert-tab-pane" role="tabpanel" aria-labelledby="alert-tab" tabindex="0">
+                        <div class="row g-3">
+                            <!-- Columna Gris: Sin Stock -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stock-column-card p-3 rounded-4 h-100 d-flex flex-column" style="min-height: 500px; border-top: 5px solid #888888 !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center">
+                                            <span class="stock-dot-zero me-2"></span> Sin Stock
+                                        </span>
+                                        <span class="badge bg-secondary rounded-pill text-white fw-bold"><%= countZero %></span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1" style="max-height: 52vh;">
+                                        <% 
+                                            boolean hasZero = false;
+                                            if(productsList != null) {
+                                                for(Product p : productsList) {
+                                                    if(p.getStock() == 0) {
+                                                        hasZero = true;
+                                                        String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
+                                        %>
+                                                        <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #888888 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
+                                                            <div class="d-flex align-items-start gap-3">
+                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
+                                                                <div class="flex-grow-1 min-w-0">
+                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                        <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
+                                                                        <span class="fw-bold text-muted" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
+                                                                    </div>
+                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
+                                                                        <svg id="barcode-card-zero-<%= p.getId() %>"></svg>
+                                                                        <script>
+                                                                            JsBarcode("#barcode-card-zero-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                                format: "CODE128",
+                                                                                displayValue: true,
+                                                                                height: 18,
+                                                                                fontSize: 10,
+                                                                                fontOptions: "bold",
+                                                                                margin: 0,
+                                                                                background: "#ffffff",
+                                                                                lineColor: "#000000"
+                                                                            });
+                                                                        </script>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        <% 
+                                                    }
+                                                }
+                                            }
+                                            if(!hasZero) {
+                                        %>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Rojo: Stock Bajo -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stock-column-card p-3 rounded-4 h-100 d-flex flex-column" style="min-height: 500px; border-top: 5px solid #ff4d4d !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center">
+                                            <span class="stock-dot-low me-2"></span> Stock Bajo (<= 20)
+                                        </span>
+                                        <span class="badge bg-danger rounded-pill text-white fw-bold"><%= countLow %></span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1" style="max-height: 52vh;">
+                                        <% 
+                                            boolean hasLow = false;
+                                            if(productsList != null) {
+                                                for(Product p : productsList) {
+                                                    if(p.getStock() > 0 && p.getStock() <= 20) {
+                                                        hasLow = true;
+                                                        String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
+                                        %>
+                                                        <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #ff4d4d !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
+                                                            <div class="d-flex align-items-start gap-3">
+                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
+                                                                <div class="flex-grow-1 min-w-0">
+                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                        <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
+                                                                        <span class="fw-bold text-danger" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
+                                                                    </div>
+                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
+                                                                        <svg id="barcode-card-low-<%= p.getId() %>"></svg>
+                                                                        <script>
+                                                                            JsBarcode("#barcode-card-low-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                                format: "CODE128",
+                                                                                displayValue: true,
+                                                                                height: 18,
+                                                                                fontSize: 10,
+                                                                                fontOptions: "bold",
+                                                                                margin: 0,
+                                                                                background: "#ffffff",
+                                                                                lineColor: "#000000"
+                                                                            });
+                                                                        </script>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        <% 
+                                                    }
+                                                }
+                                            }
+                                            if(!hasLow) {
+                                        %>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Anaranjado: Stock Medio -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stock-column-card p-3 rounded-4 h-100 d-flex flex-column" style="min-height: 500px; border-top: 5px solid #ff8c00 !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center">
+                                            <span class="stock-dot-medium me-2"></span> Stock Medio (21-50)
+                                        </span>
+                                        <span class="badge rounded-pill text-white fw-bold" style="background-color: #ff8c00;"><%= countMedium %></span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1" style="max-height: 52vh;">
+                                        <% 
+                                            boolean hasMedium = false;
+                                            if(productsList != null) {
+                                                for(Product p : productsList) {
+                                                    if(p.getStock() >= 21 && p.getStock() <= 50) {
+                                                        hasMedium = true;
+                                                        String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
+                                        %>
+                                                        <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #ff8c00 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
+                                                            <div class="d-flex align-items-start gap-3">
+                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
+                                                                <div class="flex-grow-1 min-w-0">
+                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                        <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
+                                                                        <span class="fw-bold text-warning" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
+                                                                    </div>
+                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
+                                                                        <svg id="barcode-card-med-<%= p.getId() %>"></svg>
+                                                                        <script>
+                                                                            JsBarcode("#barcode-card-med-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                                format: "CODE128",
+                                                                                displayValue: true,
+                                                                                height: 18,
+                                                                                fontSize: 10,
+                                                                                fontOptions: "bold",
+                                                                                margin: 0,
+                                                                                background: "#ffffff",
+                                                                                lineColor: "#000000"
+                                                                            });
+                                                                        </script>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        <% 
+                                                    }
+                                                }
+                                            }
+                                            if(!hasMedium) {
+                                        %>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Verde: Con Stock -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="stock-column-card p-3 rounded-4 h-100 d-flex flex-column" style="min-height: 500px; border-top: 5px solid #28a745 !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center">
+                                            <span class="stock-dot-high me-2"></span> Con Stock (> 50)
+                                        </span>
+                                        <span class="badge bg-success rounded-pill text-white fw-bold"><%= countHigh %></span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1" style="max-height: 52vh;">
+                                        <% 
+                                            boolean hasHigh = false;
+                                            if(productsList != null) {
+                                                for(Product p : productsList) {
+                                                    if(p.getStock() > 50) {
+                                                        hasHigh = true;
+                                                        String img = (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) ? p.getImageUrl() : "https://via.placeholder.com/50x50?text=No+Img";
+                                        %>
+                                                        <div class="card p-3 border-0 shadow-sm position-relative" style="background: var(--card-bg); border-radius: 12px; border-left: 4px solid #28a745 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;">
+                                                            <div class="d-flex align-items-start gap-3">
+                                                                <img src="<%= img %>" width="45" height="45" class="rounded-2" style="object-fit: cover;">
+                                                                <div class="flex-grow-1 min-w-0">
+                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                                        <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
+                                                                        <span class="fw-bold text-success" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
+                                                                    </div>
+                                                                    <div class="inventory-barcode-container shadow-sm p-1 rounded bg-white d-inline-block">
+                                                                        <svg id="barcode-card-high-<%= p.getId() %>"></svg>
+                                                                        <script>
+                                                                            JsBarcode("#barcode-card-high-<%= p.getId() %>", "<%= p.getBarcode() %>", {
+                                                                                format: "CODE128",
+                                                                                displayValue: true,
+                                                                                height: 18,
+                                                                                fontSize: 10,
+                                                                                fontOptions: "bold",
+                                                                                margin: 0,
+                                                                                background: "#ffffff",
+                                                                                lineColor: "#000000"
+                                                                            });
+                                                                        </script>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        <% 
+                                                    }
+                                                }
+                                            }
+                                            if(!hasHigh) {
+                                        %>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- TAB 3: Expected Delivery -->
+                    <div class="tab-pane fade p-3" id="delivery-tab-pane" role="tabpanel" aria-labelledby="delivery-tab" tabindex="0">
+                        <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
+                            <table class="table align-middle table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase pb-3 pt-3">Producto</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Stock Actual</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Cant. Solicitada</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Estado</th>
+                                        <th class="text-uppercase pb-3 pt-3">Proveedor</th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center">Fecha Esperada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% 
+                                        int deliveryCount = 0;
+                                        if(productsList != null) {
+                                            for(Product p : productsList) {
+                                                if(p.getStock() <= p.getMinimoProgramado() || p.getStock() <= 20) {
+                                                    deliveryCount++;
+                                                    String supplier = p.getBrand().equalsIgnoreCase("Yamaha") ? "Yamaha Motors Co." : 
+                                                                      p.getBrand().equalsIgnoreCase("Suzuki") ? "Suzuki Autopartes" : 
+                                                                      p.getBrand().equalsIgnoreCase("Honda") ? "Honda Repuestos" : "Distribuidor Asama";
+                                                    int requestedQty = (p.getMinimoProgramado() * 5);
+                                                    if (requestedQty < 50) requestedQty = 50;
+                                                    String status = (p.getId() % 3 == 0) ? "En Tránsito" : 
+                                                                    (p.getId() % 3 == 1) ? "Pendiente Aprobación" : "En Preparación";
+                                                    String statusClass = (p.getId() % 3 == 0) ? "badge-stock-medium" : 
+                                                                         (p.getId() % 3 == 1) ? "badge-stock-low" : "badge-stock-high";
+                                                    String etaDate = "24/06/2026"; 
+                                    %>
+                                                    <tr>
+                                                        <td class="fw-bolder fs-6 py-3"><%= p.getName() %></td>
+                                                        <td class="text-center">
+                                                            <%= getStockBadgeHTML(p.getStock()) %>
+                                                        </td>
+                                                        <td class="text-center fw-bold text-accent fs-5"><%= requestedQty %></td>
+                                                        <td class="text-center">
+                                                            <span class="badge <%= statusClass %> border px-3 py-2 rounded-pill fw-bold fs-6">
+                                                                <%= status %>
+                                                            </span>
+                                                        </td>
+                                                        <td class="fw-bold"><%= supplier %></td>
+                                                        <td class="text-center fw-bold"><%= etaDate %></td>
+                                                    </tr>
+                                    <% 
+                                                }
+                                            }
+                                        }
+                                        if (deliveryCount == 0) {
+                                    %>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-secondary py-5 fw-bolder fs-5">
+                                                <i class="bi bi-truck fs-1 d-block mb-3"></i>No hay entregas pendientes. Todo el stock está al día.
+                                            </td>
+                                        </tr>
                                     <% } %>
-                                </td>
-                                <td class="text-center fw-bolder fs-6 text-secondary">
-                                    <%= (p.getEstante() != null ? p.getEstante() : "-") %> / <%= (p.getFila() != null ? p.getFila() : "-") %>
-                                </td>
-                                <td class="fw-bolder text-end text-accent fs-5">$<%= String.format("%.2f", p.getPrice()) %></td>
-                                <td class="text-center">
-                                    <div class="inventory-barcode-container shadow-sm">
-                                        <svg id="barcode-<%= p.getId() %>"></svg>
-                                        <script>
-                                            JsBarcode("#barcode-<%= p.getId() %>", "<%= p.getBarcode() %>", {
-                                                format: "CODE128",
-                                                displayValue: true,
-                                                height: 30,
-                                                fontSize: 13,
-                                                fontOptions: "bold",
-                                                margin: 0,
-                                                background: "#ffffff",
-                                                lineColor: "#000000"
-                                            });
-                                        </script>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-
-                                    <div class="d-flex justify-content-center gap-3">
-                                        <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
-                                            <i class="bi bi-pencil-fill fs-5"></i>
-                                        </button>
-                                        <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="id" value="<%= p.getId() %>">
-                                            <button type="submit" class="btn btn-outline-danger rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" title="Eliminar"><i class="bi bi-trash-fill fs-5"></i></button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            <%      }
-                                } else {
-                                    out.print("<tr><td colspan='8' class='text-center text-secondary py-5 fw-bolder fs-5'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario esta vacio.</td></tr>");
-                                }
-                            %>
-                        </tbody>
-                    </table>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
