@@ -44,6 +44,7 @@
         double totalPresencial = 0;
         double totalVirtual = 0;
         double totalGeneral = 0;
+        double totalEgresos = 0;
         int productosVendidos = 0;
 
         try (Connection conn = DbConnection.getConnection();
@@ -59,31 +60,62 @@
             rs = stmt.executeQuery("SELECT SUM(quantity) FROM sales");
             if(rs.next()) productosVendidos = rs.getInt(1);
 
+            rs = stmt.executeQuery("SELECT SUM(amount) FROM expenses");
+            if(rs.next()) totalEgresos = rs.getDouble(1);
+
             totalGeneral = totalPresencial + totalVirtual;
         } catch(Exception e) {}
+        
+        double balanceNeto = totalGeneral - totalEgresos;
     %>
 
+    <!-- Alert Messages -->
+    <% if(request.getParameter("success") != null) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <%= request.getParameter("success") %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    <% if(request.getParameter("error") != null) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getParameter("error") %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
     <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="dashboard-stats">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-wallet2 text-danger"></i> Ingresos Totales</h6>
+        <div class="col-md-4">
+            <div class="dashboard-stats" style="border-left-color: #2196F3;">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-cash-stack text-primary"></i> Ingresos Totales</h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalGeneral) %></h3>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+            <div class="dashboard-stats" style="border-left-color: #f44336;">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-graph-down-arrow text-danger"></i> Egresos Totales</h6>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalEgresos) %></h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-stats" style="border-left-color: <%= balanceNeto >= 0 ? "#4caf50" : "#f44336" %>;">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-bank text-success"></i> Balance Neto</h6>
+                <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", balanceNeto) %></h3>
+            </div>
+        </div>
+        <div class="col-md-4">
             <div class="dashboard-stats" style="border-left-color: #ff9800;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-shop text-warning"></i> Físico (Caja)</h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalPresencial) %></h3>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="dashboard-stats" style="border-left-color: #4caf50;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-globe text-success"></i> Virtual (Online)</h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalVirtual) %></h3>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="dashboard-stats" style="border-left-color: #03a9f4;">
+        <div class="col-md-4">
+            <div class="dashboard-stats" style="border-left-color: #9c27b0;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-box-seam text-info"></i> Unidades Vendidas</h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);"><%= productosVendidos %></h3>
             </div>
@@ -340,5 +372,6 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

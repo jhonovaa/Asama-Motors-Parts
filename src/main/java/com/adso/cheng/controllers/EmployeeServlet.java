@@ -188,7 +188,7 @@ public class EmployeeServlet extends HttpServlet {
         String fileName = userId + ".jpg";
         filePart.write(uploadPath + File.separator + fileName);
         
-        // Also write to deployed directory for immediate UI access
+
         String deployUploadPath = request.getServletContext().getRealPath("/resources/fotos/empleados");
         if (deployUploadPath != null) {
             File deployDir = new File(deployUploadPath);
