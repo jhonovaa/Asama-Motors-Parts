@@ -158,3 +158,13 @@ CREATE TABLE audit_logs (
     details TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 12. Expenses Table (Egresos y Compras Ficticias)
+CREATE TABLE expenses (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    expense_type VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    expense_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

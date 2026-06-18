@@ -89,6 +89,98 @@
             </div>
         </div>
     </div>
+    
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#expenseModal">
+            <i class="bi bi-dash-circle"></i> Registrar Gasto / Compra
+        </button>
+    </div>
+
+    <!-- Modal para Egresos -->
+    <div class="modal fade" id="expenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form action="add-expense" method="post" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Egreso o Compra Ficticia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Egreso</label>
+                        <select class="form-select" name="expense_type" required>
+                            <option value="GASTO_OPERATIVO">Gasto Operativo (Salida de Caja)</option>
+                            <option value="COMPRA_FICTICIA">Compra Ficticia a Proveedor</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="description" rows="3" required placeholder="Ej: Pago de luz, Compra de repuestos genéricos..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Monto ($)</label>
+                        <input type="number" class="form-control" name="amount" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Registrar Egreso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Egresos Table -->
+    <div class="card-custom shadow-sm mb-4 border-danger">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-danger"><i class="bi bi-graph-down-arrow"></i> Historial de Egresos y Compras</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 400px;">
+                <table class="table table-borderless table-hover m-0 table-sm">
+                    <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
+                        <tr>
+                            <th class="text-secondary">Fecha</th>
+                            <th class="text-secondary">Tipo</th>
+                            <th class="text-secondary">Descripción</th>
+                            <th class="text-secondary">Registrado por</th>
+                            <th class="text-secondary text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%
+                            try (Connection conn = DbConnection.getConnection();
+                                 Statement stmt = conn.createStatement();
+                                 ResultSet rs = stmt.executeQuery(
+                                    "SELECT e.expense_date, e.expense_type, e.description, u.full_name as user_name, e.amount " +
+                                    "FROM expenses e " +
+                                    "JOIN users u ON e.user_id = u.id " +
+                                    "ORDER BY e.expense_date DESC"
+                                 )) {
+                                boolean hasExpenses = false;
+                                while(rs.next()) {
+                                    hasExpenses = true;
+                        %>
+                        <tr>
+                            <td><%= rs.getTimestamp("expense_date").toString().substring(0, 16) %></td>
+                            <td><span class="badge <%= rs.getString("expense_type").equals("COMPRA_FICTICIA") ? "bg-primary" : "bg-danger" %>"><%= rs.getString("expense_type").replace("_", " ") %></span></td>
+                            <td><%= rs.getString("description") %></td>
+                            <td><span class="badge bg-secondary"><%= rs.getString("user_name") %></span></td>
+                            <td class="text-end fw-bold text-danger">-$<%= String.format("%.2f", rs.getDouble("amount")) %></td>
+                        </tr>
+                        <%
+                                }
+                                if(!hasExpenses) {
+                        %>
+                        <tr><td colspan="5" class="text-center text-muted py-4">No hay egresos registrados.</td></tr>
+                        <%
+                                }
+                            } catch(Exception e) {}
+                        %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <!-- Notificaciones de Devoluciones y Garantías -->
     <div class="card-custom shadow-sm mb-4 border-danger border-2">
