@@ -359,11 +359,21 @@ div:where(.swal2-container) h2:where(.swal2-title), div:where(.swal2-container) 
         color: #121417 !important;
     }
     
-    .asama-navbar .navbar-collapse > div {
+    .asama-navbar .navbar-collapse .nav-user-section {
+        display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
         width: 100%;
-        margin-top: auto;
+        margin-bottom: 1.5rem !important;
+        gap: 10px !important;
+    }
+    
+    .asama-navbar .navbar-collapse .nav-controls-section {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100%;
+        margin-top: auto !important;
         gap: 14px !important;
     }
 }

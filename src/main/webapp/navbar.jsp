@@ -107,6 +107,40 @@
         </button>
         
         <div class="collapse navbar-collapse" id="asamaNavbar">
+            <!-- User / Login Section (Top in sidebar) -->
+            <div class="nav-user-section d-flex flex-column gap-2 w-100 mt-3 mt-lg-0 mb-lg-3">
+                <% if(navLoggedIn) { %>
+                    <!-- User Profile Area -->
+                    <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none">
+                        <div class="user-avatar-circle flex-shrink-0" style="width: 42px; height: 42px; font-size: 1rem;">
+                            <%= navUser.getFullName().substring(0, Math.min(2, navUser.getFullName().length())).toUpperCase() %>
+                        </div>
+                        <div class="text-start min-w-0 flex-grow-1 text-truncate">
+                            <h6 class="mb-0 fw-bold text-truncate" style="line-height: 1.2; font-size: 0.9rem; color: var(--text-color);"><%= navUser.getFullName() %></h6>
+                            <span class="text-secondary small fw-normal" style="font-size: 0.75rem;">
+                                <% if(navRole == 1) out.print("Administrador");
+                                   else if(navRole == 2) out.print("Contador");
+                                   else if(navRole == 3) out.print("Bodeguero");
+                                   else if(navRole == 4) out.print("Cajero");
+                                   else if(navRole == 5) out.print("Cliente");
+                                   else if(navRole == 6) out.print("Mecánico"); %>
+                            </span>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <% if(navLoggedIn) { %>
+                    <a class="btn btn-outline-danger btn-sm w-100 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center justify-content-center gap-2 transition-all" href="logout">
+                        <span><fmt:message key="nav.logout"/></span> <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                <% } else { %>
+                    <a class="btn btn-accent w-100 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center justify-content-center gap-2 transition-all" href="login.jsp">
+                        <i class="bi bi-person-circle"></i> <fmt:message key="nav.login"/>
+                    </a>
+                <% } %>
+            </div>
+
+            <!-- Navigation Links -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
                 <% if(!navLoggedIn) { %>
                     <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i><fmt:message key="nav.catalog"/></a></li>
@@ -156,27 +190,8 @@
                 <% } %>
             </ul>
             
-            <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
-                <% if(navLoggedIn) { %>
-                    <!-- User Profile Area -->
-                    <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none">
-                        <div class="user-avatar-circle flex-shrink-0" style="width: 42px; height: 42px; font-size: 1rem;">
-                            <%= navUser.getFullName().substring(0, Math.min(2, navUser.getFullName().length())).toUpperCase() %>
-                        </div>
-                        <div class="text-start min-w-0 flex-grow-1 text-truncate">
-                            <h6 class="mb-0 fw-bold text-truncate" style="line-height: 1.2; font-size: 0.9rem; color: var(--text-color);"><%= navUser.getFullName() %></h6>
-                            <span class="text-secondary small fw-normal" style="font-size: 0.75rem;">
-                                <% if(navRole == 1) out.print("Administrador");
-                                   else if(navRole == 2) out.print("Contador");
-                                   else if(navRole == 3) out.print("Bodeguero");
-                                   else if(navRole == 4) out.print("Cajero");
-                                   else if(navRole == 5) out.print("Cliente");
-                                   else if(navRole == 6) out.print("Mecánico"); %>
-                            </span>
-                        </div>
-                    </div>
-                <% } %>
-
+            <!-- Controls Section (Bottom in sidebar) -->
+            <div class="nav-controls-section d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0 w-100">
                 <div class="d-flex align-items-center justify-content-between w-100 gap-2 mt-1">
                     <% if(navLoggedIn && (navRole == 1 || navRole == 4)) { %>
                     <div class="position-relative">
@@ -203,18 +218,7 @@
                         <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
                     </button>
                 </div>
-                
-                <% if(navLoggedIn) { %>
-                    <a class="btn btn-outline-danger btn-sm w-100 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center justify-content-center gap-2 mt-1 transition-all" href="logout">
-                        <span><fmt:message key="nav.logout"/></span> <i class="bi bi-box-arrow-right"></i>
-                    </a>
-                <% } else { %>
-                    <a class="btn btn-accent w-100 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center justify-content-center gap-2 mt-1 transition-all" href="login.jsp">
-                        <i class="bi bi-person-circle"></i> <fmt:message key="nav.login"/>
-                    </a>
-                <% } %>
             </div>
-
         </div>
     </div>
 </nav>
