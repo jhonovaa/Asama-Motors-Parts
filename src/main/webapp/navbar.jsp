@@ -33,6 +33,16 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+<script>
+    if (document.body) {
+        <% if (navLoggedIn) { %>
+            document.body.classList.add('sidebar-layout');
+        <% } else { %>
+            document.body.classList.remove('sidebar-layout');
+        <% } %>
+    }
+</script>
+
 <%
     String alertMsg = request.getParameter("msg");
     if(alertMsg != null && !alertMsg.trim().isEmpty()) {
