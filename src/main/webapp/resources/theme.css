@@ -268,6 +268,27 @@ div:where(.swal2-container) h2:where(.swal2-title), div:where(.swal2-container) 
 /* Print Styles */
 @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
 
+/* ── FLEX ORDERS FOR DYNAMIC NAVBAR LAYOUT ── */
+/* Orders for sidebar layout (logged in) */
+body.sidebar-layout .nav-user-section { order: 1 !important; }
+body.sidebar-layout .asama-nav-links { order: 2 !important; }
+body.sidebar-layout .nav-controls-section { order: 3 !important; }
+
+/* Orders for horizontal layout (logged out) */
+body:not(.sidebar-layout) .asama-nav-links { order: 1 !important; }
+body:not(.sidebar-layout) .nav-controls-section { order: 2 !important; }
+body:not(.sidebar-layout) .nav-user-section { order: 3 !important; }
+
+@media (max-width: 991.98px) {
+    body:not(.sidebar-layout) .nav-controls-section {
+        margin-top: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    body:not(.sidebar-layout) .nav-user-section {
+        margin-bottom: 1rem !important;
+    }
+}
+
 /* ── NAVEGACIÓN VERTICAL LATERAL (SIDEBAR GLOBAL) ── */
 @media (min-width: 992px) {
     body.sidebar-layout {
@@ -382,5 +403,51 @@ div:where(.swal2-container) h2:where(.swal2-title), div:where(.swal2-container) 
     body.sidebar-layout > div.container,
     body.sidebar-layout > div.container-fluid {
         margin-top: 40px !important;
+    }
+
+    /* Horizontal Layout Overrides (when logged out on desktop) */
+    body:not(.sidebar-layout) .asama-navbar .navbar-collapse {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+    
+    body:not(.sidebar-layout) .asama-navbar .asama-nav-links {
+        margin-right: auto !important;
+        margin-left: 1.5rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    
+    body:not(.sidebar-layout) .asama-navbar .nav-controls-section {
+        width: auto !important;
+        margin: 0 1rem 0 auto !important;
+        padding-bottom: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    
+    body:not(.sidebar-layout) .asama-navbar .nav-controls-section > div {
+        width: auto !important;
+        margin-top: 0 !important;
+        gap: 15px !important;
+        justify-content: flex-start !important;
+    }
+    
+    body:not(.sidebar-layout) .asama-navbar .nav-user-section {
+        width: auto !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    
+    body:not(.sidebar-layout) .asama-navbar .nav-user-section .login-btn {
+        width: auto !important;
+        padding: 8px 24px !important;
+        white-space: nowrap !important;
     }
 }
