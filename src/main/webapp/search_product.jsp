@@ -21,19 +21,78 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Load html5-qrcode for barcode scanning -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
+    <style>
+        .main-container { margin-top: 100px; padding-bottom: 50px; }
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        .nav-tabs-custom .nav-link {
+            color: var(--text-color) !important;
+            border: 2px solid rgba(255, 255, 255, 0.15) !important;
+            background: transparent !important;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        body.light-mode .nav-tabs-custom .nav-link {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        .nav-tabs-custom .nav-link.active {
+            background-color: var(--accent-orange) !important;
+            color: #121417 !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .result-card-premium {
+            background: var(--card-bg);
+            border: 2px solid var(--accent-orange);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 8px 30px var(--accent-glow);
+            display: none;
+        }
+        /* Style reader scanner container */
+        #reader {
+            border: 2px solid var(--accent-orange) !important;
+            border-radius: 16px !important;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        #reader button {
+            background: var(--accent-orange) !important;
+            color: #121417 !important;
+            font-weight: bold;
+            border-radius: 30px !important;
+            border: none !important;
+            padding: 8px 24px !important;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            transition: 0.3s;
+        }
+        #reader button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
+    <script src="resources/theme.js"></script>
 
     <%@ include file="navbar.jsp" %>
 
     <div class="container main-container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold m-0"><i class="bi bi-search text-orange me-2"></i> <fmt:message key="search_product.header" /></h2>
+            <h2 class="fw-bold m-0"><i class="bi bi-search text-accent me-2"></i> <fmt:message key="search_product.header" /></h2>
         </div>
 
-        <div class="card-custom">
-            <ul class="nav nav-tabs" id="searchTabs" role="tablist">
+        <div class="section-card">
+            <ul class="nav nav-pills nav-tabs-custom gap-2 mb-4" id="searchTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="camera-tab" data-bs-toggle="tab" data-bs-target="#camera-pane" type="button" role="tab"><i class="bi bi-camera me-1"></i> <fmt:message key="search_product.camera" /></button>
                 </li>
@@ -52,37 +111,41 @@
                 <!-- Manual Tab -->
                 <div class="tab-pane fade" id="manual-pane" role="tabpanel">
                     <div class="mb-3">
-                        <label class="form-label text-secondary"><fmt:message key="search_product.enter_barcode" /></label>
+                        <label class="form-label text-secondary fw-semibold small"><fmt:message key="search_product.enter_barcode" /></label>
                         <input type="text" id="manualBarcode" class="form-control" placeholder="<fmt:message key='search_product.barcode_placeholder'/>">
                     </div>
-                    <button class="btn btn-moto" onclick="searchManual()"><fmt:message key="search_product.search_btn" /></button>
+                    <button class="btn btn-accent rounded-pill px-5 fw-bold" onclick="searchManual()"><fmt:message key="search_product.search_btn" /></button>
                 </div>
             </div>
 
             <!-- Result Section -->
             <div id="loadingIndicator" class="text-center my-4" style="display: none;">
-                <div class="spinner-border text-orange" role="status"></div>
+                <div class="spinner-border text-accent" role="status"></div>
                 <div class="mt-2 text-secondary small"><fmt:message key="search_product.searching" /></div>
             </div>
 
-            <div id="resultCard" class="result-card">
+            <div id="resultCard" class="result-card-premium">
                 <div class="row align-items-center">
                     <div class="col-md-4 text-center mb-3 mb-md-0" id="resultImgContainer">
                         <!-- Image rendered here -->
                     </div>
                     <div class="col-md-8">
                         <h4 id="resName" class="fw-bold mb-1"></h4>
-                        <div class="text-secondary small mb-2"><i class="bi bi-tag-fill me-1"></i> <span id="resBrand"></span> | <fmt:message key="search_product.code_prefix" /><span id="resBarcode"></span></div>
-                        <p id="resDesc" class="text-light small mb-3"></p>
+                        <div class="text-secondary small mb-3">
+                            <i class="bi bi-tag-fill me-1 text-accent"></i> <span id="resBrand" class="fw-semibold"></span> 
+                            <span class="mx-2 text-muted">|</span> 
+                            <fmt:message key="search_product.code_prefix" /> <span id="resBarcode" class="badge bg-secondary px-2 py-1 text-white"></span>
+                        </div>
+                        <p id="resDesc" class="text-secondary small mb-4"></p>
                         
-                        <div class="d-flex justify-content-between align-items-end mt-3 border-top border-secondary pt-3">
+                        <div class="d-flex justify-content-between align-items-center mt-3 border-top border-secondary border-opacity-10 pt-3">
                             <div>
-                                <div class="text-secondary small"><fmt:message key="search_product.unit_price" /></div>
-                                <h3 class="text-orange fw-bold m-0" id="resPrice"></h3>
+                                <div class="text-secondary small mb-1"><fmt:message key="search_product.unit_price" /></div>
+                                <h3 class="text-accent fw-bold m-0" id="resPrice"></h3>
                             </div>
                             <div class="text-end">
-                                <div class="text-secondary small"><fmt:message key="search_product.inventory" /></div>
-                                <h5 class="m-0" id="resStock"></h5>
+                                <div class="text-secondary small mb-1"><fmt:message key="search_product.inventory" /></div>
+                                <h4 class="m-0 fw-bold" id="resStock"></h4>
                             </div>
                         </div>
                     </div>

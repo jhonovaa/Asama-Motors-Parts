@@ -9,6 +9,9 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    String lang = (String) session.getAttribute("lang");
+    if (lang == null) lang = "es";
+    boolean isEn = "en".equals(lang);
 %>
 <%!
     public String getStockBadgeHTML(int stock) {
@@ -23,15 +26,15 @@
         }
     }
 
-    public String getStockAlertBadgeHTML(int stock) {
+    public String getStockAlertBadgeHTML(int stock, boolean isEn) {
         if (stock == 0) {
-            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-zero me-2'></span>Sin Stock</span>";
+            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-zero me-2'></span>" + (isEn ? "No Stock" : "Sin Stock") + "</span>";
         } else if (stock <= 20) {
-            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-low me-2'></span>Stock Bajo</span>";
+            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-low me-2'></span>" + (isEn ? "Low Stock" : "Stock Bajo") + "</span>";
         } else if (stock <= 50) {
-            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-medium me-2'></span>Stock Medio</span>";
+            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-medium me-2'></span>" + (isEn ? "Medium Stock" : "Stock Medio") + "</span>";
         } else {
-            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-high me-2'></span>Con Stock</span>";
+            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-high me-2'></span>" + (isEn ? "In Stock" : "Con Stock") + "</span>";
         }
     }
 %>
@@ -286,23 +289,23 @@
                             <button class="nav-link active px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="tracker-tab" data-bs-toggle="tab" data-bs-target="#tracker-tab-pane" type="button" role="tab" 
                                     aria-controls="tracker-tab-pane" aria-selected="true">
-                                <i class="bi bi-grid-3x3-gap-fill"></i> Control de Inventario
+                                <i class="bi bi-grid-3x3-gap-fill"></i> <%= isEn ? "Inventory Control" : "Control de Inventario" %>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="alert-tab" data-bs-toggle="tab" data-bs-target="#alert-tab-pane" type="button" role="tab" 
                                     aria-controls="alert-tab-pane" aria-selected="false">
-                                <i class="bi bi-columns-gap"></i> Alerta de Stock
+                                <i class="bi bi-columns-gap"></i> <%= isEn ? "Stock Alert" : "Alerta de Stock" %>
                             </button>
                         </li>
                     </ul>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-accent rounded-pill px-4 py-2 fw-bolder d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newProductModal">
-                            <i class="bi bi-plus-circle-fill fs-5"></i> Nuevo Producto
+                            <i class="bi bi-plus-circle-fill fs-5"></i> <%= isEn ? "New Product" : "Nuevo Producto" %>
                         </button>
                         <button class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
-                            <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> Carga Masiva
+                            <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> <%= isEn ? "Mass Upload" : "Carga Masiva" %>
                         </button>
                         <span class="badge bg-secondary bg-opacity-25 text-light px-4 py-2 rounded-pill fw-bolder fs-6 border border-secondary border-opacity-50">
                             Total: <%= productsList != null ? productsList.size() : 0 %>
@@ -315,17 +318,17 @@
                     <div class="tab-pane fade show active px-3" id="tracker-tab-pane" role="tabpanel" aria-labelledby="tracker-tab" tabindex="0">
                         <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
                             <table class="table align-middle table-borderless table-hover">
-                                <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
-                                    <tr>
-                                        <th class="text-uppercase pb-3 pt-3">Foto</th>
-                                        <th class="text-uppercase pb-3 pt-3">Repuesto</th>
-                                        <th class="text-uppercase pb-3 pt-3">Marca</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Código de Barras</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Cantidad</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Alerta de Stock</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Ubicación</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-end">Precio</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Acciones</th>
+                                <thead>
+                                    <tr class="border-bottom-3 border-secondary">
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Photo" : "Foto" %></th>
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Spare Part" : "Repuesto" %></th>
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Brand" : "Marca" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Barcode" : "Código de Barras" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Quantity" : "Cantidad" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Stock Alert" : "Alerta de Stock" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Location" : "Ubicación" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-end"><%= isEn ? "Price" : "Precio" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Actions" : "Acciones" %></th>
                                     </tr>
                                 </thead>
                                 <tbody>
