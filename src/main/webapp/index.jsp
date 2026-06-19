@@ -44,7 +44,37 @@
 <body class="no-pad">
 <script src="resources/theme.js"></script>
 
-    <%@ include file="navbar.jsp" %>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top shadow-sm" style="background: var(--nav-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border);">
+        <div class="container-fluid px-4 py-2">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.jsp" style="text-decoration: none;">
+                <i class="bi bi-gear-wide-connected fs-4 text-orange"></i>
+                <span class="fw-bold fs-4 asama-text" style="color: var(--text-color);">Asama<span class="text-orange fw-light">MotoParts</span></span>
+            </a>
+            
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#simpleNavbar" aria-controls="simpleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-1 text-orange"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="simpleNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center">
+                    <li class="nav-item">
+                        <a href="catalog.jsp" class="nav-link fw-bold" style="color: var(--text-color);"><i class="bi bi-grid-3x3-gap me-2"></i>Catálogo</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-3 align-items-center ms-lg-auto mt-3 mt-lg-0">
+                    <button onclick="toggleTheme()" class="btn btn-icon rounded-circle" style="background: var(--card-bg); border: 1px solid var(--card-border); color: var(--accent-orange);" title="Cambiar tema">
+                        <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
+                    </button>
+                    <% if(isLoggedIn) { %>
+                        <a href="dashboard.jsp" class="btn btn-moto-outline rounded-pill px-4 fw-bold">Mi Panel</a>
+                    <% } else { %>
+                        <a href="login.jsp" class="btn btn-accent rounded-pill px-4 fw-bold" style="color: #121417 !important;"><i class="bi bi-person-circle me-2"></i>Iniciar Sesión</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <section class="hero-section">
         <div class="hero-content mt-5">

@@ -1,10 +1,24 @@
 <%@ page import="com.adso.cheng.models.User" %>
+<%@ page import="com.adso.cheng.models.Product" %>
+<%@ page import="com.adso.cheng.dao.ProductDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.TreeSet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
     if (sessionUser == null || (sessionUser.getRoleId() != 1 && sessionUser.getRoleId() != 4)) {
         response.sendRedirect("login.jsp");
         return;
+    }
+
+    ProductDAO dao = new ProductDAO();
+    List<Product> products = dao.getAllProducts();
+    Set<String> brands = new TreeSet<>();
+    Set<String> categories = new TreeSet<>();
+    for(Product p : products) {
+        if(p.getBrand() != null && !p.getBrand().trim().isEmpty()) brands.add(p.getBrand());
+        if(p.getPartCategory() != null && !p.getPartCategory().trim().isEmpty()) categories.add(p.getPartCategory());
     }
 %>
 <!DOCTYPE html>
@@ -139,6 +153,81 @@
             </div>
         </div>
         
+    </div>
+</div>
+
+<!-- Floating Action Button for Advanced Search -->
+<button class="btn btn-warning rounded-circle shadow-lg" type="button" data-bs-toggle="offcanvas" data-bs-target="#advancedSearchOffcanvas" style="position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; font-size: 24px; z-index: 1040;">
+    <i class="bi bi-search"></i>
+</button>
+
+<!-- Advanced Search Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="advancedSearchOffcanvas" aria-labelledby="advancedSearchOffcanvasLabel" style="width: 450px; background-color: var(--bg-color); color: var(--text-color);">
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
+        <h5 class="offcanvas-title fw-bold" id="advancedSearchOffcanvasLabel"><i class="bi bi-funnel-fill text-orange me-2"></i> Búsqueda Avanzada</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="mb-3">
+            <input type="text" id="advSearchText" class="form-control" placeholder="Buscar por nombre o descripción..." onkeyup="applyAdvancedFilters()">
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <select id="advSearchBrand" class="form-select" onchange="applyAdvancedFilters()">
+                    <option value="">Todas las Marcas</option>
+                    <% for(String b : brands) { %>
+                        <option value="<%= b.toLowerCase() %>"><%= b %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-6">
+                <select id="advSearchCategory" class="form-select" onchange="applyAdvancedFilters()">
+                    <option value="">Todas las Categorías</option>
+                    <% for(String c : categories) { %>
+                        <option value="<%= c.toLowerCase() %>"><%= c %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="form-label text-secondary small">Precio Máximo: $<span id="advPriceLabel">2000000</span></label>
+            <input type="range" class="form-range" id="advSearchPrice" min="0" max="2000000" step="10000" value="2000000" oninput="document.getElementById('advPriceLabel').innerText = this.value; applyAdvancedFilters()">
+        </div>
+
+        <h6 class="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">Resultados</h6>
+        
+        <div id="advSearchResults" class="d-flex flex-column gap-3">
+            <% for(Product p : products) { %>
+            <div class="card bg-transparent border border-secondary border-opacity-25 adv-product-item" 
+                 data-name="<%= p.getName() != null ? p.getName().toLowerCase() : "" %>" 
+                 data-desc="<%= p.getDescription() != null ? p.getDescription().toLowerCase() : "" %>" 
+                 data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>" 
+                 data-category="<%= p.getPartCategory() != null ? p.getPartCategory().toLowerCase() : "" %>" 
+                 data-price="<%= p.getPrice() %>">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold m-0" style="max-width: 75%;"><%= p.getName() %></h6>
+                        <span class="badge bg-secondary"><%= p.getBrand() != null ? p.getBrand() : "Genérico" %></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-orange fw-bold m-0">$<%= String.format("%.2f", p.getPrice()) %></h5>
+                        <small class="<%= p.getStock() > 0 ? "text-success" : "text-danger" %> fw-bold"><%= p.getStock() %> en stock</small>
+                    </div>
+                    <div class="text-secondary small mb-3">
+                        <i class="bi bi-tag-fill"></i> <%= p.getPartCategory() != null ? p.getPartCategory() : "Sin Categoría" %> <br>
+                        <i class="bi bi-geo-alt-fill"></i> Ubicación: Estante <%= p.getEstante() != null && !p.getEstante().isEmpty() ? p.getEstante() : "N/A" %> - Fila <%= p.getFila() != null && !p.getFila().isEmpty() ? p.getFila() : "N/A" %>
+                    </div>
+                    <% if(p.getStock() > 0) { %>
+                        <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="addFromSearch(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, '<%= p.getBrand() != null ? p.getBrand().replace("'", "\\'") : "Genérico" %>')">
+                            <i class="bi bi-cart-plus"></i> Añadir
+                        </button>
+                    <% } else { %>
+                        <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
     </div>
 </div>
 
@@ -290,6 +379,39 @@
     
     // Renderizado inicial
     renderCart();
+
+    function applyAdvancedFilters() {
+        let text = document.getElementById('advSearchText').value.toLowerCase();
+        let brand = document.getElementById('advSearchBrand').value;
+        let category = document.getElementById('advSearchCategory').value;
+        let maxPrice = parseFloat(document.getElementById('advSearchPrice').value);
+        
+        let items = document.getElementsByClassName('adv-product-item');
+        for(let i=0; i<items.length; i++) {
+            let el = items[i];
+            let pName = el.getAttribute('data-name');
+            let pDesc = el.getAttribute('data-desc');
+            let pBrand = el.getAttribute('data-brand');
+            let pCategory = el.getAttribute('data-category');
+            let pPrice = parseFloat(el.getAttribute('data-price'));
+            
+            let matchText = (pName.includes(text) || pDesc.includes(text));
+            let matchBrand = (brand === "" || pBrand === brand);
+            let matchCategory = (category === "" || pCategory === category);
+            let matchPrice = (pPrice <= maxPrice);
+            
+            if(matchText && matchBrand && matchCategory && matchPrice) {
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        }
+    }
+
+    function addFromSearch(id, name, price, brand) {
+        addToCart({id: id, name: name, price: price, brand: brand});
+        showStatus('<i class="bi bi-check-circle-fill me-2"></i>' + name + ' agregado desde búsqueda', 'success');
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
