@@ -1,15 +1,16 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<fmt:message key='app.lang' />">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asama Moto Parts - Repuestos para Motos</title>
+    <title><fmt:message key="index.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -78,18 +79,16 @@
 
     <section class="hero-section">
         <div class="hero-content mt-5">
-            <h1 class="hero-title">Potencia en cada <span class="text-accent text-shadow">repuesto.</span></h1>
+            <h1 class="hero-title"><fmt:message key="index.hero_title" /> <span class="text-accent text-shadow"><fmt:message key="index.hero_title_accent" /></span></h1>
             <p class="hero-subtitle">
-                Descubre el catalogo mas completo de piezas para motocicletas.
-                Repuestos OEM y aftermarket con calidad certificada para que tu moto
-                siempre rinda al maximo nivel.
+                <fmt:message key="index.hero_subtitle" />
             </p>
             <div class="d-flex gap-3 justify-content-center flex-wrap hero-buttons mt-5">
                 <a href="catalog.jsp" class="btn btn-accent rounded-pill fw-bold shadow-lg d-flex align-items-center justify-content-center px-4 py-2 fs-5">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>Ver Catalogo
+                    <i class="bi bi-grid-3x3-gap me-2"></i><fmt:message key="index.btn_catalog" />
                 </a>
                 <a href="#features" class="btn btn-moto-outline rounded-pill fw-bold d-flex align-items-center justify-content-center px-4 py-2 fs-5">
-                    Saber mas
+                    <fmt:message key="index.btn_learn_more" />
                 </a>
             </div>
         </div>
@@ -98,29 +97,29 @@
     <section id="features" class="features-section">
         <div class="container">
             <div class="section-label mb-5 pb-3 text-center">
-                <h2 class="fw-bold mb-3">¿Por que elegirnos?</h2>
-                <p class="text-secondary fs-5">Todo lo que tu vehiculo necesita, en un solo lugar y con la mejor atencion.</p>
+                <h2 class="fw-bold mb-3"><fmt:message key="index.features_title" /></h2>
+                <p class="text-secondary fs-5"><fmt:message key="index.features_subtitle" /></p>
             </div>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="feature-card shadow-sm transition-all">
                         <i class="bi bi-shield-check feature-icon mb-4 fs-1"></i>
-                        <h4 class="fw-bold mb-3">Piezas Certificadas</h4>
-                        <p class="text-secondary small">Trabajamos con repuestos OEM y aftermarket bajo los mas altos estandares de la industria del motociclismo.</p>
+                        <h4 class="fw-bold mb-3"><fmt:message key="index.feature1_title" /></h4>
+                        <p class="text-secondary small"><fmt:message key="index.feature1_desc" /></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card shadow-sm transition-all">
                         <i class="bi bi-lightning-charge feature-icon mb-4 fs-1"></i>
-                        <h4 class="fw-bold mb-3">Envio Express</h4>
-                        <p class="text-secondary small">Despacho rapido gracias a nuestro sistema moderno de inventario. Tus repuestos llegan justo cuando los necesitas.</p>
+                        <h4 class="fw-bold mb-3"><fmt:message key="index.feature2_title" /></h4>
+                        <p class="text-secondary small"><fmt:message key="index.feature2_desc" /></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card shadow-sm transition-all">
                         <i class="bi bi-wrench-adjustable feature-icon mb-4 fs-1"></i>
-                        <h4 class="fw-bold mb-3">Taller Especializado</h4>
-                        <p class="text-secondary small">Contamos con taller especializado en mantenimiento y reparacion. Manos expertas cuidando de tu vehiculo.</p>
+                        <h4 class="fw-bold mb-3"><fmt:message key="index.feature3_title" /></h4>
+                        <p class="text-secondary small"><fmt:message key="index.feature3_desc" /></p>
                     </div>
                 </div>
             </div>
@@ -129,7 +128,7 @@
 
     <footer class="footer-section py-4 border-top border-secondary border-opacity-25" style="background: var(--nav-bg);">
         <div class="container text-center">
-            <p class="text-secondary small mb-0">&copy; 2026 Asama Moto Parts. Todos los derechos reservados.</p>
+            <p class="text-secondary small mb-0">&copy; 2026 Asama Moto Parts. <fmt:message key="index.rights" /></p>
         </div>
     </footer>
 

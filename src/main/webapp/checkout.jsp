@@ -1,5 +1,6 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null || user.getRoleId() != 5) {
@@ -11,7 +12,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pago - Asama Moto Parts</title>
+    <title><fmt:message key="checkout.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -36,55 +37,115 @@
             <div class="col-md-6">
                 <div class="checkout-card" id="paymentForm">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="fw-bold m-0">Detalles de Pago</h4>
+                        <h4 class="fw-bold m-0"><fmt:message key="checkout.details" /></h4>
                         <span class="mp-badge"><i class="bi bi-credit-card-2-front"></i> Mercado Pago</span>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label text-secondary small">Número de Tarjeta</label>
+                        <label class="form-label text-secondary small"><fmt:message key="checkout.card_number" /></label>
                         <input type="text" class="form-control" placeholder="4545 4545 4545 4545" value="4545 4545 4545 4545" disabled>
                     </div>
                     
                     <div class="row mb-4">
                         <div class="col-6">
-                            <label class="form-label text-secondary small">Vencimiento</label>
+                            <label class="form-label text-secondary small"><fmt:message key="checkout.expiry" /></label>
                             <input type="text" class="form-control" placeholder="MM/YY" value="12/30" disabled>
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-secondary small">CVC</label>
+                            <label class="form-label text-secondary small"><fmt:message key="checkout.cvc" /></label>
                             <input type="text" class="form-control" placeholder="123" value="123" disabled>
                         </div>
                     </div>
 
-                    <div class="alert alert-warning py-2 small">
-                        <i class="bi bi-info-circle"></i> Simulación de pasarela de pago. Su pedido será procesado inmediatamente.
+                    <hr class="my-4 border-secondary border-opacity-50">
+                    <h5 class="fw-bold mb-3"><fmt:message key="checkout.order_summary" /></h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary"><fmt:message key="checkout.subtotal" /></span>
+                        <span class="fw-medium" id="summarySubtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary"><fmt:message key="checkout.est_weight" /></span>
+                        <span class="fw-medium text-accent" id="summaryWeight">0 kg</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-secondary"><fmt:message key="checkout.shipping_cost" /> <i class="bi bi-truck ms-1"></i></span>
+                        <span class="fw-medium" id="summaryShipping">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-3 mb-4">
+                        <span class="fw-bold fs-5"><fmt:message key="checkout.total_pay" /></span>
+                        <span class="fw-bolder fs-4 text-accent" id="summaryTotal">$0.00</span>
                     </div>
 
-                    <button class="btn btn-moto mt-3" id="btnPay" onclick="submitOrder()">Confirmar Pago Seguro</button>
+                    <div class="alert alert-warning py-2 small">
+                        <i class="bi bi-info-circle"></i> <fmt:message key="checkout.simulation_warning" />
+                    </div>
+
+                    <button class="btn btn-moto mt-3" id="btnPay" onclick="submitOrder()"><fmt:message key="checkout.confirm_pay" /></button>
                 </div>
 
                 <div class="checkout-card text-center" id="successMessage" style="display: none;">
                     <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                    <h3 class="mt-3">¡Pago Exitoso!</h3>
-                    <p class="text-secondary">Tu pedido ha sido registrado y será enviado pronto.</p>
-                    <a href="dashboard.jsp" class="btn btn-moto-outline mt-3" style="border-radius: 20px;">Ir a mi panel</a>
+                    <h3 class="mt-3"><fmt:message key="checkout.success_title" /></h3>
+                    <p class="text-secondary"><fmt:message key="checkout.success_text" /></p>
+                    <a href="dashboard.jsp" class="btn btn-moto-outline mt-3" style="border-radius: 20px;"><fmt:message key="checkout.go_to_panel" /></a>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        function loadSummary() {
+            let currentUserId = <%= user != null ? user.getId() : -1 %>;
+            let cartKey = 'asama_cart_' + currentUserId;
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            
+            let subtotal = 0;
+            let totalItems = 0;
+            
+            cart.forEach(item => {
+                subtotal += (item.price * item.qty);
+                totalItems += item.qty;
+            });
+            
+            // Algorithmic Shipping Logic:
+            // Estimate 1.2 kg per item + 0.5 kg box base weight
+            let estWeight = (totalItems * 1.2) + 0.5;
+            
+            // Shipping Cost: Base $5.00 + $1.50 per Kg
+            let shipping = 5.00 + (estWeight * 1.50);
+            
+            // Free shipping on orders over $500
+            if (subtotal >= 500) {
+                shipping = 0;
+            }
+            if (subtotal === 0) {
+                shipping = 0;
+                estWeight = 0;
+            }
+            
+            let totalPay = subtotal + shipping;
+            
+            document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
+            document.getElementById('summaryShipping').innerText = shipping === 0 ? (subtotal > 0 ? 'FREE' : '$0.00') : '$' + shipping.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('summaryTotal').innerText = '$' + totalPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        
+        window.onload = function() {
+            loadSummary();
+        };
+
         function submitOrder() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
             let cart = localStorage.getItem(cartKey);
             if(!cart || cart === '[]') {
-                alert("El carrito está vacío");
+                alert("<fmt:message key='checkout.cart_empty' />");
                 window.location.href = 'catalog.jsp';
                 return;
             }
 
-            document.getElementById('btnPay').innerText = 'Procesando...';
+            document.getElementById('btnPay').innerText = '<fmt:message key="checkout.processing" />';
             document.getElementById('btnPay').disabled = true;
 
             fetch('checkout', {
@@ -98,8 +159,8 @@
                     document.getElementById('paymentForm').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                 } else {
-                    alert("Hubo un error al procesar el pago. Revisa el stock.");
-                    document.getElementById('btnPay').innerText = 'Confirmar Pago Seguro';
+                    alert("<fmt:message key='checkout.error' />");
+                    document.getElementById('btnPay').innerText = '<fmt:message key="checkout.confirm_pay" />';
                     document.getElementById('btnPay').disabled = false;
                 }
             });

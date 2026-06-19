@@ -1,5 +1,6 @@
 <%@ page import="com.adso.cheng.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
@@ -10,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escáner Visual de Repuestos - Asama Moto Parts</title>
+    <title><fmt:message key="scanner.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -234,8 +235,8 @@
     <div class="container" style="margin-top: 30px; margin-bottom: 50px;">
         <!-- Header -->
         <div class="text-center mb-4">
-            <h2 class="fw-bold"><i class="bi bi-camera text-orange me-2"></i>Escáner Visual de Repuestos</h2>
-            <p class="text-secondary">Captura una foto del repuesto y la IA identificará productos similares</p>
+            <h2 class="fw-bold"><i class="bi bi-camera text-orange me-2"></i><fmt:message key="scanner.heading" /></h2>
+            <p class="text-secondary"><fmt:message key="scanner.description" /></p>
             <span class="ai-badge"><i class="bi bi-cpu"></i> Powered by TensorFlow.js + MobileNet</span>
         </div>
 
@@ -243,7 +244,7 @@
             <!-- Camera Panel -->
             <div class="col-lg-5">
                 <div class="scanner-section">
-                    <h5 class="fw-bold mb-3 text-center"><i class="bi bi-camera-video text-orange me-2"></i>Cámara</h5>
+                    <h5 class="fw-bold mb-3 text-center"><i class="bi bi-camera-video text-orange me-2"></i><fmt:message key="scanner.camera" /></h5>
                     
                     <div class="camera-container" id="cameraContainer">
                         <video id="video" autoplay muted playsinline></video>
@@ -253,31 +254,31 @@
                         </div>
                         <div class="loading-model" id="modelLoading">
                             <div class="spinner-border text-warning mb-2"></div>
-                            <span class="text-warning small">Cargando modelo de IA...</span>
-                            <span class="text-secondary small mt-1">Esto puede tomar unos segundos</span>
+                            <span class="text-warning small"><fmt:message key="scanner.loading_ai" /></span>
+                            <span class="text-secondary small mt-1"><fmt:message key="scanner.takes_seconds" /></span>
                         </div>
                     </div>
 
                     <button class="capture-btn" id="captureBtn" onclick="captureAndAnalyze()" disabled>
                         <i class="bi bi-camera-fill"></i>
                     </button>
-                    <p class="text-center text-secondary small mt-2">Apunta al repuesto y presiona para escanear</p>
+                    <p class="text-center text-secondary small mt-2"><fmt:message key="scanner.point_and_scan" /></p>
 
                     <!-- Captured preview & Predictions -->
                     <div id="analysisResult" style="display:none;" class="mt-3">
                         <img id="capturedImage" class="captured-preview d-block" alt="Captura">
                         <div class="text-center mt-2">
-                            <p class="small text-secondary mb-2">La IA detectó:</p>
+                            <p class="small text-secondary mb-2"><fmt:message key="scanner.ai_detected" /></p>
                             <div id="predictionTags"></div>
                         </div>
                     </div>
 
                     <!-- Manual search fallback -->
                     <div class="mt-4">
-                        <label class="form-label small text-secondary">O busca manualmente:</label>
+                        <label class="form-label small text-secondary"><fmt:message key="scanner.manual_search" /></label>
                         <div class="d-flex gap-2">
-                            <input type="text" id="manualSearch" class="form-control search-bar" placeholder="Ej. filtro, cadena, aceite...">
-                            <button class="btn btn-moto" onclick="searchByText()">Buscar</button>
+                            <input type="text" id="manualSearch" class="form-control search-bar" placeholder="<fmt:message key='scanner.search_placeholder' />">
+                            <button class="btn btn-moto" onclick="searchByText()"><fmt:message key="scanner.search_button" /></button>
                         </div>
                     </div>
                 </div>
@@ -287,13 +288,13 @@
             <div class="col-lg-7">
                 <div class="scanner-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0"><i class="bi bi-grid text-orange me-2"></i>Repuestos Encontrados</h5>
-                        <span id="resultCount" class="text-secondary small">0 resultados</span>
+                        <h5 class="fw-bold mb-0"><i class="bi bi-grid text-orange me-2"></i><fmt:message key="scanner.found_parts" /></h5>
+                        <span id="resultCount" class="text-secondary small">0 <fmt:message key="scanner.results" /></span>
                     </div>
 
                     <!-- Brand Filter Chips -->
                     <div id="brandFilters" class="d-flex flex-wrap gap-2 mb-3">
-                        <button class="filter-chip active" onclick="filterByBrand('')">Todos</button>
+                        <button class="filter-chip active" onclick="filterByBrand('')"><fmt:message key="scanner.all" /></button>
                     </div>
 
                     <!-- Products Grid -->
@@ -301,7 +302,7 @@
                         <div class="row g-3" id="productsGrid">
                             <div class="col-12 text-center py-5">
                                 <i class="bi bi-camera text-secondary" style="font-size: 3rem;"></i>
-                                <p class="text-secondary mt-3">Captura una foto para buscar repuestos<br>o usa la búsqueda manual</p>
+                                <p class="text-secondary mt-3"><fmt:message key="scanner.capture_instruction" /></p>
                             </div>
                         </div>
                     </div>
@@ -333,8 +334,8 @@
                 console.error('Camera error:', err);
                 document.getElementById('cameraContainer').innerHTML = 
                     '<div class="text-center p-5"><i class="bi bi-camera-video-off text-danger fs-1"></i>' +
-                    '<p class="text-danger mt-2">No se pudo acceder a la cámara</p>' +
-                    '<p class="text-secondary small">Usa la búsqueda manual</p></div>';
+                    '<p class="text-danger mt-2"><fmt:message key="scanner.camera_access_error" /></p>' +
+                    '<p class="text-secondary small"><fmt:message key="scanner.use_manual" /></p></div>';
             }
         }
 
@@ -348,8 +349,8 @@
             } catch(err) {
                 console.error('Model load error:', err);
                 document.getElementById('modelLoading').innerHTML = 
-                    '<span class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i>Error al cargar IA</span>' +
-                    '<span class="text-secondary small mt-1">Usa la búsqueda manual</span>';
+                    '<span class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i><fmt:message key="scanner.ai_error" /></span>' +
+                    '<span class="text-secondary small mt-1"><fmt:message key="scanner.use_manual" /></span>';
                 // Still enable manual search
             }
         }
@@ -357,7 +358,7 @@
         // ========== CAPTURE & ANALYZE ==========
         async function captureAndAnalyze() {
             if (!model) {
-                alert('El modelo de IA aún se está cargando. Usa la búsqueda manual.');
+                alert('<fmt:message key="scanner.model_loading_alert" />');
                 return;
             }
 
@@ -433,13 +434,13 @@
                 
                 // If no results, DO NOT show all products. Just warn the user.
                 if (found === 0) {
-                    tagsContainer.innerHTML += '<br><span class="text-danger small mt-2 d-block"><i class="bi bi-exclamation-circle me-1"></i>No se encontraron repuestos similares en nuestro inventario.</span>';
+                    tagsContainer.innerHTML += '<br><span class="text-danger small mt-2 d-block"><i class="bi bi-exclamation-circle me-1"></i><fmt:message key="scanner.no_similar_parts" /></span>';
                 }
 
             } catch(err) {
                 console.error('Analysis error:', err);
                 document.getElementById('predictionTags').innerHTML = 
-                    '<span class="text-danger small">Error al analizar la imagen. Intenta enfocar mejor o usa la búsqueda manual.</span>';
+                    '<span class="text-danger small"><fmt:message key="scanner.analysis_error" /></span>';
                 // Do not fallback to the whole catalog anymore
             }
 
@@ -478,12 +479,12 @@
         function renderProducts(products) {
             const grid = document.getElementById('productsGrid');
             const countEl = document.getElementById('resultCount');
-            countEl.textContent = products.length + ' resultado' + (products.length !== 1 ? 's' : '');
+            countEl.textContent = products.length + ' <fmt:message key="scanner.result" />' + (products.length !== 1 ? '<fmt:message key="scanner.results_plural" />' : '');
 
             if (products.length === 0) {
                 grid.innerHTML = '<div class="col-12 text-center py-5">' +
                     '<i class="bi bi-search text-secondary" style="font-size: 3rem;"></i>' +
-                    '<p class="text-secondary mt-3">No se encontraron repuestos</p></div>';
+                    '<p class="text-secondary mt-3"><fmt:message key="scanner.no_parts_found" /></p></div>';
                 return;
             }
 
@@ -494,19 +495,19 @@
                     : '<div class="placeholder-img"><i class="bi bi-tools"></i></div>';
                 
                 const stockBadge = p.stock > 0 
-                    ? '<span class="badge bg-success bg-opacity-25 text-success">' + p.stock + ' en stock</span>'
-                    : '<span class="badge bg-danger bg-opacity-25 text-danger">Agotado</span>';
+                    ? '<span class="badge bg-success bg-opacity-25 text-success">' + p.stock + ' <fmt:message key="scanner.in_stock" /></span>'
+                    : '<span class="badge bg-danger bg-opacity-25 text-danger"><fmt:message key="scanner.out_of_stock" /></span>';
                 
                 const addToCartBtn = p.stock > 0 
-                    ? '<button class="btn btn-moto btn-sm w-100 mt-2" onclick="addToCart(' + p.id + ', \'' + p.name.replace(/'/g, "\\'") + '\', ' + p.price + ')"><i class="bi bi-cart-plus me-1"></i>Añadir</button>'
-                    : '<button class="btn btn-secondary btn-sm w-100 mt-2" disabled>Agotado</button>';
+                    ? '<button class="btn btn-moto btn-sm w-100 mt-2" onclick="addToCart(' + p.id + ', \'' + p.name.replace(/'/g, "\\'") + '\', ' + p.price + ')"><i class="bi bi-cart-plus me-1"></i><fmt:message key="scanner.add" /></button>'
+                    : '<button class="btn btn-secondary btn-sm w-100 mt-2" disabled><fmt:message key="scanner.out_of_stock" /></button>';
 
                 grid.innerHTML += 
                     '<div class="col-md-6 col-xl-4">' +
                         '<div class="product-card">' +
                             img +
                             '<h6 class="fw-bold mb-1">' + p.name + '</h6>' +
-                            '<p class="text-secondary small mb-1">' + (p.brand || 'Genérico') + '</p>' +
+                            '<p class="text-secondary small mb-1">' + (p.brand || '<fmt:message key="scanner.generic" />') + '</p>' +
                             '<div class="d-flex justify-content-between align-items-center mb-1">' +
                                 '<h5 class="text-orange fw-bold mb-0">$' + p.price.toFixed(2) + '</h5>' +
                                 stockBadge +
@@ -520,7 +521,7 @@
         function renderBrandFilters(products) {
             const brands = [...new Set(products.map(p => p.brand).filter(b => b))];
             const container = document.getElementById('brandFilters');
-            container.innerHTML = '<button class="filter-chip ' + (currentBrandFilter === '' ? 'active' : '') + '" onclick="filterByBrand(\'\')">Todos</button>';
+            container.innerHTML = '<button class="filter-chip ' + (currentBrandFilter === '' ? 'active' : '') + '" onclick="filterByBrand(\'\')"><fmt:message key="scanner.all" /></button>';
             
             brands.forEach(brand => {
                 container.innerHTML += '<button class="filter-chip ' + (currentBrandFilter === brand ? 'active' : '') + '" onclick="filterByBrand(\'' + brand + '\')">' + brand + '</button>';
@@ -537,14 +538,14 @@
             // Update active chip
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.classList.remove('active');
-                if (chip.textContent === (brand || 'Todos')) chip.classList.add('active');
+                if (chip.textContent === (brand || '<fmt:message key="scanner.all" />')) chip.classList.add('active');
             });
         }
 
         // ========== CART ==========
         function addToCart(id, name, price) {
             if (!isLoggedIn) {
-                window.location.href = "login.jsp?msg=Debes+iniciar+sesion+para+añadir+al+carrito";
+                window.location.href = "login.jsp?msg=<fmt:message key='scanner.login_required' />";
                 return;
             }
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
@@ -559,7 +560,7 @@
             localStorage.setItem(cartKey, JSON.stringify(cart));
             
             // Show nice toast instead of alert
-            showToast(name + ' añadido al carrito');
+            showToast(name + ' <fmt:message key="scanner.added_to_cart" />');
         }
 
         function showToast(msg) {

@@ -5,6 +5,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.TreeSet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
     if (sessionUser == null || (sessionUser.getRoleId() != 1 && sessionUser.getRoleId() != 4)) {
@@ -22,11 +23,11 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<fmt:message key='app.lang' />">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Punto de Venta - Asama Moto Parts</title>
+    <title><fmt:message key="cashier.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -105,12 +106,12 @@
                     <div class="pulse-scanner rounded-circle mb-4">
                         <i class="bi bi-upc-scan fs-1"></i>
                     </div>
-                    <h4 class="fw-bold mb-3">Escaner Activo</h4>
-                    <p class="text-secondary small mb-4">El sistema esta escuchando el escaner de codigo de barras en todo momento. Simplemente apunte y dispare al producto.</p>
+                    <h4 class="fw-bold mb-3"><fmt:message key="cashier.scanner_active" /></h4>
+                    <p class="text-secondary small mb-4"><fmt:message key="cashier.scanner_desc" /></p>
                 </div>
                 
                 <div class="mt-auto border-top border-secondary border-opacity-25 pt-4 text-start">
-                    <label class="form-label text-secondary fw-semibold small mb-2"><i class="bi bi-keyboard me-2"></i>Entrada Manual (Opcional):</label>
+                    <label class="form-label text-secondary fw-semibold small mb-2"><i class="bi bi-keyboard me-2"></i><fmt:message key="cashier.manual_input" /></label>
                     <input type="text" id="barcodeInput" class="form-control form-control-lg text-center" placeholder="|||| |||||| ||||" autocomplete="off">
                 </div>
                 <div id="scanStatus" class="alert d-none mt-3 fw-bold small py-2 rounded-pill" role="alert"></div>
@@ -120,18 +121,18 @@
         <div class="col-lg-8 col-md-7">
             <div class="action-card h-100 d-flex flex-column p-4">
                 <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
-                    <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-cart3 me-2"></i>Cuenta Actual</h4>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearCart()" title="Vaciar Carrito"><i class="bi bi-trash"></i></button>
+                    <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-cart3 me-2"></i><fmt:message key="cashier.account" /></h4>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearCart()" title="<fmt:message key='cashier.empty_cart' />"><i class="bi bi-trash"></i></button>
                 </div>
                 
                 <div class="table-responsive flex-grow-1" style="min-height: 350px; max-height: 50vh; overflow-y: auto;">
                     <table class="table table-borderless cart-table mb-0">
                         <thead class="sticky-top" style="background: var(--card-bg);">
                             <tr>
-                                <th class="text-secondary text-uppercase pb-2">Producto</th>
-                                <th class="text-secondary text-uppercase pb-2 text-center">Cant.</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">P. Unit.</th>
-                                <th class="text-secondary text-uppercase pb-2 text-end">Subtotal</th>
+                                <th class="text-secondary text-uppercase pb-2"><fmt:message key="cashier.th_product" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-center"><fmt:message key="cashier.th_qty" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="cashier.th_unit_price" /></th>
+                                <th class="text-secondary text-uppercase pb-2 text-end"><fmt:message key="cashier.th_subtotal" /></th>
                             </tr>
                         </thead>
                         <tbody id="cartBody">
@@ -142,11 +143,11 @@
                 <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
                     <div class="d-flex justify-content-between align-items-end">
                         <div>
-                            <p class="text-secondary fw-bold mb-1">Total a Pagar:</p>
+                            <p class="text-secondary fw-bold mb-1"><fmt:message key="cashier.total_to_pay" /></p>
                             <h2 class="mb-0 fw-bold text-accent" id="totalPrice" style="font-size: 2.5rem; letter-spacing: -1px;">$0.00</h2>
                         </div>
                         <button id="payBtn" class="btn btn-accent btn-lg rounded-pill px-5 fw-bold shadow-lg d-flex align-items-center gap-2 transition-all" disabled>
-                            <i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)
+                            <i class="bi bi-cash-coin fs-4"></i> <fmt:message key="cashier.charge" />
                         </button>
                     </div>
                 </div>
@@ -285,10 +286,10 @@
                 showStatus('<i class="bi bi-exclamation-triangle-fill me-2"></i>' + data.error, 'danger');
             } else {
                 addToCart(data);
-                showStatus('<i class="bi bi-check-circle-fill me-2"></i>' + data.name + ' agregado', 'success');
+                showStatus('<i class="bi bi-check-circle-fill me-2"></i>' + data.name + ' <fmt:message key="cashier.added" />', 'success');
             }
         }).catch(err => {
-            showStatus('<i class="bi bi-wifi-off me-2"></i>Error de conexion', 'danger');
+            showStatus('<i class="bi bi-wifi-off me-2"></i><fmt:message key="cashier.conn_error" />', 'danger');
         });
     }
 
@@ -308,7 +309,7 @@
         let total = 0;
         
         if(cart.length === 0) {
-            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-5"><i class="bi bi-cart-x fs-1 d-block mb-3"></i>Esperando articulos...</td></tr>';
+            cartBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-5"><i class="bi bi-cart-x fs-1 d-block mb-3"></i><fmt:message key="cashier.waiting_items" /></td></tr>';
             totalPriceEl.innerText = '$0.00';
             payBtn.disabled = true;
             return;
@@ -344,7 +345,7 @@
     }
 
     function clearCart() {
-        if(cart.length > 0 && confirm('¿Desea vaciar la cuenta actual?')) {
+        if(cart.length > 0 && confirm('<fmt:message key="cashier.empty_confirm" />')) {
             cart = [];
             renderCart();
         }
@@ -353,7 +354,7 @@
     payBtn.addEventListener('click', () => {
         if(cart.length === 0) return;
         
-        payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Procesando...';
+        payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> <fmt:message key="cashier.processing" />';
         payBtn.disabled = true;
 
         let promises = cart.map(item => {
@@ -366,13 +367,13 @@
         });
 
         Promise.all(promises).then(() => {
-            showStatus('<i class="bi bi-bag-check-fill me-2"></i>Venta procesada con exito', 'success');
+            showStatus('<i class="bi bi-bag-check-fill me-2"></i><fmt:message key="cashier.sale_success" />', 'success');
             cart = [];
             renderCart();
-            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)';
+            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> <fmt:message key="cashier.charge" />';
         }).catch(() => {
-            alert('Error al procesar la venta');
-            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> Cobrar (Enter)';
+            alert('<fmt:message key="cashier.sale_error" />');
+            payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> <fmt:message key="cashier.charge" />';
             payBtn.disabled = false;
         });
     });

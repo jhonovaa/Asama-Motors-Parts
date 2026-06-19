@@ -2,6 +2,7 @@
 <%@ page import="com.adso.cheng.utils.DbConnection" %>
 <%@ page import="java.sql.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 2)) { // Solo Admin y Contador
@@ -14,7 +15,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad - Asama Moto Parts</title>
+    <title><fmt:message key="accountant.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -84,9 +85,15 @@
     <% } %>
 
     <div class="row g-4 mb-4">
+<<<<<<< HEAD
         <div class="col-md-4">
             <div class="dashboard-stats" style="border-left-color: #2196F3;">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-cash-stack text-primary"></i> Ingresos Totales</h6>
+=======
+        <div class="col-md-3">
+            <div class="dashboard-stats">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-wallet2 text-danger"></i> <fmt:message key="accountant.total_revenue" /></h6>
+>>>>>>> origin/Mariana
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalGeneral) %></h3>
             </div>
         </div>
@@ -104,19 +111,19 @@
         </div>
         <div class="col-md-4">
             <div class="dashboard-stats" style="border-left-color: #ff9800;">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-shop text-warning"></i> Físico (Caja)</h6>
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-shop text-warning"></i> <fmt:message key="accountant.physical_sales" /></h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalPresencial) %></h3>
             </div>
         </div>
         <div class="col-md-4">
             <div class="dashboard-stats" style="border-left-color: #4caf50;">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-globe text-success"></i> Virtual (Online)</h6>
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-globe text-success"></i> <fmt:message key="accountant.virtual_sales" /></h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalVirtual) %></h3>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="dashboard-stats" style="border-left-color: #9c27b0;">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-box-seam text-info"></i> Unidades Vendidas</h6>
+            <div class="dashboard-stats" style="border-left-color: #03a9f4;">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-box-seam text-info"></i> <fmt:message key="accountant.units_sold" /></h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);"><%= productosVendidos %></h3>
             </div>
         </div>
@@ -217,17 +224,17 @@
     <!-- Notificaciones de Devoluciones y Garantías -->
     <div class="card-custom shadow-sm mb-4 border-danger border-2">
         <div class="card-header d-flex justify-content-between align-items-center bg-danger bg-opacity-10">
-            <h5 class="mb-0 text-danger"><i class="bi bi-bell-fill"></i> Notificaciones de Devoluciones y Garantías</h5>
+            <h5 class="mb-0 text-danger"><i class="bi bi-bell-fill"></i> <fmt:message key="accountant.notifications" /></h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 300px;">
                 <table class="table table-borderless table-hover m-0 table-sm">
                     <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
                         <tr>
-                            <th class="text-secondary">Fecha de Aprobación</th>
-                            <th class="text-secondary">ID Reclamo</th>
-                            <th class="text-secondary">Estado</th>
-                            <th class="text-secondary text-end">Reporte (PDF)</th>
+                            <th class="text-secondary"><fmt:message key="accountant.approval_date" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.claim_id" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.status" /></th>
+                            <th class="text-secondary text-end"><fmt:message key="accountant.report_pdf" /></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -247,14 +254,14 @@
                             <td><span class="badge bg-secondary">#<%= rs.getInt("request_id") %></span></td>
                             <td>
                                 <% if(!isRead) { %>
-                                    <span class="badge bg-danger rounded-pill">NUEVO</span>
+                                    <span class="badge bg-danger rounded-pill"><fmt:message key="accountant.new" /></span>
                                 <% } else { %>
-                                    <span class="badge bg-light text-dark rounded-pill">Revisado</span>
+                                    <span class="badge bg-light text-dark rounded-pill"><fmt:message key="accountant.reviewed" /></span>
                                 <% } %>
                             </td>
                             <td class="text-end">
-                                <a href="<%= rs.getString("pdf_path") %>" target="_blank" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="this.parentElement.previousElementSibling.innerHTML='<span class=\'badge bg-light text-dark rounded-pill\'>Revisado</span>';">
-                                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>Ver PDF
+                                <a href="<%= rs.getString("pdf_path") %>" target="_blank" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="this.parentElement.previousElementSibling.innerHTML='<span class=\'badge bg-light text-dark rounded-pill\'><fmt:message key="accountant.reviewed" /></span>';">
+                                    <i class="bi bi-file-earmark-pdf-fill me-1"></i><fmt:message key="accountant.view_pdf" />
                                 </a>
                             </td>
                         </tr>
@@ -262,7 +269,7 @@
                                 }
                                 if(!hasReports) {
                         %>
-                        <tr><td colspan="4" class="text-center text-muted py-4">No hay reportes recientes.</td></tr>
+                        <tr><td colspan="4" class="text-center text-muted py-4"><fmt:message key="accountant.no_reports" /></td></tr>
                         <%
                                 }
                             } catch(Exception e) {}
@@ -276,19 +283,19 @@
     <!-- Presencial Table -->
     <div class="card-custom shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-warning"><i class="bi bi-shop"></i> Historial de Ventas Físicas (Cajero)</h5>
-            <button class="btn btn-sm btn-secondary" style="border-radius:20px;" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
+            <h5 class="mb-0 text-warning"><i class="bi bi-shop"></i> <fmt:message key="accountant.physical_history" /></h5>
+            <button class="btn btn-sm btn-secondary" style="border-radius:20px;" onclick="window.print()"><i class="bi bi-printer"></i> <fmt:message key="accountant.print" /></button>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-borderless table-hover m-0 table-sm">
                     <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
                         <tr>
-                            <th class="text-secondary">Fecha</th>
-                            <th class="text-secondary">Producto</th>
-                            <th class="text-secondary">Cajero Responsable</th>
-                            <th class="text-secondary text-center">Cant.</th>
-                            <th class="text-secondary text-end">Total</th>
+                            <th class="text-secondary"><fmt:message key="accountant.date" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.product" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.cashier" /></th>
+                            <th class="text-secondary text-center"><fmt:message key="accountant.qty" /></th>
+                            <th class="text-secondary text-end"><fmt:message key="accountant.total" /></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -325,18 +332,18 @@
     <!-- Virtual Table -->
     <div class="card-custom shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-success"><i class="bi bi-globe"></i> Historial de Ventas Online (E-commerce)</h5>
+            <h5 class="mb-0 text-success"><i class="bi bi-globe"></i> <fmt:message key="accountant.online_history" /></h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-borderless table-hover m-0 table-sm">
                     <thead style="border-bottom: 1px solid var(--card-border); position: sticky; top: 0; background: var(--card-bg);">
                         <tr>
-                            <th class="text-secondary">Fecha</th>
-                            <th class="text-secondary">Producto</th>
-                            <th class="text-secondary">Cliente</th>
-                            <th class="text-secondary text-center">Cant.</th>
-                            <th class="text-secondary text-end">Total</th>
+                            <th class="text-secondary"><fmt:message key="accountant.date" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.product" /></th>
+                            <th class="text-secondary"><fmt:message key="accountant.customer" /></th>
+                            <th class="text-secondary text-center"><fmt:message key="accountant.qty" /></th>
+                            <th class="text-secondary text-end"><fmt:message key="accountant.total" /></th>
                         </tr>
                     </thead>
                     <tbody>

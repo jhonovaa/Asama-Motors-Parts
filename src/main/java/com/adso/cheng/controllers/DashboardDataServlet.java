@@ -28,8 +28,8 @@ public class DashboardDataServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Security Check: Only Admin (1)
-        if (user == null || user.getRoleId() != 1) {
+        // Security Check: Admin (1), Bodeguero (3), Cajero (4)
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 3 && user.getRoleId() != 4)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
         }
@@ -47,6 +47,11 @@ public class DashboardDataServlet extends HttpServlet {
             out.print(gson.toJson(getCashierHistory()));
         } else if ("onlineHistory".equals(action)) {
             out.print(gson.toJson(getOnlineHistory()));
+        } else if ("dailySummary".equals(action)) {
+            out.print(gson.toJson(getDailySummary()));
+        } else if ("dailySalesDetails".equals(action)) {
+            String date = request.getParameter("date");
+            out.print(gson.toJson(getDailySalesDetails(date)));
         } else {
             out.print("{\"error\": \"Invalid action\"}");
         }
@@ -154,6 +159,67 @@ public class DashboardDataServlet extends HttpServlet {
                 row.put("sales_count", rs.getInt("sales_count"));
                 row.put("revenue", rs.getDouble("revenue"));
                 list.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private List<Map<String, Object>> getDailySummary() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT DATE(s.sale_date) as sale_date, " +
+                     "SUM(CASE WHEN s.sale_type = 'ONLINE' OR s.cashier_id IS NULL THEN 1 ELSE 0 END) as online_count, " +
+                     "SUM(CASE WHEN s.sale_type = 'ONLINE' OR s.cashier_id IS NULL THEN s.total_price ELSE 0 END) as online_revenue, " +
+                     "SUM(CASE WHEN s.sale_type != 'ONLINE' AND s.cashier_id IS NOT NULL THEN 1 ELSE 0 END) as cashier_count, " +
+                     "SUM(CASE WHEN s.sale_type != 'ONLINE' AND s.cashier_id IS NOT NULL THEN s.total_price ELSE 0 END) as cashier_revenue, " +
+                     "SUM(s.total_price) as total_revenue " +
+                     "FROM sales s " +
+                     "WHERE s.sale_date >= CURRENT_DATE - INTERVAL '30 days' " +
+                     "GROUP BY DATE(s.sale_date) " +
+                     "ORDER BY sale_date DESC";
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("date", rs.getDate("sale_date").toString());
+                row.put("online_count", rs.getInt("online_count"));
+                row.put("online_revenue", rs.getDouble("online_revenue"));
+                row.put("cashier_count", rs.getInt("cashier_count"));
+                row.put("cashier_revenue", rs.getDouble("cashier_revenue"));
+                row.put("total_revenue", rs.getDouble("total_revenue"));
+                list.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private List<Map<String, Object>> getDailySalesDetails(String dateStr) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        if (dateStr == null || dateStr.trim().isEmpty()) return list;
+        String sql = "SELECT s.sale_date, s.sale_type, u.full_name as cashier_name, p.name as product_name, s.quantity, s.total_price " +
+                     "FROM sales s " +
+                     "JOIN products p ON s.product_id = p.id " +
+                     "LEFT JOIN users u ON s.cashier_id = u.id " +
+                     "WHERE DATE(s.sale_date) = ?::date " +
+                     "ORDER BY s.sale_date ASC";
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dateStr);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("sale_date", rs.getTimestamp("sale_date").toString());
+                    row.put("sale_type", rs.getString("sale_type"));
+                    row.put("cashier_name", rs.getString("cashier_name"));
+                    row.put("product_name", rs.getString("product_name"));
+                    row.put("quantity", rs.getInt("quantity"));
+                    row.put("total_price", rs.getDouble("total_price"));
+                    list.add(row);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

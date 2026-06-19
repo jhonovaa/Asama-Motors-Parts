@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     String otpCode = (String) session.getAttribute("otp");
     if (otpCode == null) {
@@ -11,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificacion OTP - Asama Moto Parts</title>
+    <title><fmt:message key="otp.title" /></title>
     <link rel="icon" type="image/png" href="resources/logo-asama.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -82,7 +83,7 @@
 <script src="resources/theme.js"></script>
 
     <div style="position:fixed; top:20px; right:20px; z-index:1000;">
-        <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-lg" title="Cambiar tema">
+        <button onclick="toggleTheme()" class="btn btn-icon theme-toggle-btn rounded-circle transition-all shadow-lg" title="<fmt:message key='otp.theme_toggle' />">
             <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
         </button>
     </div>
@@ -93,8 +94,8 @@
             <i class="bi bi-shield-lock-fill"></i>
         </div>
         
-        <h2 class="fw-bold mb-2 title-main text-white">Seguridad de Cuenta</h2>
-        <p class="text-secondary mb-4 fs-6">Hemos enviado un codigo de 6 digitos a tu correo electronico. Ingresalo a continuacion.</p>
+        <h2 class="fw-bold mb-2 title-main text-white"><fmt:message key="otp.account_security" /></h2>
+        <p class="text-secondary mb-4 fs-6"><fmt:message key="otp.instruction" /></p>
         
         <% if(request.getAttribute("error") != null) { %>
             <div class="alert bg-danger bg-opacity-25 border border-danger text-danger py-3 px-3 text-center rounded-3 fw-bold mb-4 shadow-sm fs-6" role="alert">
@@ -121,19 +122,19 @@
             </div>
             
             <button type="submit" class="btn btn-accent w-100 rounded-pill fw-bold py-3 fs-5 shadow-lg transition-all d-flex justify-content-center align-items-center gap-2">
-                <i class="bi bi-check-circle-fill"></i> Verificar e Ingresar
+                <i class="bi bi-check-circle-fill"></i> <fmt:message key="otp.verify_button" />
             </button>
         </form>
 
         <div class="mt-3">
             <button id="resendBtn" class="btn btn-outline-secondary w-100 rounded-pill fw-bold py-2 transition-all d-flex justify-content-center align-items-center gap-2" disabled>
-                <i class="bi bi-arrow-clockwise"></i> <span id="countdownSpan">Reenviar en 60s</span>
+                <i class="bi bi-arrow-clockwise"></i> <span id="countdownSpan"><fmt:message key="otp.resend_60s" /></span>
             </button>
         </div>
         
         <div class="text-center mt-4 pt-4 border-top border-secondary border-opacity-25">
             <a href="login.jsp" class="text-secondary text-decoration-none hover-accent transition-all fw-bold fs-6">
-                <i class="bi bi-arrow-left-circle-fill me-2"></i> Volver al inicio de sesion
+                <i class="bi bi-arrow-left-circle-fill me-2"></i> <fmt:message key="otp.back_login" />
             </a>
         </div>
     </div>
@@ -218,13 +219,13 @@
             
             let timer = setInterval(() => {
                 timeLeft--;
-                countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                countdownSpan.innerText = `<fmt:message key="otp.resend_in" /> ${timeLeft}s`;
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     resendBtn.disabled = false;
                     resendBtn.classList.remove('btn-outline-secondary');
                     resendBtn.classList.add('btn-outline-light');
-                    countdownSpan.innerText = 'Reenviar código';
+                    countdownSpan.innerText = '<fmt:message key="otp.resend_code" />';
                 }
             }, 1000);
 
@@ -233,35 +234,35 @@
                 resendBtn.disabled = true;
                 resendBtn.classList.remove('btn-outline-light');
                 resendBtn.classList.add('btn-outline-secondary');
-                countdownSpan.innerText = 'Enviando...';
+                countdownSpan.innerText = '<fmt:message key="otp.sending" />';
                 
                 fetch('resendOtp', { method: 'POST' })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
                             timeLeft = 60;
-                            countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                            countdownSpan.innerText = `<fmt:message key="otp.resend_in" /> ${timeLeft}s`;
                             timer = setInterval(() => {
                                 timeLeft--;
-                                countdownSpan.innerText = `Reenviar en ${timeLeft}s`;
+                                countdownSpan.innerText = `<fmt:message key="otp.resend_in" /> ${timeLeft}s`;
                                 if (timeLeft <= 0) {
                                     clearInterval(timer);
                                     resendBtn.disabled = false;
                                     resendBtn.classList.remove('btn-outline-secondary');
                                     resendBtn.classList.add('btn-outline-light');
-                                    countdownSpan.innerText = 'Reenviar código';
+                                    countdownSpan.innerText = '<fmt:message key="otp.resend_code" />';
                                 }
                             }, 1000);
                         } else {
-                            alert('Error al reenviar el correo: ' + (data.message || 'Error desconocido'));
-                            countdownSpan.innerText = 'Reenviar código';
+                            alert('<fmt:message key="otp.error_resend" /> ' + (data.message || '<fmt:message key="otp.unknown_error" />'));
+                            countdownSpan.innerText = '<fmt:message key="otp.resend_code" />';
                             resendBtn.disabled = false;
                             resendBtn.classList.remove('btn-outline-secondary');
                             resendBtn.classList.add('btn-outline-light');
                         }
                     }).catch(err => {
-                        alert('Error de red al intentar reenviar el correo.');
-                        countdownSpan.innerText = 'Reenviar código';
+                        alert('<fmt:message key="otp.network_error" />');
+                        countdownSpan.innerText = '<fmt:message key="otp.resend_code" />';
                         resendBtn.disabled = false;
                         resendBtn.classList.remove('btn-outline-secondary');
                         resendBtn.classList.add('btn-outline-light');
