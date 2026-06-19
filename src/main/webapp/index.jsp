@@ -43,7 +43,7 @@
     </style>
 </head>
 <body class="no-pad">
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top shadow-sm" style="background: var(--nav-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border);">

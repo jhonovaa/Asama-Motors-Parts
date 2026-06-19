@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 <%@ include file="navbar.jsp" %>
 
 <div class="container pb-5" style="margin-top: 100px;">
@@ -64,7 +64,7 @@
                     <div class="order-card p-4">
                         <div class="d-flex flex-column flex-md-row justify-content-between mb-3 border-bottom border-secondary pb-3">
                             <div>
-                                <h5 class="fw-bold mb-1">Pedido #<%= o.getId() %> <span class="text-secondary fs-6 fw-normal ms-2"><%= o.getCreatedAt().toString().substring(0, 16) %></span></h5>
+                                <h5 class="fw-bold mb-1">Pedido #<%= o.getId() %> <span class="text-secondary fs-6 fw-normal ms-2"><%= o.getCreatedAt().toInstant().atZone(java.time.ZoneId.of("America/Bogota")).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) %></span></h5>
                                 <p class="mb-0 text-accent fw-bold"><i class="bi bi-person me-1"></i> <%= o.getCustomerName() %></p>
                             </div>
                             <div class="text-md-end mt-3 mt-md-0">

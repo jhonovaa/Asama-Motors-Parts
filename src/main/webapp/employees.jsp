@@ -40,7 +40,7 @@
     </style>
 </head>
 <body>
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 
 <%@ include file="navbar.jsp" %>
 

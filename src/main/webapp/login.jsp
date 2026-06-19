@@ -54,7 +54,7 @@
     </style>
 </head>
 <body class="body-center" style="background: radial-gradient(circle at center, var(--card-bg) 0%, var(--bg-color) 100%);">
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 
     <!-- Boton de Tema -->
     <div style="position:fixed; top:20px; right:20px; z-index:1000;">
