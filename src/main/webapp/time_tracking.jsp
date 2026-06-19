@@ -125,7 +125,7 @@
     </style>
 </head>
 <body>
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 
     <div class="d-flex justify-content-between align-items-center w-100 p-4 position-absolute top-0 start-0" style="z-index: 100;">
         <a href="dashboard.jsp" class="btn btn-moto-outline rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">

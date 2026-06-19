@@ -20,12 +20,12 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px; }
         .checkout-card { background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
-        .form-control { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-color); border-radius: 8px; }
-        .form-control:focus { background: var(--card-bg); color: var(--text-color); border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
-        .form-control:disabled { background: var(--bg-color); color: var(--text-color); opacity: 0.7; }
-        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 12px; font-weight: 600; width: 100%; transition: 0.3s; }
-        .btn-moto:hover { background-color: #E55A2B; color: white; transform: translateY(-1px); }
-        .mp-badge { background: #009ee3; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
+        .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 14px; font-weight: 700; width: 100%; font-size: 1.1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-moto:hover { background-color: #E55A2B; color: white; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229,90,43,0.4); }
+        .btn-moto:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .security-info { background: rgba(40,167,69,0.1); border: 1px solid rgba(40,167,69,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .security-info i { color: #28a745; }
+        .spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.15em; }
     </style>
 </head>
 <body>
@@ -38,23 +38,12 @@
                 <div class="checkout-card" id="paymentForm">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="fw-bold m-0"><fmt:message key="checkout.details" /></h4>
-                        <span class="mp-badge"><i class="bi bi-credit-card-2-front"></i> Mercado Pago</span>
+                        <span class="badge bg-success py-2 px-3 rounded-pill"><i class="bi bi-box-seam me-1"></i> Envío a Domicilio</span>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label text-secondary small"><fmt:message key="checkout.card_number" /></label>
-                        <input type="text" class="form-control" placeholder="4545 4545 4545 4545" value="4545 4545 4545 4545" disabled>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-6">
-                            <label class="form-label text-secondary small"><fmt:message key="checkout.expiry" /></label>
-                            <input type="text" class="form-control" placeholder="MM/YY" value="12/30" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label text-secondary small"><fmt:message key="checkout.cvc" /></label>
-                            <input type="text" class="form-control" placeholder="123" value="123" disabled>
-                        </div>
+
+                    <div class="security-info">
+                        <p class="mb-1 small fw-medium"><i class="bi bi-check-circle-fill me-2"></i>Pedido Directo</p>
+                        <p class="mb-0 small text-secondary">Al confirmar, tu pedido será registrado y descontado del inventario. El pago se acordará de manera externa.</p>
                     </div>
 
                     <hr class="my-4 border-secondary border-opacity-50">
@@ -76,18 +65,10 @@
                         <span class="fw-bolder fs-4 text-accent" id="summaryTotal">$0.00</span>
                     </div>
 
-                    <div class="alert alert-warning py-2 small">
-                        <i class="bi bi-info-circle"></i> <fmt:message key="checkout.simulation_warning" />
-                    </div>
-
-                    <button class="btn btn-moto mt-3" id="btnPay" onclick="submitOrder()"><fmt:message key="checkout.confirm_pay" /></button>
-                </div>
-
-                <div class="checkout-card text-center" id="successMessage" style="display: none;">
-                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                    <h3 class="mt-3"><fmt:message key="checkout.success_title" /></h3>
-                    <p class="text-secondary"><fmt:message key="checkout.success_text" /></p>
-                    <a href="dashboard.jsp" class="btn btn-moto-outline mt-3" style="border-radius: 20px;"><fmt:message key="checkout.go_to_panel" /></a>
+                    <button class="btn btn-moto" id="btnPay" onclick="processPayment()">
+                        <i class="bi bi-check2-circle"></i>
+                        Confirmar Pedido
+                    </button>
                 </div>
             </div>
         </div>
@@ -97,45 +78,42 @@
         function loadSummary() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
-            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-            
+            let cartStr = localStorage.getItem(cartKey);
+            if(!cartStr || cartStr === '[]') {
+                alert("<fmt:message key='checkout.cart_empty' />");
+                window.location.href = 'catalog.jsp';
+                return 0;
+            }
+            let cart = JSON.parse(cartStr);
+
             let subtotal = 0;
             let totalItems = 0;
-            
+
             cart.forEach(item => {
                 subtotal += (item.price * item.qty);
                 totalItems += item.qty;
             });
-            
-            // Algorithmic Shipping Logic:
-            // Estimate 1.2 kg per item + 0.5 kg box base weight
+
             let estWeight = (totalItems * 1.2) + 0.5;
-            
-            // Shipping Cost: Base $5.00 + $1.50 per Kg
             let shipping = 5.00 + (estWeight * 1.50);
-            
-            // Free shipping on orders over $500
-            if (subtotal >= 500) {
-                shipping = 0;
-            }
-            if (subtotal === 0) {
-                shipping = 0;
-                estWeight = 0;
-            }
-            
+            if (subtotal >= 500) shipping = 0;
+            if (subtotal === 0) { shipping = 0; estWeight = 0; }
+
             let totalPay = subtotal + shipping;
-            
+
             document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
             document.getElementById('summaryShipping').innerText = shipping === 0 ? (subtotal > 0 ? 'FREE' : '$0.00') : '$' + shipping.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryTotal').innerText = '$' + totalPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            return totalPay;
         }
-        
+
         window.onload = function() {
             loadSummary();
         };
 
-        function submitOrder() {
+        function processPayment() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
             let cart = localStorage.getItem(cartKey);
@@ -145,24 +123,34 @@
                 return;
             }
 
-            document.getElementById('btnPay').innerText = '<fmt:message key="checkout.processing" />';
-            document.getElementById('btnPay').disabled = true;
+            let btn = document.getElementById('btnPay');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
+            btn.disabled = true;
 
             fetch('checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'cartData=' + encodeURIComponent(cart)
             })
-            .then(response => {
-                if(response.ok) {
-                    localStorage.removeItem(cartKey);
-                    document.getElementById('paymentForm').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
+            .then(response => response.json())
+            .then(data => {
+                if(data.success && data.init_point) {
+                    // Guardar orderId para procesarlo al volver de Mercado Pago
+                    let currentUserId = <%= user != null ? user.getId() : -1 %>;
+                    localStorage.setItem('asama_pending_order_' + currentUserId, data.orderId);
+                    // Redirigir al Sandbox de Mercado Pago
+                    window.location.href = data.init_point;
                 } else {
-                    alert("<fmt:message key='checkout.error' />");
-                    document.getElementById('btnPay').innerText = '<fmt:message key="checkout.confirm_pay" />';
-                    document.getElementById('btnPay').disabled = false;
+                    alert("<fmt:message key='checkout.error' />: " + data.error);
+                    btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
+                    btn.disabled = false;
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error de conexión");
+                btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
+                btn.disabled = false;
             });
         }
     </script>

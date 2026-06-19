@@ -12,7 +12,7 @@
     boolean isApp = navUserAgent != null && navUserAgent.contains("ChengAndroidApp");
 %>
 <link rel="stylesheet" href="resources/theme.css?v=6">
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 

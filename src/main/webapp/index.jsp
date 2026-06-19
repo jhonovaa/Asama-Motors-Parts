@@ -43,7 +43,7 @@
     </style>
 </head>
 <body class="no-pad">
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
 
     <%@ include file="navbar.jsp" %>
 

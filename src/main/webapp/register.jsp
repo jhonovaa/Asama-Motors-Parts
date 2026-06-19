@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body class="body-center">
-<script src="resources/theme.js"></script>
+<script src="resources/theme.js?v=2"></script>
     <div style="position:fixed; top:16px; right:16px; z-index:1000;">
         <button onclick="toggleTheme()" class="theme-toggle-btn" title="<fmt:message key='register.theme_toggle' />">
             <i id="themeIcon" class="bi bi-sun-fill"></i>
