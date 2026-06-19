@@ -144,9 +144,7 @@
                 <div class="position-relative">
                     <a href="online_orders.jsp" class="btn btn-icon rounded-circle transition-all d-flex align-items-center justify-content-center" title="<fmt:message key='nav.online_orders'/>">
                         <i class="bi bi-bell-fill fs-5"></i>
-                        <span id="orderNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                            0
-                        </span>
+                        <span id="orderNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
                     </a>
                 </div>
                 <% } %>
@@ -227,26 +225,11 @@
     resetTimer();
 
     <% if(navRole == 1 || navRole == 4) { %>
-    function checkNotifications() {
-        fetch('api/notifications')
-            .then(res => res.json())
-            .then(data => {
-                if(data.error) return;
-                const badge = document.getElementById('orderNotificationBadge');
-                if(badge) {
-                    if(data.unreadCount > 0) {
-                        badge.innerText = data.unreadCount;
-                        badge.style.display = 'block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            }).catch(console.error);
-    }
-    document.addEventListener("DOMContentLoaded", function() {
+    // checkNotifications ya está definida arriba, solo reiniciar el intervalo si es necesario
+    if (typeof checkNotifications === 'function') {
         checkNotifications();
         setInterval(checkNotifications, 15000);
-    });
+    }
     <% } %>
 </script>
 <% } %>

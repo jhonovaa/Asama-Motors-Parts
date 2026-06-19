@@ -59,11 +59,30 @@
 
     <div class="success-card">
         <i class="bi bi-check-circle-fill success-icon"></i>
-        <h2 class="fw-bold mt-4">¡Pedido Confirmado!</h2>
+        <h2 class="fw-bold mt-4">¡Pago Exitoso!</h2>
+        
+        <%
+            String orderIdStr = request.getParameter("orderId");
+            if(orderIdStr != null && !orderIdStr.isEmpty()) {
+        %>
+        <h4 class="text-primary fw-bold mb-3">Orden #<%= orderIdStr %></h4>
+        <p class="text-secondary mb-1">Tu pago se procesó correctamente mediante Mercado Pago.</p>
+        <p class="text-secondary mb-4">El pedido ya ha sido registrado y está en proceso de despacho.</p>
+        
+        <div class="d-grid gap-2 mb-4">
+            <a href="api/receipt?orderId=<%= orderIdStr %>" class="btn btn-outline-danger fw-bold" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Descargar Recibo PDF
+            </a>
+        </div>
+        <%
+            } else {
+        %>
         <p class="text-secondary mt-3 mb-1">Tu pedido ha sido registrado correctamente y está en proceso de despacho.</p>
-        <p class="text-secondary mb-4">El pago se acordará con nuestro equipo o al momento de la entrega.</p>
+        <%
+            }
+        %>
 
-        <div class="d-flex flex-column gap-2 mt-4">
+        <div class="d-flex flex-column gap-2 mt-2">
             <a href="catalog.jsp" class="btn btn-moto">
                 <i class="bi bi-bag-check me-2"></i>Seguir Comprando
             </a>

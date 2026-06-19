@@ -59,8 +59,8 @@ public class PaymentSuccessServlet extends HttpServlet {
                     int customerId = rs.getInt("customer_id");
                     String itemsJson = rs.getString("items_json");
 
-                    // Marcar como completado
-                    String updateSql = "UPDATE online_orders SET status = 'COMPLETADO' WHERE id = ?";
+                    // Marcar como completado y activar notificaciones
+                    String updateSql = "UPDATE online_orders SET status = 'COMPLETADO', is_read_admin = FALSE, is_read_cashier = FALSE WHERE id = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                         updateStmt.setInt(1, orderId);
                         updateStmt.executeUpdate();

@@ -257,3 +257,101 @@ div:where(.swal2-container) h2:where(.swal2-title), div:where(.swal2-container) 
 
 /* Print Styles */
 @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
+
+/* ── Notification Dropdown ── */
+.notif-dropdown {
+    width: 360px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    overflow: hidden;
+    margin-top: 10px;
+}
+.notif-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255,107,53,0.1);
+    border-bottom: 1px solid var(--card-border);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+.notif-ver-todos {
+    font-size: 0.8rem;
+    color: var(--accent-orange);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+.notif-ver-todos:hover { opacity: 0.75; }
+.notif-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 340px;
+    overflow-y: auto;
+}
+.notif-item {
+    padding: 14px 16px;
+    cursor: default;
+    transition: background 0.2s;
+}
+.notif-item:hover { background: rgba(255,107,53,0.07); }
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.notif-id {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+.notif-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.notif-customer {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+.notif-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+}
+.notif-total {
+    font-weight: 700;
+    color: var(--accent-orange);
+}
+.notif-time {
+    color: var(--text-color);
+    opacity: 0.6;
+}
+.notif-divider {
+    height: 1px;
+    background: var(--card-border);
+    margin: 0;
+    padding: 0;
+}
+.notif-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-color);
+    opacity: 0.5;
+    font-size: 0.88rem;
+}
+body.light-mode .notif-dropdown {
+    background: #ffffff;
+}
+body.light-mode .notif-dropdown-header {
+    background: rgba(255,107,53,0.06);
+}

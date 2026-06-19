@@ -65,16 +65,18 @@
                         <span class="fw-bolder fs-4 text-accent" id="summaryTotal">$0.00</span>
                     </div>
 
-                    <button class="btn btn-moto" id="btnPay" onclick="processPayment()">
-                        <i class="bi bi-check2-circle"></i>
-                        Confirmar Pedido
-                    </button>
+                    <div id="paymentBrick_container"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- SDK MercadoPago.js V2 -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
     <script>
+        let totalPayGlobal = 0;
+
         function loadSummary() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
@@ -100,6 +102,7 @@
             if (subtotal === 0) { shipping = 0; estWeight = 0; }
 
             let totalPay = subtotal + shipping;
+            totalPayGlobal = totalPay;
 
             document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
@@ -109,50 +112,86 @@
             return totalPay;
         }
 
-        window.onload = function() {
-            loadSummary();
+        window.onload = async function() {
+            let amount = loadSummary();
+            if (amount > 0) {
+                await renderPaymentBrick(amount);
+            }
         };
 
-        function processPayment() {
-            let currentUserId = <%= user != null ? user.getId() : -1 %>;
-            let cartKey = 'asama_cart_' + currentUserId;
-            let cart = localStorage.getItem(cartKey);
-            if(!cart || cart === '[]') {
-                alert("<fmt:message key='checkout.cart_empty' />");
-                window.location.href = 'catalog.jsp';
-                return;
-            }
+        const mp = new MercadoPago('TEST-5078b5d5-347a-4228-b46a-ae17dd4fe78e', {
+            locale: 'es-CO'
+        });
+        const bricksBuilder = mp.bricks();
 
-            let btn = document.getElementById('btnPay');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
-            btn.disabled = true;
+        const renderPaymentBrick = async (amount) => {
+            const settings = {
+                initialization: {
+                    amount: amount,
+                },
+                customization: {
+                    visual: {
+                        style: {
+                            theme: 'default',
+                        }
+                    },
+                    paymentMethods: {
+                        creditCard: "all",
+                        debitCard: "all"
+                    }
+                },
+                callbacks: {
+                    onReady: () => {
+                        // Brick is ready
+                    },
+                    onSubmit: ({ selectedPaymentMethod, formData }) => {
+                        return new Promise((resolve, reject) => {
+                            let currentUserId = <%= user != null ? user.getId() : -1 %>;
+                            let cartKey = 'asama_cart_' + currentUserId;
+                            let cart = localStorage.getItem(cartKey);
 
-            fetch('checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'cartData=' + encodeURIComponent(cart)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success && data.init_point) {
-                    // Guardar orderId para procesarlo al volver de Mercado Pago
-                    let currentUserId = <%= user != null ? user.getId() : -1 %>;
-                    localStorage.setItem('asama_pending_order_' + currentUserId, data.orderId);
-                    // Redirigir al Sandbox de Mercado Pago
-                    window.location.href = data.init_point;
-                } else {
-                    alert("<fmt:message key='checkout.error' />: " + data.error);
-                    btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
-                    btn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Error de conexión");
-                btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
-                btn.disabled = false;
-            });
-        }
+                            fetch("api/process_payment", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    cartData: cart,
+                                    formData: formData
+                                }),
+                            })
+                            .then((response) => response.json())
+                            .then((response) => {
+                                resolve();
+                                if (response.success && response.status === 'approved') {
+                                    // Limpiar cart
+                                    localStorage.removeItem(cartKey);
+                                    // Llamar a PaymentSuccessServlet para completar stock y notificaciones
+                                    window.location.href = 'PaymentSuccessServlet?status=approved&external_reference=' + response.orderId;
+                                } else {
+                                    let errorMsg = response.error ? response.error : response.status;
+                                    alert("Hubo un error con tu pago: " + errorMsg + ". Por favor verifica los datos o usa otra tarjeta.");
+                                }
+                            })
+                            .catch((error) => {
+                                reject();
+                                alert("Error procesando pago. Inténtalo de nuevo.");
+                                console.error(error);
+                            });
+                        });
+                    },
+                    onError: (error) => {
+                        console.error(error);
+                    },
+                },
+            };
+            
+            window.paymentBrickController = await bricksBuilder.create(
+                "payment",
+                "paymentBrick_container",
+                settings
+            );
+        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
