@@ -89,6 +89,10 @@ body.no-pad { padding-top: 0; }
 .brand-hover:hover .brand-icon-wrapper { transform: rotate(15deg) scale(1.1); }
 .tracking-tight { letter-spacing: -0.5px; }
 
+.asama-text {
+    color: var(--text-color) !important;
+}
+
 .custom-link {
     position: relative;
     color: var(--text-color) !important;
@@ -115,6 +119,17 @@ body.no-pad { padding-top: 0; }
     box-shadow: 0 0 8px var(--accent-glow);
 }
 .custom-link:hover::after { width: 80%; }
+
+.custom-link.active {
+    color: var(--accent-orange) !important;
+    opacity: 1 !important;
+}
+body:not(.light-mode) .custom-link.active {
+    text-shadow: 0 0 8px var(--accent-glow) !important;
+}
+.custom-link.active::after {
+    width: 80% !important;
+}
 
 .role-badge {
     background: rgba(0, 229, 255, 0.1);
