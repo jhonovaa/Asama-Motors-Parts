@@ -32,11 +32,18 @@ public class OnlineOrderDAO {
 
     public List<OnlineOrder> getUnreadOrdersByRole(int roleId) {
         List<OnlineOrder> orders = new ArrayList<>();
-        String column = roleId == 1 ? "is_read_admin" : "is_read_cashier";
+        String column;
+        if (roleId == 1) {
+            column = "is_read_admin";
+        } else if (roleId == 3) {
+            column = "is_read_storekeeper";
+        } else {
+            column = "is_read_cashier";
+        }
         String sql = "SELECT o.*, u.full_name as customer_name " +
                      "FROM online_orders o " +
                      "JOIN users u ON o.customer_id = u.id " +
-                     "WHERE o." + column + " = FALSE " +
+                     "WHERE o." + column + " = FALSE AND o.status = 'COMPLETADO' " +
                      "ORDER BY o.created_at DESC";
                      
         try (Connection conn = DbConnection.getConnection();
@@ -53,7 +60,14 @@ public class OnlineOrderDAO {
     }
 
     public void markAsRead(int orderId, int roleId) {
-        String column = roleId == 1 ? "is_read_admin" : "is_read_cashier";
+        String column;
+        if (roleId == 1) {
+            column = "is_read_admin";
+        } else if (roleId == 3) {
+            column = "is_read_storekeeper";
+        } else {
+            column = "is_read_cashier";
+        }
         String sql = "UPDATE online_orders SET " + column + " = TRUE WHERE id = ?";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -65,7 +79,14 @@ public class OnlineOrderDAO {
     }
     
     public void markAllAsRead(int roleId) {
-        String column = roleId == 1 ? "is_read_admin" : "is_read_cashier";
+        String column;
+        if (roleId == 1) {
+            column = "is_read_admin";
+        } else if (roleId == 3) {
+            column = "is_read_storekeeper";
+        } else {
+            column = "is_read_cashier";
+        }
         String sql = "UPDATE online_orders SET " + column + " = TRUE WHERE " + column + " = FALSE";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -98,6 +119,7 @@ public class OnlineOrderDAO {
         order.setStatus(rs.getString("status"));
         order.setReadAdmin(rs.getBoolean("is_read_admin"));
         order.setReadCashier(rs.getBoolean("is_read_cashier"));
+        order.setReadStorekeeper(rs.getBoolean("is_read_storekeeper"));
         order.setCreatedAt(rs.getTimestamp("created_at"));
         return order;
     }

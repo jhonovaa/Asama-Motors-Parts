@@ -12,6 +12,7 @@ public class OnlineOrder {
     private String status;
     private boolean isReadAdmin;
     private boolean isReadCashier;
+    private boolean isReadStorekeeper;
     private Timestamp createdAt;
 
     public OnlineOrder() {}
@@ -42,6 +43,9 @@ public class OnlineOrder {
 
     public boolean isReadCashier() { return isReadCashier; }
     public void setReadCashier(boolean readCashier) { isReadCashier = readCashier; }
+
+    public boolean isReadStorekeeper() { return isReadStorekeeper; }
+    public void setReadStorekeeper(boolean readStorekeeper) { isReadStorekeeper = readStorekeeper; }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }

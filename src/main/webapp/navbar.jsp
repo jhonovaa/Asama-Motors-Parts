@@ -67,29 +67,6 @@
         document.body.classList.add('light-mode');
         document.getElementById('themeIcon').classList.replace('bi-sun-fill', 'bi-moon-fill');
     }
-
-    <% if(navRole == 1 || navRole == 4) { %>
-    function checkNotifications() {
-        fetch('api/notifications')
-            .then(res => res.json())
-            .then(data => {
-                if(data.error) return;
-                const badge = document.getElementById('orderNotificationBadge');
-                if(badge) {
-                    if(data.unreadCount > 0) {
-                        badge.innerText = data.unreadCount;
-                        badge.style.display = 'block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            }).catch(console.error);
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-        checkNotifications();
-        setInterval(checkNotifications, 15000);
-    });
-    <% } %>
 </script>
 <% } %>
 
@@ -178,7 +155,7 @@
                 <% } %>
 
                 <div class="d-flex align-items-center justify-content-between w-100 gap-2 mt-1">
-                    <% if(navLoggedIn && (navRole == 1 || navRole == 4)) { %>
+                    <% if(navLoggedIn && (navRole == 1 || navRole == 3 || navRole == 4)) { %>
                     <div class="position-relative">
                         <a href="online_orders.jsp" class="btn btn-icon rounded-circle transition-all d-flex align-items-center justify-content-center" title="<fmt:message key='nav.online_orders'/>">
                             <i class="bi bi-bell-fill fs-5"></i>
@@ -255,7 +232,57 @@
     // Start timer on page load
     resetTimer();
 
-    <% if(navRole == 1 || navRole == 4) { %>
+    <% if(navRole == 1 || navRole == 3 || navRole == 4) { %>
+    let lastNotificationCount = 0;
+    function showToastNotification(title, message) {
+        let container = document.getElementById('asama-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'asama-toast-container';
+            container.style.position = 'fixed';
+            container.style.bottom = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '99999';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.gap = '10px';
+            document.body.appendChild(container);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = 'p-3 shadow-lg rounded-3 border border-opacity-50 text-white';
+        toast.style.background = 'rgba(255, 107, 53, 0.95)'; // Orange accent with glass feel
+        toast.style.color = '#fff';
+        toast.style.minWidth = '320px';
+        toast.style.maxWidth = '400px';
+        toast.style.cursor = 'pointer';
+        toast.style.transition = 'all 0.5s ease';
+        toast.style.border = '1px solid rgba(255,255,255,0.2)';
+        toast.style.backdropFilter = 'blur(10px)';
+        toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+        
+        toast.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between mb-1">
+                <strong class="me-auto"><i class="bi bi-bell-fill me-2"></i>\${title}</strong>
+                <button type="button" class="btn-close btn-close-white btn-sm" onclick="event.stopPropagation(); this.parentElement.parentElement.remove();"></button>
+            </div>
+            <div class="small">\${message}</div>
+        `;
+        
+        toast.onclick = function() {
+            window.location.href = 'online_orders.jsp';
+        };
+        
+        container.appendChild(toast);
+        
+        // Auto-remove after 8 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 500);
+        }, 8000);
+    }
+
     function checkNotifications() {
         fetch('api/notifications')
             .then(res => res.json())
@@ -266,9 +293,14 @@
                     if(data.unreadCount > 0) {
                         badge.innerText = data.unreadCount;
                         badge.style.display = 'block';
+                        
+                        if (lastNotificationCount > 0 && data.unreadCount > lastNotificationCount) {
+                            showToastNotification("¡Nueva Venta Realizada!", "Se ha registrado un nuevo pedido online. Haz clic aquí para ir al módulo.");
+                        }
                     } else {
                         badge.style.display = 'none';
                     }
+                    lastNotificationCount = data.unreadCount;
                 }
             }).catch(console.error);
     }

@@ -42,8 +42,8 @@
                     </div>
 
                     <div class="security-info">
-                        <p class="mb-1 small fw-medium"><i class="bi bi-check-circle-fill me-2"></i>Pedido Directo</p>
-                        <p class="mb-0 small text-secondary">Al confirmar, tu pedido será registrado y descontado del inventario. El pago se acordará de manera externa.</p>
+                        <p class="mb-1 small fw-medium"><i class="bi bi-shield-lock-fill me-2"></i>Pago Seguro con Mercado Pago</p>
+                        <p class="mb-0 small text-secondary">Serás redirigido a Mercado Pago para realizar tu pago. Tu pedido será registrado, pero el stock solo se descontará una vez que el pago sea exitoso.</p>
                     </div>
 
                     <hr class="my-4 border-secondary border-opacity-50">
@@ -65,10 +65,30 @@
                         <span class="fw-bolder fs-4 text-accent" id="summaryTotal">$0.00</span>
                     </div>
 
-                    <button class="btn btn-moto" id="btnPay" onclick="processPayment()">
-                        <i class="bi bi-check2-circle"></i>
-                        Confirmar Pedido
-                    </button>
+                    <div id="simulated_payment_form" class="mt-4 border p-4 rounded-3 shadow-sm bg-light">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-credit-card-fill text-primary me-2"></i>Pago con Tarjeta (Simulado)</h5>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Número de Tarjeta</label>
+                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000" value="4555 5555 5555 5555">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-secondary small">Fecha de Vencimiento</label>
+                                <input type="text" class="form-control" placeholder="MM/YY" value="12/30">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-secondary small">CVC</label>
+                                <input type="text" class="form-control" placeholder="123" value="123">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Nombre en la tarjeta</label>
+                            <input type="text" class="form-control" placeholder="Tu Nombre" value="<%= user != null ? user.getFullName() : "Cliente" %>">
+                        </div>
+                        <button class="btn btn-moto w-100" id="btnPay" onclick="processSimulatedPayment()">
+                            <i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,17 +129,13 @@
             return totalPay;
         }
 
-        window.onload = function() {
-            loadSummary();
-        };
-
-        function processPayment() {
+        function processSimulatedPayment() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
-            let cart = localStorage.getItem(cartKey);
-            if(!cart || cart === '[]') {
+            let cartStr = localStorage.getItem(cartKey);
+
+            if(!cartStr || cartStr === '[]') {
                 alert("<fmt:message key='checkout.cart_empty' />");
-                window.location.href = 'catalog.jsp';
                 return;
             }
 
@@ -127,32 +143,41 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
             btn.disabled = true;
 
-            fetch('checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'cartData=' + encodeURIComponent(cart)
+            const formData = new URLSearchParams();
+            formData.append("cartData", cartStr);
+
+            fetch("checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: formData.toString(),
             })
             .then(response => response.json())
             .then(data => {
-                if(data.success && data.init_point) {
-                    // Guardar orderId para procesarlo al volver de Mercado Pago
-                    let currentUserId = <%= user != null ? user.getId() : -1 %>;
-                    localStorage.setItem('asama_pending_order_' + currentUserId, data.orderId);
-                    // Redirigir al Sandbox de Mercado Pago
-                    window.location.href = data.init_point;
+                if (data.success) {
+                    // Limpiar el carrito de localStorage
+                    localStorage.removeItem(cartKey);
+                    
+                    // Redirigir a la pagina de pago exitoso
+                    window.location.href = 'pago-exitoso.jsp?orderId=' + data.orderId;
                 } else {
-                    alert("<fmt:message key='checkout.error' />: " + data.error);
-                    btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
+                    alert("Error: " + data.error);
+                    btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar';
                     btn.disabled = false;
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error(error);
                 alert("Error de conexión");
-                btn.innerHTML = '<i class="bi bi-check2-circle"></i> Confirmar Pedido';
+                btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar';
                 btn.disabled = false;
             });
         }
+
+        window.onload = function() {
+            loadSummary();
+        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -85,15 +85,9 @@
     <% } %>
 
     <div class="row g-4 mb-4">
-<<<<<<< HEAD
-        <div class="col-md-4">
-            <div class="dashboard-stats" style="border-left-color: #2196F3;">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-cash-stack text-primary"></i> Ingresos Totales</h6>
-=======
         <div class="col-md-3">
-            <div class="dashboard-stats">
-                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-wallet2 text-danger"></i> <fmt:message key="accountant.total_revenue" /></h6>
->>>>>>> origin/Mariana
+            <div class="dashboard-stats" style="border-left-color: #2196F3;">
+                <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-wallet2 text-primary"></i> <fmt:message key="accountant.total_revenue" /></h6>
                 <h3 class="mb-0 fw-bold" style="color: var(--text-color);">$<%= String.format("%.2f", totalGeneral) %></h3>
             </div>
         </div>

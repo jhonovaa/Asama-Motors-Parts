@@ -16,11 +16,13 @@ public class Migration {
                           "status VARCHAR(50) DEFAULT 'PENDIENTE', " +
                           "is_read_admin BOOLEAN DEFAULT FALSE, " +
                           "is_read_cashier BOOLEAN DEFAULT FALSE, " +
+                          "is_read_storekeeper BOOLEAN DEFAULT FALSE, " +
                           "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                           ");";
              
              stmt.executeUpdate(sql);
-             System.out.println("MIGRATION_SUCCESS: online_orders table created.");
+             stmt.executeUpdate("ALTER TABLE online_orders ADD COLUMN IF NOT EXISTS is_read_storekeeper BOOLEAN DEFAULT FALSE;");
+             System.out.println("MIGRATION_SUCCESS: online_orders table created and altered.");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -6,7 +6,7 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 4)) {
+    if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 3 && user.getRoleId() != 4)) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -70,6 +70,9 @@
                             <div class="text-md-end mt-3 mt-md-0">
                                 <h4 class="fw-bolder mb-1">$<%= String.format("%.2f", o.getTotalAmount()) %></h4>
                                 <p class="mb-0 text-secondary small">Envío: $<%= String.format("%.2f", o.getShippingCost()) %></p>
+                                <a href="invoice.jsp?orderId=<%= o.getId() %>" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="bi bi-receipt me-1"></i> Ver Factura
+                                </a>
                             </div>
                         </div>
                         

@@ -875,23 +875,29 @@
                                         <%
                                             try (Connection conn = DbConnection.getConnection();
                                                  PreparedStatement stmt = conn.prepareStatement(
-                                                     "SELECT s.id, s.sale_date, p.name, s.quantity, s.total_price " +
-                                                     "FROM sales s JOIN products p ON s.product_id = p.id " +
-                                                     "WHERE s.customer_id = ? ORDER BY s.sale_date DESC")) {
+                                                     "SELECT id, created_at, status, total_amount " +
+                                                     "FROM online_orders " +
+                                                     "WHERE customer_id = ? ORDER BY created_at DESC")) {
                                                 stmt.setInt(1, user.getId());
                                                 ResultSet rs = stmt.executeQuery();
                                                 boolean hasPurchases = false;
                                                 while(rs.next()) {
                                                     hasPurchases = true;
+                                                    String status = rs.getString("status");
+                                                    String badgeClass = "bg-secondary";
+                                                    if(status.equals("PENDIENTE")) badgeClass = "bg-warning text-dark";
+                                                    else if(status.equals("EN_PREPARACION")) badgeClass = "bg-info text-dark";
+                                                    else if(status.equals("ENVIADO")) badgeClass = "bg-primary";
+                                                    else if(status.equals("COMPLETADO") || status.equals("ENTREGADO")) badgeClass = "bg-success";
                                         %>
                                         <tr>
-                                            <td class="text-muted small"><%= rs.getTimestamp("sale_date").toString().substring(0, 16) %></td>
-                                            <td class="fw-bold"><%= rs.getString("name") %></td>
-                                            <td class="text-center"><span class="badge bg-secondary bg-opacity-25 text-light px-2"><%= rs.getInt("quantity") %></span></td>
-                                            <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
+                                            <td class="text-muted small"><%= rs.getTimestamp("created_at").toString().substring(0, 16) %></td>
+                                            <td class="fw-bold">Pedido N° <%= rs.getInt("id") %></td>
+                                            <td class="text-center"><span class="badge <%= badgeClass %>"><%= status %></span></td>
+                                            <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_amount")) %></td>
                                             <td class="text-center">
-                                                <a href="post_sale_request.jsp?sale_id=<%= rs.getInt("id") %>" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="<fmt:message key='dashboard.claim_title' />">
-                                                    <i class="bi bi-shield-exclamation me-1"></i><fmt:message key="dashboard.claim" />
+                                                <a href="invoice.jsp?orderId=<%= rs.getInt("id") %>" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 mb-1" title="Descargar Factura">
+                                                    <i class="bi bi-receipt me-1"></i>Factura
                                                 </a>
                                             </td>
                                         </tr>

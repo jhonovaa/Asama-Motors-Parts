@@ -122,7 +122,10 @@
             <div class="action-card h-100 d-flex flex-column p-4">
                 <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
                     <h4 class="fw-bold mb-0 text-accent"><i class="bi bi-cart3 me-2"></i><fmt:message key="cashier.account" /></h4>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearCart()" title="<fmt:message key='cashier.empty_cart' />"><i class="bi bi-trash"></i></button>
+                    <div>
+                        <button class="btn btn-sm btn-outline-info rounded-pill px-3 me-2" onclick="generateShiftReport()" title="Cuadrar Turno"><i class="bi bi-wallet2 me-1"></i>Cuadrar Turno</button>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearCart()" title="<fmt:message key='cashier.empty_cart' />"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>
                 
                 <div class="table-responsive flex-grow-1" style="min-height: 350px; max-height: 50vh; overflow-y: auto;">
@@ -233,6 +236,94 @@
 </div>
 
 <script>
+    const getSwalBg = () => document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24';
+    const getSwalColor = () => document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa';
+
+    function generateShiftReport() {
+        let btn = document.querySelector('button[title="Cuadrar Turno"]');
+        if (btn) btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Cargando...';
+        
+        fetch('cashier', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'action=report'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (btn) btn.innerHTML = '<i class="bi bi-wallet2 me-1"></i>Cuadrar Turno';
+            if (data.error) {
+                Swal.fire({icon: 'error', title: 'Error', text: data.error, background: getSwalBg(), color: getSwalColor()});
+            } else {
+                let podiumHtml = '';
+                if (data.topDays && data.topDays.length > 0) {
+                    podiumHtml = '<h6 class="mt-4 mb-3 fw-bold text-center text-uppercase text-secondary" style="letter-spacing: 1px;"><i class="bi bi-trophy-fill text-warning me-2"></i>Podio del Mes</h6><div class="d-flex justify-content-center align-items-end gap-2 mb-2" style="height: 120px;">';
+                    
+                    // Orden de podio: 2, 1, 3
+                    const positions = [
+                        { idx: 1, height: '70%', color: '#C0C0C0', text: 'Plata', class: 'order-1' }, // 2nd
+                        { idx: 0, height: '100%', color: '#FFD700', text: 'Oro', class: 'order-2' }, // 1st
+                        { idx: 2, height: '50%', color: '#CD7F32', text: 'Bronce', class: 'order-3' }  // 3rd
+                    ];
+                    
+                    positions.forEach(pos => {
+                        let dayData = data.topDays[pos.idx];
+                        if (dayData) {
+                            podiumHtml += `
+                            <div class="d-flex flex-column align-items-center \${pos.class}" style="width: 30%;">
+                                <div class="small fw-bold mb-1">` + dayData.date.substring(5) + `</div>
+                                <div class="small fw-bold text-dark mb-1">$` + dayData.total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + `</div>
+                                <div class="w-100 rounded-top d-flex justify-content-center align-items-center fw-bold shadow-sm" 
+                                     style="height: \${pos.height}; background: linear-gradient(180deg, \${pos.color} 0%, rgba(0,0,0,0.6) 100%); color: #fff;">
+                                    \${pos.idx + 1}
+                                </div>
+                            </div>`;
+                        } else {
+                             podiumHtml += `<div class="\${pos.class}" style="width: 30%;"></div>`;
+                        }
+                    });
+                    
+                    podiumHtml += '</div>';
+                } else {
+                    podiumHtml = '<div class="alert alert-secondary mt-4 py-2 small text-center">No hay ventas en este mes todavía.</div>';
+                }
+
+                Swal.fire({
+                    title: 'Cuadre de Caja',
+                    html: `
+                        <div class="text-start">
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="p-3 border rounded-3 text-center" style="background: rgba(40,167,69,0.1); border-color: rgba(40,167,69,0.2) !important;">
+                                        <div class="text-secondary small fw-bold text-uppercase mb-1">Hoy</div>
+                                        <h4 class="mb-0 text-success fw-bold">$\${data.todayTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
+                                        <div class="small text-secondary mt-1">\${data.todayTxs} ventas</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 border rounded-3 text-center" style="background: rgba(13,202,240,0.1); border-color: rgba(13,202,240,0.2) !important;">
+                                        <div class="text-secondary small fw-bold text-uppercase mb-1">Este Mes</div>
+                                        <h4 class="mb-0 text-info fw-bold">$\${data.monthTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h4>
+                                        <div class="small text-secondary mt-1">\${data.monthTxs} ventas</div>
+                                    </div>
+                                </div>
+                            </div>
+                            \${podiumHtml}
+                        </div>
+                    `,
+                    background: getSwalBg(),
+                    color: getSwalColor(),
+                    width: '500px',
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: 'var(--accent-orange)'
+                });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if (btn) btn.innerHTML = '<i class="bi bi-wallet2 me-1"></i>Cuadrar Turno';
+            Swal.fire({icon: 'error', title: 'Error', text: 'No se pudo conectar con el servidor.', background: getSwalBg(), color: getSwalColor()});
+        });
+    }
     const barcodeInput = document.getElementById('barcodeInput');
     const scanStatus = document.getElementById('scanStatus');
     const cartBody = document.getElementById('cartBody');
@@ -366,11 +457,19 @@
             });
         });
 
-        Promise.all(promises).then(() => {
+        Promise.all(promises).then((responses) => {
+            return Promise.all(responses.map(res => res.json()));
+        }).then((dataArray) => {
             showStatus('<i class="bi bi-bag-check-fill me-2"></i><fmt:message key="cashier.sale_success" />', 'success');
             cart = [];
             renderCart();
             payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> <fmt:message key="cashier.charge" />';
+            
+            // Open the invoice for the first successful item
+            let firstSuccess = dataArray.find(data => data.success && data.invoiceId);
+            if (firstSuccess) {
+                window.open('invoice.jsp?id=' + firstSuccess.invoiceId, '_blank');
+            }
         }).catch(() => {
             alert('<fmt:message key="cashier.sale_error" />');
             payBtn.innerHTML = '<i class="bi bi-cash-coin fs-4"></i> <fmt:message key="cashier.charge" />';

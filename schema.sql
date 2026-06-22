@@ -180,6 +180,7 @@ CREATE TABLE online_orders (
     status VARCHAR(50) DEFAULT 'PENDIENTE',
     is_read_admin BOOLEAN DEFAULT FALSE,
     is_read_cashier BOOLEAN DEFAULT FALSE,
+    is_read_storekeeper BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

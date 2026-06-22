@@ -118,6 +118,41 @@ public class TimeTrackingServlet extends HttpServlet {
             PrintWriter out = response.getWriter();
             out.print(json.toString());
             return;
+        } else if ("theoretical_hours".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            StringBuilder json = new StringBuilder("[");
+            String sql = "SELECT u.full_name, SUM(EXTRACT(EPOCH FROM (t.exit_time - t.entry_time))/3600) as total_hours " +
+                         "FROM time_tracking t JOIN users u ON t.user_id = u.id " +
+                         "WHERE t.exit_time IS NOT NULL " +
+                         "GROUP BY u.full_name ORDER BY total_hours DESC";
+            
+            try (Connection conn = DbConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    
+                    String name = rs.getString("full_name");
+                    double hours = rs.getDouble("total_hours");
+                    
+                    json.append("{")
+                        .append("\"name\":\"").append(name.replace("\"", "\\\"")).append("\",")
+                        .append("\"hours\":").append(String.format(java.util.Locale.US, "%.2f", hours))
+                        .append("}");
+                    first = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]");
+            
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            return;
         }
 
         request.getRequestDispatcher("time_tracking.jsp").forward(request, response);

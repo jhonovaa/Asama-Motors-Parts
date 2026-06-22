@@ -27,7 +27,8 @@
             height: 100%;
         }
         .product-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); }
-        .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
+        .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; cursor: zoom-in; transition: transform 0.3s; }
+        .product-img:hover { transform: scale(1.05); }
         .btn-moto { background-color: var(--accent-orange); color: #fff; border: none; border-radius: 30px; padding: 8px 20px; font-weight: 600; transition: 0.3s; }
         .btn-moto:hover { background-color: #E55A2B; color: white;}
         .search-bar { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-color); border-radius: 30px; padding: 12px 20px; width: 100%; max-width: 500px; margin: 0 auto; display: block;}
@@ -86,7 +87,9 @@
             <div class="col-md-3 product-item" data-name="<%= p.getName().toLowerCase() %>" data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>">
                 <div class="product-card">
                     <% if(p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
-                        <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>" class="product-img">
+                        <div style="overflow: hidden; border-radius: 10px; margin-bottom: 15px;">
+                            <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>" class="product-img mb-0" onclick="openZoomModal(this.src, '<%= p.getName() %>')">
+                        </div>
                     <% } else { %>
                         <div class="product-img d-flex align-items-center justify-content-center text-secondary" style="background: var(--card-border);">
                             <i class="bi bi-tools fs-1"></i>
@@ -178,7 +181,26 @@
                 }
             }
         }
+
+        function openZoomModal(src, title) {
+            Swal.fire({
+                title: title,
+                imageUrl: src,
+                imageAlt: title,
+                width: 'auto',
+                padding: '1em',
+                background: 'var(--card-bg)',
+                color: 'var(--text-color)',
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    image: 'rounded-3 shadow-lg max-w-100',
+                    popup: 'border border-secondary border-opacity-25'
+                }
+            });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

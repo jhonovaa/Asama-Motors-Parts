@@ -29,7 +29,7 @@ public class OrderNotificationServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
-        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 4)) {
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 3 && user.getRoleId() != 4)) {
             out.print("{\"error\": \"Unauthorized\", \"unreadCount\": 0}");
             return;
         }
@@ -49,7 +49,7 @@ public class OrderNotificationServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 4)) {
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 3 && user.getRoleId() != 4)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
