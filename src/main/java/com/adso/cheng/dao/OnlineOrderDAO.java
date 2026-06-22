@@ -16,7 +16,7 @@ public class OnlineOrderDAO {
         String sql = "SELECT o.*, COALESCE(u.full_name, 'Cliente Desconocido') as customer_name " +
                      "FROM online_orders o " +
                      "LEFT JOIN users u ON o.customer_id = u.id " +
-                     "ORDER BY o.created_at DESC";
+                     "ORDER BY o.id DESC";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -37,7 +37,7 @@ public class OnlineOrderDAO {
                      "FROM online_orders o " +
                      "LEFT JOIN users u ON o.customer_id = u.id " +
                      "WHERE o." + column + " = FALSE " +
-                     "ORDER BY o.created_at DESC";
+                     "ORDER BY o.id DESC";
                      
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
