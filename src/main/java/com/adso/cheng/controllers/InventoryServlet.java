@@ -68,6 +68,9 @@ public class InventoryServlet extends HttpServlet {
             p.setPrice(Double.parseDouble(request.getParameter("price")));
             int newStock = Integer.parseInt(request.getParameter("stock"));
             p.setStock(newStock);
+            if (request.getParameter("weight") != null && !request.getParameter("weight").isEmpty()) {
+                p.setWeight(Double.parseDouble(request.getParameter("weight")));
+            }
             p.setEstante(request.getParameter("estante"));
             p.setFila(request.getParameter("fila"));
             p.setMinimoProgramado(Integer.parseInt(request.getParameter("minimo_programado")));
@@ -95,6 +98,9 @@ public class InventoryServlet extends HttpServlet {
             p.setPrice(Double.parseDouble(request.getParameter("price")));
             int stock = Integer.parseInt(request.getParameter("stock"));
             p.setStock(stock);
+            if (request.getParameter("weight") != null && !request.getParameter("weight").isEmpty()) {
+                p.setWeight(Double.parseDouble(request.getParameter("weight")));
+            }
             p.setEstante(request.getParameter("estante"));
             p.setFila(request.getParameter("fila"));
             p.setMinimoProgramado(Integer.parseInt(request.getParameter("minimo_programado")));

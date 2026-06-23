@@ -369,7 +369,7 @@
                                         <td class="fw-bolder text-end text-accent fs-5">$<%= String.format("%.2f", p.getPrice()) %></td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
+                                                <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, <%= p.getWeight() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
                                                     <i class="bi bi-pencil-fill fs-5"></i>
                                                 </button>
                                                 <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
@@ -688,14 +688,18 @@
               </div>
               
               <div class="row g-2 mb-3">
-                  <div class="col-6">
+                  <div class="col-4">
                       <label class="form-label">Precio ($)</label>
                       <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required oninput="document.getElementById('addBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
                       <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="addBasePrice" class="fw-bold text-success">$0.00</span></small>
                   </div>
-                  <div class="col-6">
+                  <div class="col-4">
                       <label class="form-label">Stock Inicial</label>
                       <input type="number" name="stock" class="form-control" placeholder="0" required>
+                  </div>
+                  <div class="col-4">
+                      <label class="form-label">Peso (Kg)</label>
+                      <input type="number" step="0.01" name="weight" class="form-control" placeholder="0.00" required>
                   </div>
               </div>
               
@@ -793,14 +797,18 @@
                   <textarea name="description" id="editDesc" class="form-control" rows="2"></textarea>
               </div>
               <div class="row g-3 mb-3">
-                  <div class="col-6">
+                  <div class="col-4">
                       <label class="form-label"><fmt:message key="inventory.price" /></label>
                       <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required oninput="document.getElementById('editBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
                       <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="editBasePrice" class="fw-bold text-success">$0.00</span></small>
                   </div>
-                  <div class="col-6">
+                  <div class="col-4">
                       <label class="form-label"><fmt:message key="inventory.cur_stock" /></label>
                       <input type="number" name="stock" id="editStock" class="form-control" required>
+                  </div>
+                  <div class="col-4">
+                      <label class="form-label">Peso (Kg)</label>
+                      <input type="number" step="0.01" name="weight" id="editWeight" class="form-control" required>
                   </div>
               </div>
               <div class="row g-3 mb-3">
@@ -954,7 +962,7 @@
         }
     }
 
-    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado, motoBrand, motoModel, partCat) {
+    function openEditModal(id, name, brand, desc, price, stock, weight, estante, fila, minimoProgramado, motoBrand, motoModel, partCat) {
         document.getElementById('editId').value = id;
         document.getElementById('editName').value = name;
         document.getElementById('editBrand').value = brand;
@@ -962,6 +970,7 @@
         document.getElementById('editPrice').value = price;
         document.getElementById('editBasePrice').innerText = (price / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'});
         document.getElementById('editStock').value = stock;
+        document.getElementById('editWeight').value = weight || 0;
         document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
         document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
         document.getElementById('editMinimoProgramado').value = minimoProgramado;
