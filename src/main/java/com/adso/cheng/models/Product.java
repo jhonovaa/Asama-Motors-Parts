@@ -15,6 +15,7 @@ public class Product {
     private String motorcycleBrand;
     private String motorcycleModel;
     private String partCategory;
+    private double weight;
 
     
     // Default constructor
@@ -62,4 +63,7 @@ public class Product {
 
     public String getPartCategory() { return partCategory; }
     public void setPartCategory(String partCategory) { this.partCategory = partCategory; }
+
+    public double getWeight() { return weight; }
+    public void setWeight(double weight) { this.weight = weight; }
 }

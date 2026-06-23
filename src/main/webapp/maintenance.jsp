@@ -60,7 +60,7 @@
             <h3 class="fw-bold mb-1"><i class="bi bi-wrench-adjustable-circle me-2" style="color:var(--accent-orange)"></i><fmt:message key="maintenance.header" /></h3>
             <p class="text-secondary mb-0"><fmt:message key="maintenance.subtitle" /></p>
         </div>
-        <% if(user.getRoleId() == 1) { %>
+        <% if(user.getRoleId() == 1 || user.getRoleId() == 4) { %>
         <button class="btn btn-moto" data-bs-toggle="modal" data-bs-target="#newJobModal">
             <i class="bi bi-plus-circle me-2"></i>Nueva Orden
         </button>
@@ -70,7 +70,7 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-4" role="tablist">
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabJobs"><fmt:message key="maintenance.tab_jobs" /></a></li>
-        <% if(user.getRoleId() == 1) { %>
+        <% if(user.getRoleId() == 1 || user.getRoleId() == 4) { %>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabNewMoto"><fmt:message key="maintenance.tab_register_moto" /></a></li>
         <% } %>
     </ul>
@@ -87,7 +87,7 @@
                                 <th class="text-secondary">#</th>
                                 <th class="text-secondary"><fmt:message key="maintenance.plate" /></th>
                                 <th class="text-secondary"><fmt:message key="maintenance.moto" /></th>
-                                <% if(user.getRoleId() == 1) { %>
+                                <% if(user.getRoleId() == 1 || user.getRoleId() == 4) { %>
                                 <th class="text-secondary"><fmt:message key="maintenance.customer" /></th>
                                 <th class="text-secondary"><fmt:message key="maintenance.mechanic" /></th>
                                 <% } %>
@@ -112,7 +112,7 @@
                                 <td><%= job.get("id") %></td>
                                 <td><span class="badge bg-secondary"><%= job.get("plate") %></span></td>
                                 <td><%= job.get("motoBrand") %> <%= job.get("motoModel") %></td>
-                                <% if(user.getRoleId() == 1) { %>
+                                <% if(user.getRoleId() == 1 || user.getRoleId() == 4) { %>
                                 <td><%= job.get("customerName") %></td>
                                 <td><%= job.get("mechanicName") != null ? job.get("mechanicName") : "<span class='text-danger'>Sin Asignar</span>" %></td>
                                 <% } %>
@@ -136,7 +136,7 @@
                                             </button>
                                         <% } %>
                                         
-                                        <% if(user.getRoleId() == 1 || user.getRoleId() == 6) { %>
+                                        <% if(user.getRoleId() == 1 || user.getRoleId() == 6 || user.getRoleId() == 4) { %>
                                             <% if(!"COMPLETADO".equals(status)) { %>
                                                 <button class="btn btn-outline-dark btn-sm" onclick="openEditModal(<%= job.get("id") %>, '<%= status %>', <%= ((Number)job.get("cost")).doubleValue() %>)" title="Editar Estado">
                                                     <i class="bi bi-pencil"></i>
@@ -153,7 +153,7 @@
             </div>
         </div>
 
-        <% if(user.getRoleId() == 1) { %>
+        <% if(user.getRoleId() == 1 || user.getRoleId() == 4) { %>
         <!-- TAB 2: Register Motorcycle -->
         <div class="tab-pane fade" id="tabNewMoto">
             <div class="row g-4">
@@ -186,6 +186,15 @@
                             <div class="mb-3">
                                 <label class="form-label small text-secondary">Año</label>
                                 <input type="number" name="year" class="form-control" placeholder="2024" min="1980" max="2030" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary">Mecánico Asignado</label>
+                                <select name="mechanicId" class="form-select" required>
+                                    <option value="">Seleccione Mecánico...</option>
+                                    <% for(Map<String, Object> mec : mechanics) { %>
+                                    <option value="<%= mec.get("id") %>"><%= mec.get("fullName") %></option>
+                                    <% } %>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-moto w-100">Registrar Motocicleta</button>
                         </form>

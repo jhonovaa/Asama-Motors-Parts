@@ -202,7 +202,8 @@
                      data-desc="<%= p.getDescription() != null ? p.getDescription().toLowerCase() : "" %>" 
                      data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>" 
                      data-category="<%= p.getPartCategory() != null ? p.getPartCategory().toLowerCase() : "" %>" 
-                     data-price="<%= p.getPrice() %>">
+                     data-price="<%= p.getPrice() %>"
+                     data-weight="<%= p.getWeight() %>">
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="fw-bold m-0" style="max-width: 75%;"><%= p.getName() %></h6>
@@ -217,7 +218,7 @@
                             <i class="bi bi-geo-alt-fill"></i> Ubicación: Estante <%= p.getEstante() != null && !p.getEstante().isEmpty() ? p.getEstante() : "N/A" %> - Fila <%= p.getFila() != null && !p.getFila().isEmpty() ? p.getFila() : "N/A" %>
                         </div>
                         <% if(p.getStock() > 0) { %>
-                            <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="addFromSearch(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>)">
+                            <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="addFromSearch(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getWeight() %>)">
                                 <i class="bi bi-cart-plus"></i> Añadir
                             </button>
                         <% } else { %>
@@ -268,10 +269,13 @@
             
             tbody.innerHTML = '';
             let total = 0;
+            let totalWeight = 0;
             
             cart.forEach((item, index) => {
                 let subtotal = item.price * item.qty;
+                let itemWeight = (item.weight || 0) * item.qty;
                 total += subtotal;
+                totalWeight += itemWeight;
                 
                 let tr = document.createElement('tr');
                 tr.innerHTML = 
@@ -292,6 +296,19 @@
                     '</td>';
                 tbody.appendChild(tr);
             });
+            
+            // Apply heavy shipping fee if weight > 16kg
+            if (totalWeight > 16.0) {
+                total += 16000;
+                let shippingTr = document.createElement('tr');
+                shippingTr.innerHTML = 
+                    '<td class="fw-bold text-wrap text-warning"><i class="bi bi-truck me-2"></i>Envío Pesado (>16 Kg)</td>' +
+                    '<td class="fw-medium">$16,000.00</td>' +
+                    '<td class="text-center">-</td>' +
+                    '<td class="fw-bolder text-warning fs-5 text-end">$16,000.00</td>' +
+                    '<td></td>';
+                tbody.appendChild(shippingTr);
+            }
             
             totalSpan.innerText = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
@@ -382,7 +399,7 @@
             }
         }
 
-        function addFromSearch(id, name, price) {
+        function addFromSearch(id, name, price, weight) {
             let currentStock = productStocks[id] || 0;
             let existing = cart.find(i => i.id === id);
             
@@ -396,7 +413,7 @@
                 existing.qty++;
             } else {
                 if(currentStock <= 0) return;
-                cart.push({id: id, name: name, price: price, qty: 1});
+                cart.push({id: id, name: name, price: price, qty: 1, weight: weight});
             }
             localStorage.setItem(cartKey, JSON.stringify(cart));
             renderCart();

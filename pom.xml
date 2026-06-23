@@ -67,6 +67,12 @@
       <artifactId>jakarta.servlet.jsp.jstl</artifactId>
       <version>3.0.1</version>
     </dependency>
+    <!-- MercadoPago SDK -->
+    <dependency>
+      <groupId>com.mercadopago</groupId>
+      <artifactId>sdk-java</artifactId>
+      <version>2.5.0</version>
+    </dependency>
   </dependencies>
 
   <build>

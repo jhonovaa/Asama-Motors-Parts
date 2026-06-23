@@ -89,23 +89,23 @@
             let cart = JSON.parse(cartStr);
 
             let subtotal = 0;
-            let totalItems = 0;
+            let totalWeight = 0;
 
             cart.forEach(item => {
                 subtotal += (item.price * item.qty);
-                totalItems += item.qty;
+                totalWeight += ((item.weight || 0) * item.qty);
             });
 
-            let estWeight = (totalItems * 1.2) + 0.5;
-            let shipping = 5.00 + (estWeight * 1.50);
-            if (subtotal >= 500) shipping = 0;
-            if (subtotal === 0) { shipping = 0; estWeight = 0; }
+            let shipping = 0;
+            if (totalWeight > 16.0) {
+                shipping = 16000;
+            }
 
             let totalPay = subtotal + shipping;
             totalPayGlobal = totalPay;
 
             document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
+            document.getElementById('summaryWeight').innerText = totalWeight.toFixed(1) + ' kg';
             document.getElementById('summaryShipping').innerText = shipping === 0 ? (subtotal > 0 ? 'FREE' : '$0.00') : '$' + shipping.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryTotal').innerText = '$' + totalPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 

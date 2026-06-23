@@ -88,8 +88,8 @@ public class MaintenanceDAO {
         return jobs;
     }
 
-    public void addMotorcycle(int customerId, String plate, String brand, String model, int year) {
-        String sql = "INSERT INTO motorcycles (customer_id, plate, brand, model, year) VALUES (?, ?, ?, ?, ?)";
+    public int addMotorcycle(int customerId, String plate, String brand, String model, int year) {
+        String sql = "INSERT INTO motorcycles (customer_id, plate, brand, model, year) VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -97,10 +97,15 @@ public class MaintenanceDAO {
             stmt.setString(3, brand);
             stmt.setString(4, model);
             stmt.setInt(5, year);
-            stmt.executeUpdate();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
     public List<Map<String, Object>> getMotorcyclesByCustomer(int customerId) {

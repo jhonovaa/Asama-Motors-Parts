@@ -34,8 +34,8 @@ public class MaintenanceServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
-        // Security Check: Only Admin (1) or Mecánico (6)
-        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 6)) {
+        // Security Check: Only Admin (1), Mecánico (6), or Cajero (4)
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 6 && user.getRoleId() != 4)) {
             response.sendRedirect("login");
             return;
         }
@@ -82,7 +82,7 @@ public class MaintenanceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 6)) {
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 6 && user.getRoleId() != 4)) {
             response.sendRedirect("login");
             return;
         }
@@ -95,8 +95,18 @@ public class MaintenanceServlet extends HttpServlet {
             String brand = request.getParameter("brand");
             String model = request.getParameter("model");
             int year = Integer.parseInt(request.getParameter("year"));
-            maintenanceDAO.addMotorcycle(customerId, plate, brand, model, year);
+            
+            // Add moto and get ID
+            int motoId = maintenanceDAO.addMotorcycle(customerId, plate, brand, model, year);
             AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Moto Registrada", "Registró moto placa: " + plate + " para el cliente ID: " + customerId);
+            
+            // Auto-assign to mechanic
+            String mechanicIdStr = request.getParameter("mechanicId");
+            if (mechanicIdStr != null && !mechanicIdStr.isEmpty() && motoId > 0) {
+                int mechanicId = Integer.parseInt(mechanicIdStr);
+                maintenanceDAO.addJob(motoId, mechanicId, "Ingreso Automático de Taller");
+                AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Orden Creada", "Asignó orden automáticamente al mecánico ID: " + mechanicId + " para la moto ID: " + motoId);
+            }
 
         } else if ("addJob".equals(action)) {
             int motorcycleId = Integer.parseInt(request.getParameter("motorcycleId"));

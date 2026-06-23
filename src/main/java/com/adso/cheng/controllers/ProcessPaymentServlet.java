@@ -90,6 +90,9 @@ public class ProcessPaymentServlet extends HttpServlet {
             String docType = identificationObj != null && identificationObj.has("type") && !identificationObj.get("type").isJsonNull() ? identificationObj.get("type").getAsString() : null;
             String docNumber = identificationObj != null && identificationObj.has("number") && !identificationObj.get("number").isJsonNull() ? identificationObj.get("number").getAsString() : null;
 
+            // Validar estrictamente el stock desde el lado del servidor
+            validateStock(cart);
+
             // Guardar orden como PENDIENTE
             int orderId = savePendingOrderToDb(user.getId(), cartDataStr, cart);
 
@@ -141,11 +144,15 @@ public class ProcessPaymentServlet extends HttpServlet {
         int orderId = -1;
         try (Connection conn = DbConnection.getConnection()) {
             double total = 0;
+            double totalWeight = 0;
             for (Map<String, Object> item : cart) {
                 double price = (Double) item.get("price");
                 int qty = ((Double) item.get("qty")).intValue();
+                double weight = item.containsKey("weight") && item.get("weight") != null ? (Double) item.get("weight") : 0.0;
                 total += price * qty;
+                totalWeight += weight * qty;
             }
+            double shippingCost = (totalWeight > 16.0) ? 16000.0 : 0.0;
 
             // Hora actual en Colombia (UTC-5)
             Timestamp nowColombia = Timestamp.from(
@@ -156,7 +163,7 @@ public class ProcessPaymentServlet extends HttpServlet {
             try (PreparedStatement orderStmt = conn.prepareStatement(orderSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 orderStmt.setInt(1, customerId);
                 orderStmt.setDouble(2, total);
-                orderStmt.setDouble(3, 0.0);
+                orderStmt.setDouble(3, shippingCost);
                 orderStmt.setString(4, cartDataStr);
                 orderStmt.setTimestamp(5, nowColombia);
                 orderStmt.executeUpdate();
@@ -168,6 +175,29 @@ public class ProcessPaymentServlet extends HttpServlet {
             }
         }
         return orderId;
+    }
+
+    private void validateStock(List<Map<String, Object>> cart) throws Exception {
+        try (Connection conn = DbConnection.getConnection()) {
+            for (Map<String, Object> item : cart) {
+                int productId = ((Double) item.get("id")).intValue();
+                int qty = ((Double) item.get("qty")).intValue();
+                String name = (String) item.get("name");
+                
+                try (PreparedStatement stmt = conn.prepareStatement("SELECT stock FROM products WHERE id = ?")) {
+                    stmt.setInt(1, productId);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        int stock = rs.getInt("stock");
+                        if (qty > stock) {
+                            throw new Exception("Stock insuficiente para el producto: " + name + " (Solicitado: " + qty + ", Disponible: " + stock + ")");
+                        }
+                    } else {
+                        throw new Exception("Producto no encontrado: " + name);
+                    }
+                }
+            }
+        }
     }
 
     private void sendError(HttpServletResponse response, String errorMsg) throws IOException {

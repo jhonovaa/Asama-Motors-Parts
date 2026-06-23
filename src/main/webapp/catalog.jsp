@@ -180,15 +180,15 @@
                             <img src="<%= p.getImageUrl() %>" alt="<%= p.getName() %>" class="product-img mb-0" onclick="openZoomModal(this.src, '<%= p.getName() %>')">
                         </div>
                     <% } else { %>
-                        <div class="product-img d-flex align-items-center justify-content-center text-secondary" style="background: var(--card-border);">
-                            <i class="bi bi-tools fs-1"></i>
+                        <div class="product-img d-flex align-items-center justify-content-center" style="background: rgba(128,128,128,0.1); border: 1px dashed var(--card-border);">
+                            <i class="bi bi-image text-secondary" style="font-size: 3.5rem; opacity: 0.5;"></i>
                         </div>
                     <% } %>
                     <h5 class="fw-bold mb-1"><%= p.getName() %></h5>
                     <p class="text-secondary small mb-2"><%= p.getBrand() != null ? p.getBrand() : "<fmt:message key='catalog.generic' />" %></p>
                     <h4 class="text-orange fw-bold mb-3">$<%= String.format("%.2f", p.getPrice()) %></h4>
                     <% if(p.getStock() > 0) { %>
-                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getStock() %>)"><fmt:message key="catalog.add_cart" /></button>
+                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getStock() %>, <%= p.getWeight() %>)"><fmt:message key="catalog.add_cart" /></button>
                     <% } else { %>
                         <button class="btn btn-secondary w-100" disabled><fmt:message key="catalog.out_of_stock" /></button>
                     <% } %>
@@ -227,7 +227,7 @@
             }
         }
 
-        function addToCart(id, name, price, maxStock) {
+        function addToCart(id, name, price, maxStock, weight) {
             if (!isLoggedIn) {
                 window.location.href = "login.jsp?msg=" + encodeURIComponent("<fmt:message key='catalog.login_required' />");
                 return;
@@ -243,7 +243,7 @@
                 item.qty++;
             } else {
                 if(maxStock <= 0) return;
-                cart.push({id, name, price, qty: 1});
+                cart.push({id, name, price, qty: 1, weight: weight});
             }
             localStorage.setItem(cartKey, JSON.stringify(cart));
             updateCartBadge();

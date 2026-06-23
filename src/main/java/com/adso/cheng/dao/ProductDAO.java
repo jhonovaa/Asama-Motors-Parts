@@ -44,7 +44,7 @@ public class ProductDAO {
     }
 
     public int addProduct(Product p) {
-        String sql = "INSERT INTO products (name, description, brand, price, stock, barcode, image_url, estante, fila, minimo_programado, motorcycle_brand, motorcycle_model, part_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO products (name, description, brand, price, stock, barcode, image_url, estante, fila, minimo_programado, motorcycle_brand, motorcycle_model, part_category, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getName());
@@ -60,6 +60,7 @@ public class ProductDAO {
             stmt.setString(11, p.getMotorcycleBrand());
             stmt.setString(12, p.getMotorcycleModel());
             stmt.setString(13, p.getPartCategory());
+            stmt.setDouble(14, p.getWeight());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("id");
@@ -86,9 +87,9 @@ public class ProductDAO {
     }
 
     public boolean updateProduct(Product p) {
-        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=? WHERE id=?";
+        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=? WHERE id=?";
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, image_url=? WHERE id=?";
+            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=?, image_url=? WHERE id=?";
         }
         
         try (Connection conn = DbConnection.getConnection();
@@ -104,12 +105,13 @@ public class ProductDAO {
             stmt.setString(9, p.getMotorcycleBrand());
             stmt.setString(10, p.getMotorcycleModel());
             stmt.setString(11, p.getPartCategory());
+            stmt.setDouble(12, p.getWeight());
             
             if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-                stmt.setString(12, p.getImageUrl());
-                stmt.setInt(13, p.getId());
+                stmt.setString(13, p.getImageUrl());
+                stmt.setInt(14, p.getId());
             } else {
-                stmt.setInt(12, p.getId());
+                stmt.setInt(13, p.getId());
             }
             
             return stmt.executeUpdate() > 0;
@@ -165,6 +167,7 @@ public class ProductDAO {
         p.setMotorcycleBrand(rs.getString("motorcycle_brand"));
         p.setMotorcycleModel(rs.getString("motorcycle_model"));
         p.setPartCategory(rs.getString("part_category"));
+        p.setWeight(rs.getDouble("weight"));
         return p;
     }
 }

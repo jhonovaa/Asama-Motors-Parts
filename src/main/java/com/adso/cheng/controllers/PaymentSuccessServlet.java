@@ -45,7 +45,7 @@ public class PaymentSuccessServlet extends HttpServlet {
             conn.setAutoCommit(false);
 
             // Verificar estado actual
-            String checkSql = "SELECT customer_id, items_json, status FROM online_orders WHERE id = ?";
+            String checkSql = "SELECT o.customer_id, o.items_json, o.status, o.shipping_cost, u.full_name, u.email, u.document_number FROM online_orders o JOIN users u ON o.customer_id = u.id WHERE o.id = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
                 checkStmt.setInt(1, orderId);
                 ResultSet rs = checkStmt.executeQuery();
@@ -58,6 +58,10 @@ public class PaymentSuccessServlet extends HttpServlet {
 
                     int customerId = rs.getInt("customer_id");
                     String itemsJson = rs.getString("items_json");
+                    double shippingCost = rs.getDouble("shipping_cost");
+                    String fullName = rs.getString("full_name");
+                    String email = rs.getString("email");
+                    String documentNumber = rs.getString("document_number");
 
                     // Marcar como completado y activar notificaciones
                     String updateSql = "UPDATE online_orders SET status = 'COMPLETADO', is_read_admin = FALSE, is_read_cashier = FALSE WHERE id = ?";
@@ -92,6 +96,9 @@ public class PaymentSuccessServlet extends HttpServlet {
                         }
                         salesStmt.executeBatch();
                     }
+                    
+                    // Generar Factura DIAN automáticamente
+                    com.adso.cheng.utils.DianInvoiceGenerator.generateInvoice(customerId, documentNumber, fullName, email, cart, shippingCost, orderId);
                 }
             }
             conn.commit();

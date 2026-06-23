@@ -81,7 +81,6 @@
             <a href="catalog.jsp" class="btn btn-moto">
                 <i class="bi bi-bag-check me-2"></i> Seguir Comprando
             </a>
-            <% } %>
             <a href="dashboard.jsp" class="btn btn-outline-secondary" style="border-radius: 30px;">
                 <i class="bi bi-speedometer2 me-2"></i>Ir a Mi Panel
             </a>
