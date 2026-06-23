@@ -1,21 +1,22 @@
 package com.adso.cheng.controllers;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 import com.adso.cheng.dao.ProductDAO;
 import com.adso.cheng.models.Product;
 import com.adso.cheng.models.User;
-import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
 import com.google.gson.Gson;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 @WebServlet("/cashier")
 public class CashierServlet extends HttpServlet {
@@ -132,7 +133,7 @@ public class CashierServlet extends HttpServlet {
                     }
                 }
                 
-                // 3. Podio de Días del Mes
+                // 3. Podio de Dias del Mes
                 String sqlTop = "SELECT CAST(sale_date AS DATE) as day_date, COALESCE(SUM(total_price), 0) as total FROM sales WHERE cashier_id = ? AND EXTRACT(MONTH FROM sale_date) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(YEAR FROM sale_date) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY CAST(sale_date AS DATE) ORDER BY total DESC LIMIT 3";
                             
                 java.util.List<java.util.Map<String, Object>> topDays = new java.util.ArrayList<>();

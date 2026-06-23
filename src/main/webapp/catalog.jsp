@@ -1,7 +1,11 @@
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
 <%@ page import="com.adso.cheng.models.Product" %>
 <%@ page import="com.adso.cheng.dao.ProductDAO" %>
 <%@ page import="com.adso.cheng.models.User" %>
+<%@ page import="com.adso.cheng.models.Motorcycle" %>
+<%@ page import="com.adso.cheng.dao.MotorcycleDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
@@ -14,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="resources/theme.css?v=6">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 60px;}
         .product-card {
@@ -37,6 +42,7 @@
     </style>
 </head>
 <body>
+<script src="resources/theme.js?v=2"></script>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top shadow-sm" style="background: var(--nav-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border);">
@@ -70,21 +76,104 @@
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 40px; margin-bottom: 50px;">
+    <div class="container-fluid px-lg-5" style="margin-top: 40px; margin-bottom: 50px;">
         <div class="text-center mb-4">
             <h2 class="fw-bold"><fmt:message key="catalog.header" /></h2>
             <p class="text-secondary"><fmt:message key="catalog.subtitle" /></p>
         </div>
         
-        <input type="text" id="searchInput" class="search-bar mb-5" placeholder="<fmt:message key='catalog.search' />" onkeyup="filterProducts()">
+        <%
+            ProductDAO dao = new ProductDAO();
+            List<Product> products = dao.getAllProducts();
+            
+            // Extract unique categories and brands
+            Set<String> categories = new HashSet<>();
+            Set<String> partBrands = new HashSet<>();
+            for (Product p : products) {
+                if (p.getPartCategory() != null && !p.getPartCategory().trim().isEmpty()) {
+                    categories.add(p.getPartCategory());
+                }
+                if (p.getBrand() != null && !p.getBrand().trim().isEmpty()) {
+                    partBrands.add(p.getBrand());
+                }
+            }
+            
+            // User's motorcycles
+            User currentUser = (User) session.getAttribute("user");
+            List<Motorcycle> myMotos = new java.util.ArrayList<>();
+            if (currentUser != null && currentUser.getRoleId() == 5) {
+                myMotos = new MotorcycleDAO().getMotorcyclesByCustomer(currentUser.getId());
+            }
+        %>
 
-        <div class="row g-4" id="productGrid">
-            <%
-                ProductDAO dao = new ProductDAO();
-                List<Product> products = dao.getAllProducts();
-                for(Product p : products) {
-            %>
-            <div class="col-md-3 product-item" data-name="<%= p.getName().toLowerCase() %>" data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>">
+        <!-- Mobile Filter Button -->
+        <div class="d-lg-none mb-4 text-center">
+            <button class="btn btn-moto rounded-pill px-4 shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+                <i class="bi bi-funnel-fill me-2"></i>Filtros Avanzados
+            </button>
+        </div>
+
+        <div class="row g-4">
+            <!-- Sidebar / Offcanvas for Filters -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="filterOffcanvas" style="background: var(--bg-color);">
+                    <div class="offcanvas-header border-bottom" style="border-color: var(--card-border) !important;">
+                        <h5 class="offcanvas-title fw-bold" style="color: var(--text-color);">Filtros Avanzados</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#filterOffcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body d-block">
+                        <div class="card w-100 border-0 shadow-sm" style="background: var(--card-bg); border: 1px solid var(--card-border) !important; border-radius: 15px;">
+                            <div class="card-body p-4">
+                                <h6 class="fw-bold mb-3"><i class="bi bi-search text-orange me-2"></i>Búsqueda</h6>
+                                <input type="text" id="searchInput" class="form-control mb-4" placeholder="<fmt:message key='catalog.search' />" onkeyup="filterProducts()" style="background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); border-radius: 10px;">
+                                
+                                <% if (currentUser != null && currentUser.getRoleId() == 5) { %>
+                                <h6 class="fw-bold mb-3"><i class="bi bi-bicycle text-orange me-2"></i>Mi Moto (Compatibles)</h6>
+                                <select id="motoFilter" class="form-select mb-4" onchange="filterProducts()" style="background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); border-radius: 10px;">
+                                    <option value="">Cualquier moto / Sin filtrar</option>
+                                    <% for(Motorcycle m : myMotos) { %>
+                                        <option value="<%= m.getBrand().toLowerCase() %>|<%= m.getModel().toLowerCase() %>"><%= m.getBrand() %> <%= m.getModel() %> (<%= m.getYear() %>)</option>
+                                    <% } %>
+                                </select>
+                                <% } %>
+
+                                <h6 class="fw-bold mb-3"><i class="bi bi-tags text-orange me-2"></i>Categoría</h6>
+                                <select id="categoryFilter" class="form-select mb-4" onchange="filterProducts()" style="background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); border-radius: 10px;">
+                                    <option value="">Todas las categorías</option>
+                                    <% for(String cat : categories) { %>
+                                        <option value="<%= cat %>"><%= cat %></option>
+                                    <% } %>
+                                </select>
+
+                                <h6 class="fw-bold mb-3"><i class="bi bi-star text-orange me-2"></i>Marca de Repuesto</h6>
+                                <select id="brandFilter" class="form-select mb-4" onchange="filterProducts()" style="background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); border-radius: 10px;">
+                                    <option value="">Todas las marcas</option>
+                                    <% for(String br : partBrands) { %>
+                                        <option value="<%= br.toLowerCase() %>"><%= br %></option>
+                                    <% } %>
+                                </select>
+
+                                <h6 class="fw-bold mb-3"><i class="bi bi-currency-dollar text-orange me-2"></i>Precio Máximo</h6>
+                                <input type="range" class="form-range" id="priceFilter" min="10000" max="1000000" step="10000" value="1000000" oninput="updatePriceLabel(); filterProducts();">
+                                <div class="text-center mt-2 fw-bold text-orange" id="priceValue">Cualquier Precio</div>
+                                <button class="btn btn-outline-secondary w-100 mt-4 btn-sm rounded-pill" onclick="resetFilters()">Limpiar Filtros</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="col-lg-9">
+                <div class="row g-4" id="productGrid">
+                    <% for(Product p : products) { %>
+                    <div class="col-md-4 product-item" 
+                         data-name="<%= p.getName().toLowerCase() %>" 
+                         data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>"
+                         data-category="<%= p.getPartCategory() != null ? p.getPartCategory() : "" %>"
+                         data-moto-brand="<%= p.getMotorcycleBrand() != null ? p.getMotorcycleBrand().toLowerCase() : "" %>"
+                         data-moto-model="<%= p.getMotorcycleModel() != null ? p.getMotorcycleModel().toLowerCase() : "" %>"
+                         data-price="<%= p.getPrice() %>">
                 <div class="product-card">
                     <% if(p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
                         <div style="overflow: hidden; border-radius: 10px; margin-bottom: 15px;">
@@ -99,13 +188,16 @@
                     <p class="text-secondary small mb-2"><%= p.getBrand() != null ? p.getBrand() : "<fmt:message key='catalog.generic' />" %></p>
                     <h4 class="text-orange fw-bold mb-3">$<%= String.format("%.2f", p.getPrice()) %></h4>
                     <% if(p.getStock() > 0) { %>
-                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName() %>', <%= p.getPrice() %>)"><fmt:message key="catalog.add_cart" /></button>
+                        <button class="btn btn-moto w-100" onclick="addToCart(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getStock() %>)"><fmt:message key="catalog.add_cart" /></button>
                     <% } else { %>
                         <button class="btn btn-secondary w-100" disabled><fmt:message key="catalog.out_of_stock" /></button>
                     <% } %>
                 </div>
             </div>
             <% } %>
+        </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -135,15 +227,22 @@
             }
         }
 
-        function addToCart(id, name, price) {
+        function addToCart(id, name, price, maxStock) {
             if (!isLoggedIn) {
                 window.location.href = "login.jsp?msg=" + encodeURIComponent("<fmt:message key='catalog.login_required' />");
                 return;
             }
             let item = cart.find(i => i.id === id);
             if(item) {
+                if(item.qty >= maxStock) {
+                    if(typeof Swal !== 'undefined') {
+                        Swal.fire({ toast: true, position: 'bottom-end', icon: 'error', title: 'Stock límite alcanzado', text: 'Solo hay ' + maxStock + ' disponibles.', showConfirmButton: false, timer: 2000, background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24', color: document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa' });
+                    }
+                    return;
+                }
                 item.qty++;
             } else {
+                if(maxStock <= 0) return;
                 cart.push({id, name, price, qty: 1});
             }
             localStorage.setItem(cartKey, JSON.stringify(cart));
@@ -167,14 +266,53 @@
             updateCartBadge();
         });
 
+        function updatePriceLabel() {
+            let val = document.getElementById('priceFilter').value;
+            let label = val == 1000000 ? "Cualquier Precio" : "$" + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('priceValue').innerText = label;
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = "";
+            let moto = document.getElementById('motoFilter'); if(moto) moto.value = "";
+            document.getElementById('categoryFilter').value = "";
+            document.getElementById('brandFilter').value = "";
+            document.getElementById('priceFilter').value = "1000000";
+            updatePriceLabel();
+            filterProducts();
+        }
+
         function filterProducts() {
             let input = document.getElementById('searchInput').value.toLowerCase();
+            let motoSelect = document.getElementById('motoFilter');
+            let selectedMoto = motoSelect ? motoSelect.value : "";
+            let motoBrandFilter = selectedMoto.split('|')[0] || "";
+            let motoModelFilter = selectedMoto.split('|')[1] || "";
+            let categoryFilter = document.getElementById('categoryFilter').value;
+            let brandFilter = document.getElementById('brandFilter').value;
+            let maxPrice = parseInt(document.getElementById('priceFilter').value);
+
             let items = document.getElementsByClassName('product-item');
             
             for (let i = 0; i < items.length; i++) {
                 let name = items[i].getAttribute('data-name');
                 let brand = items[i].getAttribute('data-brand');
-                if (name.includes(input) || brand.includes(input)) {
+                let category = items[i].getAttribute('data-category');
+                let pMotoBrand = items[i].getAttribute('data-moto-brand');
+                let pMotoModel = items[i].getAttribute('data-moto-model');
+                let price = parseFloat(items[i].getAttribute('data-price'));
+
+                let matchesText = name.includes(input) || brand.includes(input);
+                let matchesCategory = categoryFilter === "" || category === categoryFilter;
+                let matchesBrand = brandFilter === "" || brand === brandFilter;
+                let matchesPrice = maxPrice == 1000000 || price <= maxPrice;
+                
+                // Compatibilidad: Repuestos universales (sin moto asignada) o repuestos exactos para el modelo
+                let isUniversal = pMotoBrand === "";
+                let isCompatible = pMotoBrand === motoBrandFilter && (pMotoModel === "" || pMotoModel === motoModelFilter);
+                let matchesMoto = selectedMoto === "" || isUniversal || isCompatible;
+
+                if (matchesText && matchesCategory && matchesBrand && matchesPrice && matchesMoto) {
                     items[i].style.display = "block";
                 } else {
                     items[i].style.display = "none";

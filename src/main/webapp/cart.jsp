@@ -241,6 +241,12 @@
         let cartKey = 'asama_cart_' + currentUserId;
         let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
 
+        const productStocks = {
+        <% for(Product p : products) { %>
+            <%= p.getId() %>: <%= p.getStock() %>,
+        <% } %>
+        };
+
         // Set Light/Dark colors for SweetAlert
         const getSwalBg = () => document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24';
         const getSwalColor = () => document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa';
@@ -291,8 +297,28 @@
         }
 
         function updateQty(index, change) {
-            cart[index].qty += change;
-            if(cart[index].qty <= 0) {
+            let item = cart[index];
+            let currentStock = productStocks[item.id] || 0;
+            
+            if (change > 0 && item.qty >= currentStock) {
+                if(typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true, position: 'bottom-end', icon: 'error',
+                        title: 'Stock máximo alcanzado',
+                        text: 'Solo hay ' + currentStock + ' disponibles.',
+                        showConfirmButton: false, timer: 2000,
+                        background: getSwalBg(), color: getSwalColor()
+                    });
+                }
+                item.qty = currentStock;
+                if(item.qty <= 0) { removeFromCart(index); return; }
+                localStorage.setItem(cartKey, JSON.stringify(cart));
+                renderCart();
+                return;
+            }
+            
+            item.qty += change;
+            if(item.qty <= 0) {
                 removeFromCart(index);
                 return;
             }
@@ -357,10 +383,19 @@
         }
 
         function addFromSearch(id, name, price) {
+            let currentStock = productStocks[id] || 0;
             let existing = cart.find(i => i.id === id);
+            
             if(existing) {
+                if(existing.qty >= currentStock) {
+                    if(typeof Swal !== 'undefined') {
+                        Swal.fire({ toast: true, position: 'bottom-end', icon: 'error', title: 'Stock máximo alcanzado', text: 'Solo hay ' + currentStock + ' disponibles.', showConfirmButton: false, timer: 2000, background: getSwalBg(), color: getSwalColor() });
+                    }
+                    return;
+                }
                 existing.qty++;
             } else {
+                if(currentStock <= 0) return;
                 cart.push({id: id, name: name, price: price, qty: 1});
             }
             localStorage.setItem(cartKey, JSON.stringify(cart));
