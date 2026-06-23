@@ -134,6 +134,7 @@
             </ul>
             
             <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
+
                 <% if(navLoggedIn) { %>
                     <!-- User Profile Area -->
                     <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none">
@@ -251,7 +252,7 @@
         
         const toast = document.createElement('div');
         toast.className = 'p-3 shadow-lg rounded-3 border border-opacity-50 text-white';
-        toast.style.background = 'rgba(255, 107, 53, 0.95)'; // Orange accent with glass feel
+        toast.style.background = 'rgba(255, 107, 53, 0.95)';
         toast.style.color = '#fff';
         toast.style.minWidth = '320px';
         toast.style.maxWidth = '400px';
@@ -304,6 +305,7 @@
                 }
             }).catch(console.error);
     }
+
     document.addEventListener("DOMContentLoaded", function() {
         checkNotifications();
         setInterval(checkNotifications, 15000);

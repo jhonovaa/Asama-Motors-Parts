@@ -71,8 +71,15 @@
 
         <div class="d-flex flex-column gap-2 mt-4">
             <% if (orderIdStr != null && !orderIdStr.isEmpty()) { %>
-            <a href="invoice.jsp?orderId=<%= orderIdStr %>" target="_blank" class="btn btn-moto" style="background-color: #0052ff;">
-                <i class="bi bi-receipt me-2"></i>Descargar / Ver Factura
+            <a href="invoice.jsp?orderId=<%= orderIdStr %>" target="_blank" class="btn btn-moto" style="background-color: #0052ff; color: white;">
+                <i class="bi bi-receipt me-2"></i> Factura Web
+            </a>
+            <a href="api/receipt?orderId=<%= orderIdStr %>" target="_blank" class="btn btn-outline-danger fw-bold" style="border-radius: 30px;">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i> Recibo PDF
+            </a>
+            <% } %>
+            <a href="catalog.jsp" class="btn btn-moto">
+                <i class="bi bi-bag-check me-2"></i> Seguir Comprando
             </a>
             <% } %>
             <a href="dashboard.jsp" class="btn btn-outline-secondary" style="border-radius: 30px;">

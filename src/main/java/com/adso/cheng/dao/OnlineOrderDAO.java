@@ -13,10 +13,10 @@ public class OnlineOrderDAO {
 
     public List<OnlineOrder> getAllOrders() {
         List<OnlineOrder> orders = new ArrayList<>();
-        String sql = "SELECT o.*, u.full_name as customer_name " +
+        String sql = "SELECT o.*, COALESCE(u.full_name, 'Cliente Desconocido') as customer_name " +
                      "FROM online_orders o " +
-                     "JOIN users u ON o.customer_id = u.id " +
-                     "ORDER BY o.created_at DESC";
+                     "LEFT JOIN users u ON o.customer_id = u.id " +
+                     "ORDER BY o.id DESC";
         try (Connection conn = DbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -40,9 +40,9 @@ public class OnlineOrderDAO {
         } else {
             column = "is_read_cashier";
         }
-        String sql = "SELECT o.*, u.full_name as customer_name " +
+        String sql = "SELECT o.*, COALESCE(u.full_name, 'Cliente Desconocido') as customer_name " +
                      "FROM online_orders o " +
-                     "JOIN users u ON o.customer_id = u.id " +
+                     "LEFT JOIN users u ON o.customer_id = u.id " +
                      "WHERE o." + column + " = FALSE AND o.status = 'COMPLETADO' " +
                      "ORDER BY o.created_at DESC";
                      
@@ -102,6 +102,17 @@ public class OnlineOrderDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             stmt.setInt(2, orderId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void markAsCompletedAndNotify(int orderId) {
+        String sql = "UPDATE online_orders SET status = 'COMPLETADO', is_read_admin = FALSE, is_read_cashier = FALSE WHERE id = ?";
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

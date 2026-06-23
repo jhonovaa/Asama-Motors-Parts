@@ -65,36 +65,18 @@
                         <span class="fw-bolder fs-4 text-accent" id="summaryTotal">$0.00</span>
                     </div>
 
-                    <div id="simulated_payment_form" class="mt-4 border p-4 rounded-3 shadow-sm bg-light">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-credit-card-fill text-primary me-2"></i>Pago con Tarjeta (Simulado)</h5>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">Número de Tarjeta</label>
-                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000" value="4555 5555 5555 5555">
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label text-secondary small">Fecha de Vencimiento</label>
-                                <input type="text" class="form-control" placeholder="MM/YY" value="12/30">
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label text-secondary small">CVC</label>
-                                <input type="text" class="form-control" placeholder="123" value="123">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small">Nombre en la tarjeta</label>
-                            <input type="text" class="form-control" placeholder="Tu Nombre" value="<%= user != null ? user.getFullName() : "Cliente" %>">
-                        </div>
-                        <button class="btn btn-moto w-100" id="btnPay" onclick="processSimulatedPayment()">
-                            <i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar
-                        </button>
-                    </div>
+                    <div id="paymentBrick_container"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- SDK MercadoPago.js V2 -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
     <script>
+        let totalPayGlobal = 0;
+
         function loadSummary() {
             let currentUserId = <%= user != null ? user.getId() : -1 %>;
             let cartKey = 'asama_cart_' + currentUserId;
@@ -120,6 +102,7 @@
             if (subtotal === 0) { shipping = 0; estWeight = 0; }
 
             let totalPay = subtotal + shipping;
+            totalPayGlobal = totalPay;
 
             document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
@@ -129,54 +112,85 @@
             return totalPay;
         }
 
-        function processSimulatedPayment() {
-            let currentUserId = <%= user != null ? user.getId() : -1 %>;
-            let cartKey = 'asama_cart_' + currentUserId;
-            let cartStr = localStorage.getItem(cartKey);
-
-            if(!cartStr || cartStr === '[]') {
-                alert("<fmt:message key='checkout.cart_empty' />");
-                return;
+        window.onload = async function() {
+            let amount = loadSummary();
+            if (amount > 0) {
+                await renderPaymentBrick(amount);
             }
+        };
 
-            let btn = document.getElementById('btnPay');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
-            btn.disabled = true;
+        const mp = new MercadoPago('TEST-5078b5d5-347a-4228-b46a-ae17dd4fe78e', {
+            locale: 'es-CO'
+        });
+        const bricksBuilder = mp.bricks();
 
-            const formData = new URLSearchParams();
-            formData.append("cartData", cartStr);
-
-            fetch("checkout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+        const renderPaymentBrick = async (amount) => {
+            const settings = {
+                initialization: {
+                    amount: amount,
                 },
-                body: formData.toString(),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Limpiar el carrito de localStorage
-                    localStorage.removeItem(cartKey);
-                    
-                    // Redirigir a la pagina de pago exitoso
-                    window.location.href = 'pago-exitoso.jsp?orderId=' + data.orderId;
-                } else {
-                    alert("Error: " + data.error);
-                    btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar';
-                    btn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                alert("Error de conexión");
-                btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Pagar y Confirmar';
-                btn.disabled = false;
-            });
-        }
+                customization: {
+                    visual: {
+                        style: {
+                            theme: 'default',
+                        }
+                    },
+                    paymentMethods: {
+                        creditCard: "all",
+                        debitCard: "all"
+                    }
+                },
+                callbacks: {
+                    onReady: () => {
+                        // Brick is ready
+                    },
+                    onSubmit: ({ selectedPaymentMethod, formData }) => {
+                        return new Promise((resolve, reject) => {
+                            let currentUserId = <%= user != null ? user.getId() : -1 %>;
+                            let cartKey = 'asama_cart_' + currentUserId;
+                            let cart = localStorage.getItem(cartKey);
 
-        window.onload = function() {
-            loadSummary();
+                            fetch("api/process_payment", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    cartData: cart,
+                                    formData: formData
+                                }),
+                            })
+                            .then((response) => response.json())
+                            .then((response) => {
+                                resolve();
+                                if (response.success && response.status === 'approved') {
+                                    // Limpiar cart
+                                    localStorage.removeItem(cartKey);
+                                    // Llamar a PaymentSuccessServlet para completar stock y notificaciones
+                                    window.location.href = 'PaymentSuccessServlet?status=approved&external_reference=' + response.orderId;
+                                } else {
+                                    let errorMsg = response.error ? response.error : response.status;
+                                    alert("Hubo un error con tu pago: " + errorMsg + ". Por favor verifica los datos o usa otra tarjeta.");
+                                }
+                            })
+                            .catch((error) => {
+                                reject();
+                                alert("Error procesando pago. Inténtalo de nuevo.");
+                                console.error(error);
+                            });
+                        });
+                    },
+                    onError: (error) => {
+                        console.error(error);
+                    },
+                },
+            };
+            
+            window.paymentBrickController = await bricksBuilder.create(
+                "payment",
+                "paymentBrick_container",
+                settings
+            );
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
