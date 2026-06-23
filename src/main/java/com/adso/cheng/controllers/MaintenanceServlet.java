@@ -1,9 +1,12 @@
 package com.adso.cheng.controllers;
 
 import com.adso.cheng.dao.MaintenanceDAO;
+import com.adso.cheng.dao.ProductDAO;
+import com.adso.cheng.models.Product;
 import com.adso.cheng.models.User;
 import com.adso.cheng.utils.AuditLogger;
 import com.adso.cheng.utils.DbConnection;
+import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,6 +26,8 @@ import java.util.Map;
 @WebServlet("/maintenance")
 public class MaintenanceServlet extends HttpServlet {
     private MaintenanceDAO maintenanceDAO = new MaintenanceDAO();
+    private ProductDAO productDAO = new ProductDAO();
+    private Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,6 +37,16 @@ public class MaintenanceServlet extends HttpServlet {
         // Security Check: Only Admin (1) or Mecánico (6)
         if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 6)) {
             response.sendRedirect("login");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        if ("getJobParts".equals(action)) {
+            int jobId = Integer.parseInt(request.getParameter("jobId"));
+            List<Map<String, Object>> parts = maintenanceDAO.getJobParts(jobId);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(gson.toJson(parts));
             return;
         }
 
@@ -55,6 +70,10 @@ public class MaintenanceServlet extends HttpServlet {
         // Fetch customers (role_id = 5)
         List<Map<String, Object>> customers = getUsersByRole(5);
         request.setAttribute("customers", customers);
+
+        // Fetch all products for the mechanics' catalog
+        List<Product> inventory = productDAO.getAllProducts();
+        request.setAttribute("inventory", inventory);
 
         request.getRequestDispatcher("maintenance.jsp").forward(request, response);
     }
@@ -92,6 +111,17 @@ public class MaintenanceServlet extends HttpServlet {
             double cost = Double.parseDouble(request.getParameter("cost"));
             maintenanceDAO.updateJobStatus(jobId, status, cost);
             AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Orden Actualizada", "Cambió estado a: " + status + " en orden ID: " + jobId + " con costo: $" + cost);
+            
+        } else if ("requestPart".equals(action)) {
+            int jobId = Integer.parseInt(request.getParameter("jobId"));
+            int productId = Integer.parseInt(request.getParameter("productId"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String reason = request.getParameter("reason");
+            double laborCost = Double.parseDouble(request.getParameter("laborCost"));
+            double productPrice = Double.parseDouble(request.getParameter("productPrice"));
+            
+            maintenanceDAO.addJobPart(jobId, productId, quantity, reason, laborCost, productPrice);
+            AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Repuesto Solicitado", "Solicitó " + quantity + " unid. producto ID: " + productId + " para orden ID: " + jobId);
         }
 
         response.sendRedirect("maintenance");

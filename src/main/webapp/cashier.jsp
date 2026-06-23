@@ -2,6 +2,8 @@
 <%@ page import="com.adso.cheng.models.Product" %>
 <%@ page import="com.adso.cheng.dao.ProductDAO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.TreeSet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -21,6 +23,9 @@
         if(p.getBrand() != null && !p.getBrand().trim().isEmpty()) brands.add(p.getBrand());
         if(p.getPartCategory() != null && !p.getPartCategory().trim().isEmpty()) categories.add(p.getPartCategory());
     }
+    
+    List<Map<String, Object>> completedJobs = (List<Map<String, Object>>) request.getAttribute("completedJobs");
+    if(completedJobs == null) completedJobs = new ArrayList<>();
 %>
 <!DOCTYPE html>
 <html lang="<fmt:message key='app.lang' />">
@@ -98,7 +103,23 @@
 <%@ include file="navbar.jsp" %>
 
 <div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px;">
-    <div class="row g-4">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4 border-secondary border-opacity-25" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active fw-bold px-4 text-accent" data-bs-toggle="tab" href="#tabVenta"><i class="bi bi-cart3 me-2"></i>Venta en Tienda</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-bold px-4" style="color: var(--text-color);" data-bs-toggle="tab" href="#tabMotos">
+                <i class="bi bi-wrench-adjustable-circle me-2"></i>Motos Terminadas
+                <% if(completedJobs.size() > 0) { %><span class="badge bg-danger ms-2 rounded-pill"><%= completedJobs.size() %></span><% } %>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- TAB 1: VENTA LIBRE -->
+        <div class="tab-pane fade show active" id="tabVenta">
+            <div class="row g-4">
         
         <div class="col-lg-4 col-md-5">
             <div class="action-card h-100 d-flex flex-column text-center p-4 p-xl-5">
@@ -157,6 +178,56 @@
             </div>
         </div>
         
+            </div>
+        </div>
+        
+        <!-- TAB 2: MOTOS TERMINADAS -->
+        <div class="tab-pane fade" id="tabMotos">
+            <div class="card bg-transparent border border-secondary border-opacity-25">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 text-accent"><i class="bi bi-bicycle me-2"></i>Cobro de Taller</h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless cart-table align-middle">
+                            <thead class="border-bottom border-secondary border-opacity-25">
+                                <tr>
+                                    <th class="text-secondary pb-2">Orden</th>
+                                    <th class="text-secondary pb-2">Vehículo</th>
+                                    <th class="text-secondary pb-2">Propietario / Cliente</th>
+                                    <th class="text-secondary pb-2">Trabajo Realizado</th>
+                                    <th class="text-secondary text-end pb-2">Total a Pagar</th>
+                                    <th class="text-secondary text-end pb-2">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if(completedJobs.isEmpty()) { %>
+                                    <tr><td colspan="6" class="text-center text-muted py-5"><i class="bi bi-check-circle fs-1 d-block mb-3"></i>No hay motos terminadas pendientes de pago.</td></tr>
+                                <% } else {
+                                    for(Map<String, Object> job : completedJobs) { %>
+                                    <tr>
+                                        <td class="fw-bold">#<%= job.get("id") %></td>
+                                        <td>
+                                            <span class="badge bg-secondary mb-1"><%= job.get("plate") %></span><br>
+                                            <span class="small"><%= job.get("motoBrand") %> <%= job.get("motoModel") %></span>
+                                        </td>
+                                        <td>
+                                            <strong><%= job.get("customerName") %></strong><br>
+                                            <span class="text-muted small"><%= job.get("customerDocument") %></span>
+                                        </td>
+                                        <td class="small text-muted text-truncate" style="max-width:200px;" title="<%= job.get("description") %>"><%= job.get("description") %></td>
+                                        <td class="text-end fw-bold text-accent fs-5">$<%= String.format("%,.2f", ((Number)job.get("cost")).doubleValue()) %></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-accent btn-sm rounded-pill fw-bold px-3 py-2 shadow-sm" onclick="payMaintenanceJob(<%= job.get("id") %>, <%= job.get("customerId") %>, '<%= job.get("customerDocument") %>', '<%= job.get("customerName") %>', '<%= job.get("customerEmail") %>', <%= job.get("cost") %>, '<%= job.get("description") %>', '<%= job.get("plate") %>')">
+                                                <i class="bi bi-cash me-1"></i> Cobrar y Facturar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% } } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -511,6 +582,44 @@
     function addFromSearch(id, name, price, brand) {
         addToCart({id: id, name: name, price: price, brand: brand});
         showStatus('<i class="bi bi-check-circle-fill me-2"></i>' + name + ' agregado desde búsqueda', 'success');
+    }
+
+    function payMaintenanceJob(jobId, customerId, doc, name, email, cost, desc, plate) {
+        if(!confirm('¿Desea facturar el pago de la orden de taller de la moto ' + plate + ' por un total de $' + cost.toLocaleString() + '?')) return;
+
+        Swal.fire({
+            title: 'Procesando pago...',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            background: getSwalBg(),
+            color: getSwalColor(),
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        fetch('cashier', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `action=payMaintenance&jobId=${jobId}&customerId=${customerId}&customerDocument=${doc}&customerName=${name}&customerEmail=${email}&cost=${cost}&description=${desc}&plate=${plate}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Pago Exitoso!',
+                    text: 'Factura generada correctamente.',
+                    background: getSwalBg(),
+                    color: getSwalColor()
+                }).then(() => {
+                    window.open('invoice.jsp?id=' + data.invoiceId, '_blank');
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({icon: 'error', title: 'Error', text: data.error || 'No se pudo generar la factura', background: getSwalBg(), color: getSwalColor()});
+            }
+        }).catch(err => {
+            Swal.fire({icon: 'error', title: 'Error', text: 'Error de conexión', background: getSwalBg(), color: getSwalColor()});
+        });
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

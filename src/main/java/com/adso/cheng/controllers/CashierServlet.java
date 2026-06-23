@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/cashier")
 public class CashierServlet extends HttpServlet {
     private ProductDAO productDAO = new ProductDAO();
+    private com.adso.cheng.dao.MaintenanceDAO maintenanceDAO = new com.adso.cheng.dao.MaintenanceDAO();
     private Gson gson = new Gson();
 
     @Override
@@ -33,6 +34,7 @@ public class CashierServlet extends HttpServlet {
             return;
         }
 
+        request.setAttribute("completedJobs", maintenanceDAO.getCompletedUnpaidJobs());
         request.getRequestDispatcher("cashier.jsp").forward(request, response);
     }
 
@@ -162,6 +164,54 @@ public class CashierServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
                 out.print("{\"error\": \"Error al generar el reporte\"}");
+            }
+        } else if ("payMaintenance".equals(action)) {
+            int jobId = Integer.parseInt(request.getParameter("jobId"));
+            int customerId = Integer.parseInt(request.getParameter("customerId"));
+            String customerDocument = request.getParameter("customerDocument");
+            String customerName = request.getParameter("customerName");
+            String customerEmail = request.getParameter("customerEmail");
+            double totalCost = Double.parseDouble(request.getParameter("cost"));
+            String description = request.getParameter("description");
+            String plate = request.getParameter("plate");
+            
+            java.util.List<java.util.Map<String, Object>> parts = maintenanceDAO.getJobParts(jobId);
+            java.util.List<java.util.Map<String, Object>> cart = new java.util.ArrayList<>();
+            
+            double partsTotal = 0;
+            for(java.util.Map<String, Object> p : parts) {
+                java.util.Map<String, Object> item = new java.util.HashMap<>();
+                item.put("id", (double)(Integer)p.get("productId"));
+                item.put("name", "Repuesto: " + p.get("name") + " (" + p.get("reason") + ")");
+                int qty = (Integer)p.get("quantity");
+                item.put("qty", (double)qty);
+                double laborPerItem = ((Double)p.get("laborCost")) / qty;
+                double priceWithLabor = ((Double)p.get("price")) + laborPerItem;
+                item.put("price", priceWithLabor);
+                cart.add(item);
+                partsTotal += priceWithLabor * qty;
+            }
+            
+            if (totalCost - partsTotal > 0.01) {
+                java.util.Map<String, Object> serviceItem = new java.util.HashMap<>();
+                serviceItem.put("id", 0.0);
+                serviceItem.put("name", "Servicio Taller: " + description + " (Moto " + plate + ")");
+                serviceItem.put("qty", 1.0);
+                serviceItem.put("price", totalCost - partsTotal);
+                cart.add(serviceItem);
+            }
+            
+            int invoiceId = -1;
+            try {
+                invoiceId = com.adso.cheng.utils.DianInvoiceGenerator.generateInvoice(
+                    customerId, customerDocument != null ? customerDocument : "222222222222", customerName, customerEmail != null ? customerEmail : "no-reply@asama.com", cart, 0.0, -1
+                );
+                maintenanceDAO.markJobAsPaid(jobId);
+                com.adso.cheng.utils.AuditLogger.logAction(user.getId(), "CAJA", "Cobro Taller", "Cobró orden de taller ID: " + jobId + " por $" + totalCost);
+                out.print("{\"success\": true, \"invoiceId\": " + invoiceId + "}");
+            } catch (Exception e) {
+                e.printStackTrace();
+                out.print("{\"error\": \"Error generando factura\"}");
             }
         }
     }

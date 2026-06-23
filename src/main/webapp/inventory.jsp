@@ -690,7 +690,8 @@
               <div class="row g-2 mb-3">
                   <div class="col-6">
                       <label class="form-label">Precio ($)</label>
-                      <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                      <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required oninput="document.getElementById('addBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
+                      <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="addBasePrice" class="fw-bold text-success">$0.00</span></small>
                   </div>
                   <div class="col-6">
                       <label class="form-label">Stock Inicial</label>
@@ -701,11 +702,21 @@
               <div class="row g-2 mb-3">
                   <div class="col-6">
                       <label class="form-label">Estante</label>
-                      <input type="text" name="estante" class="form-control" placeholder="Ej. A">
+                      <select name="estante" class="form-control">
+                          <option value="">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                          <option value="<%=i%>"><%=i%></option>
+                          <% } %>
+                      </select>
                   </div>
                   <div class="col-6">
                       <label class="form-label">Fila</label>
-                      <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
+                      <select name="fila" class="form-control">
+                          <option value="">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                          <option value="<%=i%>"><%=i%></option>
+                          <% } %>
+                      </select>
                   </div>
               </div>
               
@@ -784,7 +795,8 @@
               <div class="row g-3 mb-3">
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.price" /></label>
-                      <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required>
+                      <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required oninput="document.getElementById('editBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
+                      <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="editBasePrice" class="fw-bold text-success">$0.00</span></small>
                   </div>
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.cur_stock" /></label>
@@ -794,11 +806,21 @@
               <div class="row g-3 mb-3">
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.shelf" /></label>
-                      <input type="text" name="estante" id="editEstante" class="form-control">
+                      <select name="estante" id="editEstante" class="form-control">
+                          <option value="">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                          <option value="<%=i%>"><%=i%></option>
+                          <% } %>
+                      </select>
                   </div>
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.row" /></label>
-                      <input type="text" name="fila" id="editFila" class="form-control">
+                      <select name="fila" id="editFila" class="form-control">
+                          <option value="">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                          <option value="<%=i%>"><%=i%></option>
+                          <% } %>
+                      </select>
                   </div>
               </div>
               <div class="mb-3">
@@ -938,6 +960,7 @@
         document.getElementById('editBrand').value = brand;
         document.getElementById('editDesc').value = (desc === 'null' || !desc) ? '' : desc;
         document.getElementById('editPrice').value = price;
+        document.getElementById('editBasePrice').innerText = (price / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'});
         document.getElementById('editStock').value = stock;
         document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
         document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
