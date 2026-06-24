@@ -29,3 +29,4 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.className = isLight ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
     }
 });
+

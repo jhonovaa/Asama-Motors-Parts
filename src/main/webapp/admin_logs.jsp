@@ -19,7 +19,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="resources/theme.css?v=6">
+    <style>
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        .nav-tabs-custom .nav-link {
+            color: var(--text-color) !important;
+            border: 2px solid rgba(255, 255, 255, 0.15) !important;
+            background: transparent !important;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        body.light-mode .nav-tabs-custom .nav-link {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        .nav-tabs-custom .nav-link.active {
+            background-color: var(--accent-orange) !important;
+            color: #121417 !important;
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .dashboard-stats-premium {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-left: 4px solid var(--accent-orange) !important;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
 <body>
 <script src="resources/theme.js?v=2"></script>
@@ -35,7 +70,7 @@
     <!-- Stats & Active Personnel -->
     <div class="row mb-4">
         <div class="col-md-4 mb-3 mb-md-0">
-            <div class="dashboard-stats h-100 p-4">
+            <div class="dashboard-stats-premium h-100">
                 <h6 class="text-secondary text-uppercase mb-2"><i class="bi bi-graph-up-arrow text-danger"></i> <fmt:message key="admin_logs.today_sales" /></h6>
                 <%
                     double todaySales = 0;
@@ -49,7 +84,7 @@
             </div>
         </div>
         <div class="col-md-8">
-            <div class="card-custom h-100 p-4 border border-accent border-opacity-50">
+            <div class="section-card h-100 p-4 border border-accent border-opacity-50">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-secondary text-uppercase mb-0"><i class="bi bi-person-workspace text-accent"></i> <fmt:message key="admin_logs.active_personnel" /></h6>
                     <button class="btn btn-sm btn-outline-secondary rounded-circle" onclick="location.reload()" title="<fmt:message key='admin_logs.refresh' />">
@@ -92,7 +127,7 @@
     </div>
 
     <!-- Tabs for Tables -->
-    <ul class="nav nav-tabs custom-tabs mb-4" id="logsTab" role="tablist">
+    <ul class="nav nav-pills nav-tabs-custom gap-2 mb-4" id="logsTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-bold" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab"><fmt:message key="admin_logs.tab_audit" /></button>
         </li>
@@ -104,9 +139,8 @@
     <div class="tab-content" id="logsTabContent">
         <!-- Audit Logs Tab -->
         <div class="tab-pane fade show active" id="audit" role="tabpanel">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 500px;">
+            <div class="section-card p-0 overflow-hidden">
+                <div class="table-responsive" style="max-height: 500px;">
                         <table class="table table-hover m-0 align-middle">
                             <thead style="position: sticky; top: 0; background: var(--card-bg); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 1;">
                                 <tr>
@@ -163,9 +197,8 @@
 
         <!-- Attendance Tab -->
         <div class="tab-pane fade" id="attendance" role="tabpanel">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 500px;">
+            <div class="section-card p-0 overflow-hidden">
+                <div class="table-responsive" style="max-height: 500px;">
                         <table class="table table-borderless table-hover m-0">
                             <thead style="position: sticky; top: 0; background: var(--card-bg); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 1;">
                                 <tr>

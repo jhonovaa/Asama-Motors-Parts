@@ -14,6 +14,10 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    String lang = (String) session.getAttribute("lang");
+    if (lang == null) lang = "es";
+    boolean isEn = "en".equals(lang);
+
 
     // Fetch stats
     double salesRevenue = 0.0;
@@ -726,17 +730,7 @@
                     </div>
                 </div>
 
-                <!-- Consultar Repuesto único para Contador -->
-                <div class="row g-4 mb-4">
-                    <div class="col-12">
-                        <div class="dashboard-section-card p-4 text-center">
-                            <i class="bi bi-search fs-1 text-accent mb-3 d-block"></i>
-                            <h5 class="fw-bold"><fmt:message key="dashboard.search_part" /></h5>
-                            <p class="text-secondary small mb-4"><fmt:message key="dashboard.search_part_desc" /></p>
-                            <a href="search_product.jsp" class="btn btn-accent rounded-pill px-5 py-2 fw-bold"><fmt:message key="dashboard.open_scanner" /></a>
-                        </div>
-                    </div>
-                </div>
+
 
             <% } else if(user.getRoleId() == 5) { // Cliente %>
                 <!-- DASHBOARD CLIENTE -->
@@ -875,29 +869,23 @@
                                         <%
                                             try (Connection conn = DbConnection.getConnection();
                                                  PreparedStatement stmt = conn.prepareStatement(
-                                                     "SELECT id, created_at, status, total_amount " +
-                                                     "FROM online_orders " +
-                                                     "WHERE customer_id = ? ORDER BY created_at DESC")) {
+                                                     "SELECT s.id, s.sale_date, p.name, s.quantity, s.total_price " +
+                                                     "FROM sales s JOIN products p ON s.product_id = p.id " +
+                                                     "WHERE s.customer_id = ? ORDER BY s.sale_date DESC")) {
                                                 stmt.setInt(1, user.getId());
                                                 ResultSet rs = stmt.executeQuery();
                                                 boolean hasPurchases = false;
                                                 while(rs.next()) {
                                                     hasPurchases = true;
-                                                    String status = rs.getString("status");
-                                                    String badgeClass = "bg-secondary";
-                                                    if(status.equals("PENDIENTE")) badgeClass = "bg-warning text-dark";
-                                                    else if(status.equals("EN_PREPARACION")) badgeClass = "bg-info text-dark";
-                                                    else if(status.equals("ENVIADO")) badgeClass = "bg-primary";
-                                                    else if(status.equals("COMPLETADO") || status.equals("ENTREGADO")) badgeClass = "bg-success";
                                         %>
                                         <tr>
-                                            <td class="text-muted small"><%= rs.getTimestamp("created_at").toString().substring(0, 16) %></td>
-                                            <td class="fw-bold">Pedido N° <%= rs.getInt("id") %></td>
-                                            <td class="text-center"><span class="badge <%= badgeClass %>"><%= status %></span></td>
-                                            <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_amount")) %></td>
+                                            <td class="text-muted small"><%= rs.getTimestamp("sale_date").toString().substring(0, 16) %></td>
+                                            <td class="fw-bold"><%= rs.getString("name") %></td>
+                                            <td class="text-center"><span class="badge bg-secondary bg-opacity-25 text-light px-2"><%= rs.getInt("quantity") %></span></td>
+                                            <td class="fw-bold text-end text-accent">$<%= String.format("%.2f", rs.getDouble("total_price")) %></td>
                                             <td class="text-center">
-                                                <a href="invoice.jsp?orderId=<%= rs.getInt("id") %>" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 mb-1" title="Descargar Factura">
-                                                    <i class="bi bi-receipt me-1"></i>Factura
+                                                <a href="post_sale_request.jsp?sale_id=<%= rs.getInt("id") %>" class="btn btn-sm btn-outline-warning rounded-pill px-3" title="<fmt:message key='dashboard.claim_title' />">
+                                                    <i class="bi bi-shield-exclamation me-1"></i><fmt:message key="dashboard.claim" />
                                                 </a>
                                             </td>
                                         </tr>
@@ -975,17 +963,7 @@
                     </div>
                 </div>
                 
-                <!-- Único Consultar Repuesto para Clientes -->
-                <div class="row g-4 mb-4">
-                    <div class="col-12">
-                        <div class="dashboard-section-card p-4 text-center">
-                            <i class="bi bi-search fs-1 text-accent mb-3 d-block"></i>
-                            <h5 class="fw-bold"><fmt:message key="dashboard.search_part" /></h5>
-                            <p class="text-secondary small mb-4"><fmt:message key="dashboard.search_part_desc" /></p>
-                            <a href="search_product.jsp" class="btn btn-accent rounded-pill px-5 py-2 fw-bold"><fmt:message key="dashboard.open_scanner" /></a>
-                        </div>
-                    </div>
-                </div>
+
 
             <% } else if(user.getRoleId() == 6) { // Mecanico %>
                 <!-- DASHBOARD MECÁNICO -->
@@ -1058,7 +1036,7 @@
 
                 <div class="row g-4 mb-4">
                     <!-- Lista de Trabajos asignados -->
-                    <div class="col-lg-8">
+                    <div class="col-12">
                         <div class="dashboard-section-card p-4">
                             <h5 class="fw-bold mb-4 border-bottom border-secondary border-opacity-10 pb-3"><i class="bi bi-wrench-adjustable text-accent me-2"></i>Mis Trabajos Asignados</h5>
                             <div class="table-responsive">
@@ -1106,16 +1084,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Único Consultar Repuesto para Mecánicos -->
-                    <div class="col-lg-4">
-                        <div class="dashboard-section-card p-4 text-center h-100 d-flex flex-column justify-content-center">
-                            <i class="bi bi-upc-scan fs-1 text-accent mb-3 d-block"></i>
-                            <h5 class="fw-bold mb-2"><fmt:message key="dashboard.search_part" /></h5>
-                            <p class="text-secondary small mb-4"><fmt:message key="dashboard.mechanic_search_desc" /></p>
-                            <a href="search_product.jsp" class="btn btn-accent rounded-pill px-5 py-2 w-100 fw-bold mt-auto"><fmt:message key="dashboard.open_scanner" /></a>
-                        </div>
-                    </div>
                 </div>
 
             <% } else { // Admin (1), Bodeguero (3), Cajero (4) %>
@@ -1126,7 +1094,7 @@
                         <div class="metric-card d-flex flex-column h-100" style="border-bottom: 4px solid #00E676 !important;">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div>
-                                    <span class="text-secondary small fw-bold text-uppercase">Ventas (30 días)</span>
+                                    <span class="text-secondary small fw-bold text-uppercase"><fmt:message key="dashboard.sales_30_days" /></span>
                                     <h3 class="fw-extrabold mt-1 mb-0">$<%= String.format("%,.2f", salesRevenue) %></h3>
                                 </div>
                                 <div class="icon-circle green">
@@ -1134,7 +1102,7 @@
                                 </div>
                             </div>
                             <div class="mt-auto pt-2">
-                                <span class="text-secondary small"><i class="bi bi-arrow-up-short text-success"></i> Rendimiento mensual</span>
+                                <span class="text-secondary small"><i class="bi bi-arrow-up-short text-success"></i> <fmt:message key="dashboard.monthly_performance" /></span>
                             </div>
                         </div>
                     </div>
@@ -1144,7 +1112,7 @@
                         <div class="metric-card d-flex flex-column h-100" style="border-bottom: 4px solid #9c27b0 !important;">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div>
-                                    <span class="text-secondary small fw-bold text-uppercase">Total Repuestos</span>
+                                    <span class="text-secondary small fw-bold text-uppercase"><fmt:message key="dashboard.total_parts" /></span>
                                     <h3 class="fw-extrabold mt-1 mb-0"><%= totalProducts %></h3>
                                 </div>
                                 <div class="icon-circle purple">
@@ -1152,7 +1120,7 @@
                                 </div>
                             </div>
                             <div class="mt-auto pt-2">
-                                <span class="text-secondary small"><i class="bi bi-collection-fill text-purple"></i> Repuestos en almacén</span>
+                                <span class="text-secondary small"><i class="bi bi-collection-fill text-purple"></i> <fmt:message key="dashboard.parts_in_warehouse" /></span>
                             </div>
                         </div>
                     </div>
@@ -1162,7 +1130,7 @@
                         <div class="metric-card d-flex flex-column h-100" style="border-bottom: 4px solid #FF1744 !important;">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div>
-                                    <span class="text-secondary small fw-bold text-uppercase">Alertas de Stock</span>
+                                    <span class="text-secondary small fw-bold text-uppercase"><fmt:message key="dashboard.stock_alerts" /></span>
                                     <h3 class="fw-extrabold mt-1 mb-0 <%= lowStockCount > 0 ? "text-danger" : "" %>"><%= lowStockCount %></h3>
                                 </div>
                                 <div class="icon-circle pink">
@@ -1180,15 +1148,15 @@
                         <div class="metric-card solid-accent d-flex flex-column h-100">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div>
-                                    <span class="text-dark small fw-bold text-uppercase" style="opacity: 0.8;">Trabajos en Taller</span>
-                                    <h3 class="fw-extrabold text-dark mt-1 mb-0"><%= activeJobsCount %> Activos</h3>
+                                    <span class="text-dark small fw-bold text-uppercase" style="opacity: 0.8;"><fmt:message key="dashboard.workshop_jobs" /></span>
+                                    <h3 class="fw-extrabold text-dark mt-1 mb-0"><%= activeJobsCount %> <fmt:message key="dashboard.active_label" /></h3>
                                 </div>
                                 <div class="icon-circle shadow-sm" style="background: rgba(255,255,255,0.4); color: #121417;">
                                     <i class="bi bi-tools"></i>
                                 </div>
                             </div>
                             <div class="mt-auto pt-2">
-                                <span class="text-dark small" style="opacity: 0.8;"><i class="bi bi-clock-history"></i> Vehículos en taller</span>
+                                <span class="text-dark small" style="opacity: 0.8;"><i class="bi bi-clock-history"></i> <fmt:message key="dashboard.vehicles_in_workshop" /></span>
                             </div>
                         </div>
                     </div>
@@ -1201,11 +1169,11 @@
                         <div class="dashboard-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-0">Flujo de Repuestos</h5>
-                                    <span class="text-secondary small">Comparativa de ingresos y salidas del inventario</span>
+                                    <h5 class="fw-bold mb-0"><fmt:message key="dashboard.parts_flow" /></h5>
+                                    <span class="text-secondary small"><fmt:message key="dashboard.parts_flow_desc" /></span>
                                 </div>
                                 <div>
-                                    <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-1 rounded-pill small">Últimos 30 días</span>
+                                    <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-1 rounded-pill small"><fmt:message key="dashboard.last_30_days" /></span>
                                 </div>
                             </div>
                             <div class="chart-container position-relative" style="height: 280px; width: 100%;">
@@ -1219,10 +1187,10 @@
                         <div class="dashboard-section-card d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-0">Repuestos Populares</h5>
-                                    <span class="text-secondary small">Más vendidos en tienda</span>
+                                    <h5 class="fw-bold mb-0"><fmt:message key="dashboard.popular_parts" /></h5>
+                                    <span class="text-secondary small"><fmt:message key="dashboard.best_sellers" /></span>
                                 </div>
-                                <a href="inventory" class="btn btn-sm btn-moto-outline rounded-pill px-3">Ver Almacén</a>
+                                <a href="inventory" class="btn btn-sm btn-moto-outline rounded-pill px-3"><fmt:message key="dashboard.view_warehouse" /></a>
                             </div>
                             <div class="featured-list flex-grow-1">
                                 <% 
@@ -1241,7 +1209,7 @@
                                                     <span class="text-secondary small d-block" style="font-size: 0.75rem;"><%= p.getBrand() %></span>
                                                     <div class="d-flex align-items-center gap-2 mt-1">
                                                         <span class="text-accent fw-bold" style="font-size: 0.85rem;">$<%= String.format("%.2f", p.getPrice()) %></span>
-                                                        <span class="text-secondary small" style="font-size: 0.75rem;">| <%= sold %> vendidos</span>
+                                                        <span class="text-secondary small" style="font-size: 0.75rem;">| <%= sold %> <fmt:message key="dashboard.sold_count" /></span>
                                                     </div>
                                                 </div>
                                                 <div class="text-end">
@@ -1252,7 +1220,7 @@
                                         }
                                     } else {
                                 %>
-                                        <div class="text-center text-secondary py-5 fw-bold"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Sin datos de ventas recientes</div>
+                                        <div class="text-center text-secondary py-5 fw-bold"><i class="bi bi-inbox fs-2 d-block mb-2"></i><fmt:message key="dashboard.no_recent_sales" /></div>
                                 <% 
                                     }
                                 %>
@@ -1268,10 +1236,10 @@
                         <div class="dashboard-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-0">Personal del Equipo</h5>
-                                    <span class="text-secondary small">Colaboradores de servicio activos</span>
+                                    <h5 class="fw-bold mb-0"><fmt:message key="dashboard.team_staff" /></h5>
+                                    <span class="text-secondary small"><fmt:message key="dashboard.active_staff_desc" /></span>
                                 </div>
-                                <a href="employees" class="btn btn-sm btn-moto-outline rounded-pill px-3">Administrar Personal</a>
+                                <a href="employees" class="btn btn-sm btn-moto-outline rounded-pill px-3"><fmt:message key="dashboard.manage_staff" /></a>
                             </div>
                             <div class="row g-3">
                                 <% 
@@ -1305,14 +1273,14 @@
                                                             }
                                                         %>
                                                     </div>
-                                                    <a href="employees" class="staff-btn">Ver Horario</a>
+                                                    <a href="employees" class="staff-btn"><fmt:message key="dashboard.view_schedule" /></a>
                                                 </div>
                                             </div>
                                 <% 
                                         }
                                     } else {
                                 %>
-                                        <div class="text-center text-secondary py-5 fw-bold w-100"><i class="bi bi-people fs-2 d-block mb-2"></i>Sin personal registrado</div>
+                                        <div class="text-center text-secondary py-5 fw-bold w-100"><i class="bi bi-people fs-2 d-block mb-2"></i><fmt:message key="dashboard.no_staff_registered" /></div>
                                 <% 
                                     }
                                 %>
@@ -1325,8 +1293,8 @@
                         <div class="dashboard-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-0">Ventas por Categoría</h5>
-                                    <span class="text-secondary small">Clasificación de productos más vendidos</span>
+                                    <h5 class="fw-bold mb-0"><fmt:message key="dashboard.sales_by_category" /></h5>
+                                    <span class="text-secondary small"><fmt:message key="dashboard.category_chart_desc" /></span>
                                 </div>
                                 <div>
                                     <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-1 rounded-pill small">Top 5</span>
@@ -1339,17 +1307,7 @@
                     </div>
                 </div>
 
-                <!-- Único Consultar Repuesto para Administradores, Bodegueros y Cajeros -->
-                <div class="row g-4 mb-4">
-                    <div class="col-12">
-                        <div class="dashboard-section-card p-5 text-center">
-                            <i class="bi bi-upc-scan fs-1 text-accent mb-3 d-block text-center"></i>
-                            <h5 class="fw-bold mb-2"><fmt:message key="dashboard.consult_part" /></h5>
-                            <p class="text-secondary small mb-4 fw-medium"><fmt:message key="dashboard.consult_part_desc" /></p>
-                            <a href="search_product.jsp" class="btn btn-accent rounded-pill px-5 py-2 fw-bold"><fmt:message key="dashboard.consult" /></a>
-                        </div>
-                    </div>
-                </div>
+
             <% } %>
         </div>
     </div>
@@ -1457,9 +1415,21 @@ document.addEventListener("DOMContentLoaded", function() {
         new Chart(categoryCtx, {
             type: 'bar',
             data: {
-                labels: [<%= catLabelsJson %>],
+                labels: [<%= catLabelsJson %>].map(label => {
+                    if (<%= isEn %>) {
+                        const translationMap = {
+                            "Lubricantes": "Lubricants",
+                            "Frenos": "Brakes",
+                            "Motor": "Engine",
+                            "Llantas": "Tires",
+                            "Accesorios": "Accessories"
+                        };
+                        return translationMap[label] || label;
+                    }
+                    return label;
+                }),
                 datasets: [{
-                    label: 'Unidades Vendidas',
+                    label: <%= isEn %> ? 'Units Sold' : 'Unidades Vendidas',
                     data: [<%= catDataJson %>],
                     backgroundColor: accentColor,
                     borderColor: accentColor,

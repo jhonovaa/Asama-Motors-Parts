@@ -7,7 +7,6 @@
         response.sendRedirect("login.jsp");
         return;
     }
-    String orderIdStr = request.getParameter("orderId");
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -61,25 +60,31 @@
     <div class="success-card">
         <i class="bi bi-check-circle-fill success-icon"></i>
         <h2 class="fw-bold mt-4">¡Pago Exitoso!</h2>
-        <p class="text-secondary mt-3 mb-1">Tu pago se ha procesado y validado correctamente mediante Mercado Pago.</p>
-        <% if (orderIdStr != null && !orderIdStr.isEmpty()) { %>
-        <p class="fw-bold fs-5 my-3 p-2 rounded text-dark border" style="background-color: rgba(40,167,69,0.1); border-color: rgba(40,167,69,0.3) !important;">
-            Orden N°: <%= orderIdStr %>
-        </p>
-        <% } %>
-        <p class="text-secondary mb-3">El stock ha sido descontado y tu pedido está listo para ser despachado.</p>
+        
+        <%
+            String orderIdStr = request.getParameter("orderId");
+            if(orderIdStr != null && !orderIdStr.isEmpty()) {
+        %>
+        <h4 class="text-primary fw-bold mb-3">Orden #<%= orderIdStr %></h4>
+        <p class="text-secondary mb-1">Tu pago se procesó correctamente mediante Mercado Pago.</p>
+        <p class="text-secondary mb-4">El pedido ya ha sido registrado y está en proceso de despacho.</p>
+        
+        <div class="d-grid gap-2 mb-4">
+            <a href="invoice.jsp?orderId=<%= orderIdStr %>" class="btn btn-outline-danger fw-bold" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Descargar Recibo PDF
+            </a>
+        </div>
+        <%
+            } else {
+        %>
+        <p class="text-secondary mt-3 mb-1">Tu pedido ha sido registrado correctamente y está en proceso de despacho.</p>
+        <%
+            }
+        %>
 
-        <div class="d-flex flex-column gap-2 mt-4">
-            <% if (orderIdStr != null && !orderIdStr.isEmpty()) { %>
-            <a href="invoice.jsp?orderId=<%= orderIdStr %>" target="_blank" class="btn btn-moto" style="background-color: #0052ff; color: white;">
-                <i class="bi bi-receipt me-2"></i> Factura Web
-            </a>
-            <a href="api/receipt?orderId=<%= orderIdStr %>" target="_blank" class="btn btn-outline-danger fw-bold" style="border-radius: 30px;">
-                <i class="bi bi-file-earmark-pdf-fill me-2"></i> Recibo PDF
-            </a>
-            <% } %>
+        <div class="d-flex flex-column gap-2 mt-2">
             <a href="catalog.jsp" class="btn btn-moto">
-                <i class="bi bi-bag-check me-2"></i> Seguir Comprando
+                <i class="bi bi-bag-check me-2"></i>Seguir Comprando
             </a>
             <a href="dashboard.jsp" class="btn btn-outline-secondary" style="border-radius: 30px;">
                 <i class="bi bi-speedometer2 me-2"></i>Ir a Mi Panel
@@ -88,13 +93,22 @@
     </div>
 
     <script>
-        // Clear cart on successful payment
+        // Process pending order and clear cart on successful payment
         let currentUserId = <%= user != null ? user.getId() : -1 %>;
         let cartKey = 'asama_cart_' + currentUserId;
+        let pendingOrderId = localStorage.getItem('asama_pending_order_' + currentUserId);
+
+        // If there's a pending order from Mercado Pago, complete it
+        if (pendingOrderId) {
+            fetch('PaymentSuccessServlet?status=approved&external_reference=' + pendingOrderId)
+                .then(() => {
+                    console.log('Orden ' + pendingOrderId + ' procesada exitosamente');
+                })
+                .catch(err => console.error('Error procesando orden:', err));
+        }
 
         localStorage.removeItem(cartKey);
         localStorage.removeItem('asama_pending_order_' + currentUserId);
-
 
         // Simple confetti animation
         (function() {

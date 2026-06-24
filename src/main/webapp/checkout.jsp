@@ -42,8 +42,8 @@
                     </div>
 
                     <div class="security-info">
-                        <p class="mb-1 small fw-medium"><i class="bi bi-shield-lock-fill me-2"></i>Pago Seguro con Mercado Pago</p>
-                        <p class="mb-0 small text-secondary">Serás redirigido a Mercado Pago para realizar tu pago. Tu pedido será registrado, pero el stock solo se descontará una vez que el pago sea exitoso.</p>
+                        <p class="mb-1 small fw-medium"><i class="bi bi-check-circle-fill me-2"></i>Pedido Directo</p>
+                        <p class="mb-0 small text-secondary">Al confirmar, tu pedido será registrado y descontado del inventario. El pago se acordará de manera externa.</p>
                     </div>
 
                     <hr class="my-4 border-secondary border-opacity-50">
@@ -89,23 +89,23 @@
             let cart = JSON.parse(cartStr);
 
             let subtotal = 0;
-            let totalWeight = 0;
+            let totalItems = 0;
 
             cart.forEach(item => {
                 subtotal += (item.price * item.qty);
-                totalWeight += ((item.weight || 0) * item.qty);
+                totalItems += item.qty;
             });
 
-            let shipping = 0;
-            if (totalWeight > 16.0) {
-                shipping = 16000;
-            }
+            let estWeight = (totalItems * 1.2) + 0.5;
+            let shipping = 5.00 + (estWeight * 1.50);
+            if (subtotal >= 500) shipping = 0;
+            if (subtotal === 0) { shipping = 0; estWeight = 0; }
 
             let totalPay = subtotal + shipping;
             totalPayGlobal = totalPay;
 
             document.getElementById('summarySubtotal').innerText = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('summaryWeight').innerText = totalWeight.toFixed(1) + ' kg';
+            document.getElementById('summaryWeight').innerText = estWeight.toFixed(1) + ' kg';
             document.getElementById('summaryShipping').innerText = shipping === 0 ? (subtotal > 0 ? 'FREE' : '$0.00') : '$' + shipping.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('summaryTotal').innerText = '$' + totalPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
@@ -150,6 +150,8 @@
                             let cartKey = 'asama_cart_' + currentUserId;
                             let cart = localStorage.getItem(cartKey);
 
+                            let idempotencyKey = crypto.randomUUID();
+
                             fetch("api/process_payment", {
                                 method: "POST",
                                 headers: {
@@ -157,7 +159,8 @@
                                 },
                                 body: JSON.stringify({
                                     cartData: cart,
-                                    formData: formData
+                                    formData: formData,
+                                    idempotencyKey: idempotencyKey
                                 }),
                             })
                             .then((response) => response.json())

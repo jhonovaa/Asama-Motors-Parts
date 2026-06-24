@@ -221,28 +221,6 @@
                         <div class="spinner-border spinner-border-sm text-secondary me-2"></div> <span class="text-secondary small fw-medium"><fmt:message key="time_tracking.loading_reports" /></span>
                     </div>
                 </div>
-
-                <div class="action-card p-4 mt-4">
-                    <div class="border-bottom border-secondary pb-3 mb-4">
-                        <h5 class="fw-bold mb-1 text-accent"><i class="bi bi-clock-history me-2"></i>Horas Teóricas Trabajadas (Hoy)</h5>
-                        <p class="text-secondary small mb-0">Verificación de la dedicación del equipo</p>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-borderless align-middle mb-0 custom-table">
-                            <thead>
-                                <tr class="border-bottom border-secondary border-opacity-25">
-                                    <th class="text-uppercase small pb-3">Empleado</th>
-                                    <th class="text-uppercase small pb-3 text-end">Total Horas (Teóricas)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="theoreticalHoursTbody">
-                                <tr>
-                                    <td colspan="2" class="text-center text-secondary py-4">Cargando horas...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
             
         </div>
@@ -297,28 +275,6 @@
                 });
             })
             .catch(err => console.error("Error loading table:", err));
-        }
-
-        // Fetch Theoretical Hours
-        function loadTheoreticalHours() {
-            fetch('time-tracking?action=theoretical_hours')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('theoreticalHoursTbody');
-                tbody.innerHTML = '';
-                if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-secondary py-3">No hay datos de horas para hoy.</td></tr>';
-                    return;
-                }
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = 
-                        '<td class="fw-bold">' + row.name + '</td>' +
-                        '<td class="text-end fw-bolder text-accent">' + row.hours + ' hrs</td>';
-                    tbody.appendChild(tr);
-                });
-            })
-            .catch(err => console.error(err));
         }
 
         // --- FACE RECOGNITION LOGIC ---
@@ -480,11 +436,10 @@
         });
 
         // Inicializacion
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('load', () => {
             loadAttendanceTable();
-            loadTheoreticalHours();
             loadHistoryDates();
-            initFaceRecognition(); // Starts when tab is active
+            initFaceRecognition();
         });
 
         // --- HISTORY PDF LOGIC ---

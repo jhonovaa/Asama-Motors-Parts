@@ -1,24 +1,10 @@
 <%@ page import="com.adso.cheng.models.User" %>
-<%@ page import="com.adso.cheng.models.Product" %>
-<%@ page import="com.adso.cheng.dao.ProductDAO" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.TreeSet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%
     User user = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
     int roleId = isLoggedIn ? user.getRoleId() : 0;
-    
-    ProductDAO dao = new ProductDAO();
-    List<Product> products = dao.getAllProducts();
-    Set<String> brands = new TreeSet<>();
-    Set<String> categories = new TreeSet<>();
-    for(Product p : products) {
-        if(p.getBrand() != null && !p.getBrand().trim().isEmpty()) brands.add(p.getBrand());
-        if(p.getPartCategory() != null && !p.getPartCategory().trim().isEmpty()) categories.add(p.getPartCategory());
-    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -155,82 +141,6 @@
         </div>
     </div>
 
-    <!-- Floating Action Button for Advanced Search -->
-    <button class="btn btn-warning rounded-circle shadow-lg" type="button" data-bs-toggle="offcanvas" data-bs-target="#advancedSearchOffcanvas" style="position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; font-size: 24px; z-index: 1040;">
-        <i class="bi bi-search"></i>
-    </button>
-
-    <!-- Advanced Search Offcanvas -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="advancedSearchOffcanvas" aria-labelledby="advancedSearchOffcanvasLabel" style="width: 450px; background-color: var(--bg-color); color: var(--text-color);">
-        <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
-            <h5 class="offcanvas-title fw-bold" id="advancedSearchOffcanvasLabel"><i class="bi bi-funnel-fill text-orange me-2"></i> Búsqueda Avanzada</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="mb-3">
-                <input type="text" id="advSearchText" class="form-control" placeholder="Buscar por nombre o descripción..." onkeyup="applyAdvancedFilters()">
-            </div>
-            <div class="row g-2 mb-3">
-                <div class="col-6">
-                    <select id="advSearchBrand" class="form-select" onchange="applyAdvancedFilters()">
-                        <option value="">Todas las Marcas</option>
-                        <% for(String b : brands) { %>
-                            <option value="<%= b.toLowerCase() %>"><%= b %></option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="col-6">
-                    <select id="advSearchCategory" class="form-select" onchange="applyAdvancedFilters()">
-                        <option value="">Todas las Categorías</option>
-                        <% for(String c : categories) { %>
-                            <option value="<%= c.toLowerCase() %>"><%= c %></option>
-                        <% } %>
-                    </select>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="form-label text-secondary small">Precio Máximo: $<span id="advPriceLabel">2000000</span></label>
-                <input type="range" class="form-range" id="advSearchPrice" min="0" max="2000000" step="10000" value="2000000" oninput="document.getElementById('advPriceLabel').innerText = this.value; applyAdvancedFilters()">
-            </div>
-
-            <h6 class="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">Resultados</h6>
-            
-            <div id="advSearchResults" class="d-flex flex-column gap-3">
-                <% for(Product p : products) { %>
-                <div class="card bg-transparent border border-secondary border-opacity-25 adv-product-item" 
-                     data-name="<%= p.getName() != null ? p.getName().toLowerCase() : "" %>" 
-                     data-desc="<%= p.getDescription() != null ? p.getDescription().toLowerCase() : "" %>" 
-                     data-brand="<%= p.getBrand() != null ? p.getBrand().toLowerCase() : "" %>" 
-                     data-category="<%= p.getPartCategory() != null ? p.getPartCategory().toLowerCase() : "" %>" 
-                     data-price="<%= p.getPrice() %>"
-                     data-weight="<%= p.getWeight() %>">
-                    <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold m-0" style="max-width: 75%;"><%= p.getName() %></h6>
-                            <span class="badge bg-secondary"><%= p.getBrand() != null ? p.getBrand() : "Genérico" %></span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="text-orange fw-bold m-0">$<%= String.format("%.2f", p.getPrice()) %></h5>
-                            <small class="<%= p.getStock() > 0 ? "text-success" : "text-danger" %> fw-bold"><%= p.getStock() %> en stock</small>
-                        </div>
-                        <div class="text-secondary small mb-3">
-                            <i class="bi bi-tag-fill"></i> <%= p.getPartCategory() != null ? p.getPartCategory() : "Sin Categoría" %> <br>
-                            <i class="bi bi-geo-alt-fill"></i> Ubicación: Estante <%= p.getEstante() != null && !p.getEstante().isEmpty() ? p.getEstante() : "N/A" %> - Fila <%= p.getFila() != null && !p.getFila().isEmpty() ? p.getFila() : "N/A" %>
-                        </div>
-                        <% if(p.getStock() > 0) { %>
-                            <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="addFromSearch(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getWeight() %>)">
-                                <i class="bi bi-cart-plus"></i> Añadir
-                            </button>
-                        <% } else { %>
-                            <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
-                        <% } %>
-                    </div>
-                </div>
-                <% } %>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let isLoggedIn = <%= isLoggedIn %>;
@@ -241,12 +151,6 @@
         }
         let cartKey = 'asama_cart_' + currentUserId;
         let cart = isLoggedIn ? (JSON.parse(localStorage.getItem(cartKey)) || []) : [];
-
-        const productStocks = {
-        <% for(Product p : products) { %>
-            <%= p.getId() %>: <%= p.getStock() %>,
-        <% } %>
-        };
 
         // Set Light/Dark colors for SweetAlert
         const getSwalBg = () => document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24';
@@ -269,13 +173,10 @@
             
             tbody.innerHTML = '';
             let total = 0;
-            let totalWeight = 0;
             
             cart.forEach((item, index) => {
                 let subtotal = item.price * item.qty;
-                let itemWeight = (item.weight || 0) * item.qty;
                 total += subtotal;
-                totalWeight += itemWeight;
                 
                 let tr = document.createElement('tr');
                 tr.innerHTML = 
@@ -297,45 +198,12 @@
                 tbody.appendChild(tr);
             });
             
-            // Apply heavy shipping fee if weight > 16kg
-            if (totalWeight > 16.0) {
-                total += 16000;
-                let shippingTr = document.createElement('tr');
-                shippingTr.innerHTML = 
-                    '<td class="fw-bold text-wrap text-warning"><i class="bi bi-truck me-2"></i>Envío Pesado (>16 Kg)</td>' +
-                    '<td class="fw-medium">$16,000.00</td>' +
-                    '<td class="text-center">-</td>' +
-                    '<td class="fw-bolder text-warning fs-5 text-end">$16,000.00</td>' +
-                    '<td></td>';
-                tbody.appendChild(shippingTr);
-            }
-            
             totalSpan.innerText = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         function updateQty(index, change) {
-            let item = cart[index];
-            let currentStock = productStocks[item.id] || 0;
-            
-            if (change > 0 && item.qty >= currentStock) {
-                if(typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        toast: true, position: 'bottom-end', icon: 'error',
-                        title: 'Stock máximo alcanzado',
-                        text: 'Solo hay ' + currentStock + ' disponibles.',
-                        showConfirmButton: false, timer: 2000,
-                        background: getSwalBg(), color: getSwalColor()
-                    });
-                }
-                item.qty = currentStock;
-                if(item.qty <= 0) { removeFromCart(index); return; }
-                localStorage.setItem(cartKey, JSON.stringify(cart));
-                renderCart();
-                return;
-            }
-            
-            item.qty += change;
-            if(item.qty <= 0) {
+            cart[index].qty += change;
+            if(cart[index].qty <= 0) {
                 removeFromCart(index);
                 return;
             }
@@ -370,63 +238,6 @@
 
         // Renderizado inicial
         renderCart();
-
-        function applyAdvancedFilters() {
-            let text = document.getElementById('advSearchText').value.toLowerCase();
-            let brand = document.getElementById('advSearchBrand').value;
-            let category = document.getElementById('advSearchCategory').value;
-            let maxPrice = parseFloat(document.getElementById('advSearchPrice').value);
-            
-            let items = document.getElementsByClassName('adv-product-item');
-            for(let i=0; i<items.length; i++) {
-                let el = items[i];
-                let pName = el.getAttribute('data-name');
-                let pDesc = el.getAttribute('data-desc');
-                let pBrand = el.getAttribute('data-brand');
-                let pCategory = el.getAttribute('data-category');
-                let pPrice = parseFloat(el.getAttribute('data-price'));
-                
-                let matchText = (pName.includes(text) || pDesc.includes(text));
-                let matchBrand = (brand === "" || pBrand === brand);
-                let matchCategory = (category === "" || pCategory === category);
-                let matchPrice = (pPrice <= maxPrice);
-                
-                if(matchText && matchBrand && matchCategory && matchPrice) {
-                    el.style.display = 'block';
-                } else {
-                    el.style.display = 'none';
-                }
-            }
-        }
-
-        function addFromSearch(id, name, price, weight) {
-            let currentStock = productStocks[id] || 0;
-            let existing = cart.find(i => i.id === id);
-            
-            if(existing) {
-                if(existing.qty >= currentStock) {
-                    if(typeof Swal !== 'undefined') {
-                        Swal.fire({ toast: true, position: 'bottom-end', icon: 'error', title: 'Stock máximo alcanzado', text: 'Solo hay ' + currentStock + ' disponibles.', showConfirmButton: false, timer: 2000, background: getSwalBg(), color: getSwalColor() });
-                    }
-                    return;
-                }
-                existing.qty++;
-            } else {
-                if(currentStock <= 0) return;
-                cart.push({id: id, name: name, price: price, qty: 1, weight: weight});
-            }
-            localStorage.setItem(cartKey, JSON.stringify(cart));
-            renderCart();
-            
-            if(typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true, position: 'bottom-end', icon: 'success',
-                    title: name + ' añadido al carrito',
-                    showConfirmButton: false, timer: 1500,
-                    background: getSwalBg(), color: getSwalColor()
-                });
-            }
-        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

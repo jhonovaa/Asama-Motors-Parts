@@ -24,14 +24,27 @@
     User navUser = (User) session.getAttribute("user");
     boolean navLoggedIn = navUser != null;
     int navRole = navLoggedIn ? navUser.getRoleId() : 0;
-    String currentPage = request.getRequestURI();
+    String currentPage = (String) request.getAttribute("jakarta.servlet.forward.request_uri");
+    if (currentPage == null) {
+        currentPage = request.getRequestURI();
+    }
     String navUserAgent = request.getHeader("User-Agent");
     boolean isApp = navUserAgent != null && navUserAgent.contains("ChengAndroidApp");
 %>
 <link rel="stylesheet" href="resources/theme.css?v=6">
-<script src="resources/theme.js?v=2"></script>
+<script src="resources/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script>
+    if (document.body) {
+        <% if (navLoggedIn) { %>
+            document.body.classList.add('sidebar-layout');
+        <% } else { %>
+            document.body.classList.remove('sidebar-layout');
+        <% } %>
+    }
+</script>
 
 <%
     String alertMsg = request.getParameter("msg");
@@ -67,6 +80,29 @@
         document.body.classList.add('light-mode');
         document.getElementById('themeIcon').classList.replace('bi-sun-fill', 'bi-moon-fill');
     }
+
+    <% if(navRole == 1 || navRole == 4) { %>
+    function checkNotifications() {
+        fetch('api/notifications')
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) return;
+                const badge = document.getElementById('orderNotificationBadge');
+                if(badge) {
+                    if(data.unreadCount > 0) {
+                        badge.innerText = data.unreadCount;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }).catch(console.error);
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        checkNotifications();
+        setInterval(checkNotifications, 15000);
+    });
+    <% } %>
 </script>
 <% } %>
 
@@ -84,57 +120,8 @@
         </button>
         
         <div class="collapse navbar-collapse" id="asamaNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
-                <% if(!navLoggedIn) { %>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i><fmt:message key="nav.catalog"/></a></li>
-                <% } else if(navRole == 1) { // Admin %>
-                    <% if(isApp) { %>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.stats"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "time_tracking.jsp") ? "active" : "" %>" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "sales_history.jsp") ? "active" : "" %>" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
-                    <% } else { %>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cashier") ? "active" : "" %>" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "employees") ? "active" : "" %>" href="employees"><i class="bi bi-people me-1"></i> <fmt:message key="nav.staff"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "time_tracking.jsp") ? "active" : "" %>" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "admin_logs.jsp") ? "active" : "" %>" href="admin_logs.jsp"><i class="bi bi-shield-lock me-1"></i> <fmt:message key="nav.audit"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "sales_history.jsp") ? "active" : "" %>" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
-                    <% } %>
-                <% } else if(navRole == 2) { // Contador %>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "accountant.jsp") ? "active" : "" %>" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> <fmt:message key="nav.accounting"/></a></li>
-                <% } else if(navRole == 3) { // Bodeguero %>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
-                <% } else if(navRole == 4) { // Cajero %>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cashier") ? "active" : "" %>" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
-                <% } else if(navRole == 5) { // Cliente %>
-                    <% if(isApp) { %>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cart.jsp") ? "active" : "" %>" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.order"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
-                    <% } else { %>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> <fmt:message key="nav.my_dashboard"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cart.jsp") ? "active" : "" %>" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.cart"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
-                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "visual_scanner.jsp") ? "active" : "" %>" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> <fmt:message key="nav.scanner"/></a></li>
-                    <% } %>
-                <% } else if(navRole == 6) { // Mecanico %>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="nav.search"/></a></li>
-                <% } %>
-            </ul>
-            
-            <div class="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0">
-
+            <!-- User / Login Section (Top in sidebar) -->
+            <div class="nav-user-section d-flex flex-column gap-2 w-100 mt-3 mt-lg-0 mb-lg-3">
                 <% if(navLoggedIn) { %>
                     <!-- User Profile Area -->
                     <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none">
@@ -154,15 +141,80 @@
                         </div>
                     </div>
                 <% } %>
+                
+                <% if(navLoggedIn) { %>
+                    <a class="btn btn-outline-danger btn-sm w-100 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center justify-content-center gap-2 transition-all" href="logout">
+                        <span><fmt:message key="nav.logout"/></span> <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                <% } else { %>
+                    <a class="btn btn-accent w-100 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center justify-content-center gap-2 transition-all" href="login.jsp">
+                        <i class="bi bi-person-circle"></i> <fmt:message key="nav.login"/>
+                    </a>
+                <% } %>
+            </div>
 
+            <!-- Navigation Links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1 align-items-center asama-nav-links">
+                <% if(!navLoggedIn) { %>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-2"></i><fmt:message key="nav.catalog"/></a></li>
+                <% } else if(navRole == 1) { // Admin %>
+                    <% if(isApp) { %>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.stats"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "time_tracking.jsp") ? "active" : "" %>" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "sales_history.jsp") ? "active" : "" %>" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
+                    <% } else { %>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cashier") ? "active" : "" %>" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "employees") ? "active" : "" %>" href="employees"><i class="bi bi-people me-1"></i> <fmt:message key="nav.staff"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "time_tracking.jsp") ? "active" : "" %>" href="time_tracking.jsp"><i class="bi bi-clock-history me-1"></i> <fmt:message key="nav.attendance"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "admin_logs.jsp") ? "active" : "" %>" href="admin_logs.jsp"><i class="bi bi-shield-lock me-1"></i> <fmt:message key="nav.audit"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "sales_history.jsp") ? "active" : "" %>" href="sales_history.jsp"><i class="bi bi-journal-text me-1"></i> <fmt:message key="nav.history"/></a></li>
+                    <% } %>
+                <% } else if(navRole == 2) { // Contador %>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "accountant.jsp") ? "active" : "" %>" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> <fmt:message key="nav.accounting"/></a></li>
+                <% } else if(navRole == 3) { // Bodeguero %>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "inventory") ? "active" : "" %>" href="inventory"><i class="bi bi-box-seam me-1"></i> <fmt:message key="nav.inventory"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                <% } else if(navRole == 4) { // Cajero %>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cashier") ? "active" : "" %>" href="cashier"><i class="bi bi-currency-dollar me-1"></i> <fmt:message key="nav.sales"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                <% } else if(navRole == 5) { // Cliente %>
+                    <% if(isApp) { %>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cart.jsp") ? "active" : "" %>" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.order"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
+                    <% } else { %>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-person-badge me-1"></i> <fmt:message key="nav.my_dashboard"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "catalog.jsp") ? "active" : "" %>" href="catalog.jsp"><i class="bi bi-grid-3x3-gap me-1"></i> <fmt:message key="nav.catalog"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "cart.jsp") ? "active" : "" %>" href="cart.jsp"><i class="bi bi-cart3 me-1"></i> <fmt:message key="nav.cart"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                        <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "visual_scanner.jsp") ? "active" : "" %>" href="visual_scanner.jsp"><i class="bi bi-camera me-1"></i> <fmt:message key="nav.scanner"/></a></li>
+                    <% } %>
+                <% } else if(navRole == 6) { // Mecanico %>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "maintenance") ? "active" : "" %>" href="maintenance"><i class="bi bi-tools me-1"></i> <fmt:message key="nav.workshop"/></a></li>
+                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
+                <% } %>
+            </ul>
+            
+            <!-- Controls Section (Bottom in sidebar) -->
+            <div class="nav-controls-section d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0 pb-3 pb-lg-0 w-100">
                 <div class="d-flex align-items-center justify-content-between w-100 gap-2 mt-1">
-                    <% if(navLoggedIn && (navRole == 1 || navRole == 3 || navRole == 4)) { %>
+                    <% if(navLoggedIn && (navRole == 1 || navRole == 4)) { %>
                     <div class="position-relative">
-                        <a href="online_orders.jsp" class="btn btn-icon rounded-circle transition-all d-flex align-items-center justify-content-center" title="<fmt:message key='nav.online_orders'/>">
+                        <a href="online_orders.jsp" class="btn btn-icon rounded-circle transition-all d-flex align-items-center justify-content-center" title="<fmt:message key='nav.notifications'/>">
                             <i class="bi bi-bell-fill fs-5"></i>
-                            <span id="orderNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                                0
-                            </span>
+                            <span id="orderNotificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
                         </a>
                     </div>
                     <% } %>
@@ -181,18 +233,7 @@
                         <i id="themeIcon" class="bi bi-sun-fill fs-5"></i>
                     </button>
                 </div>
-                
-                <% if(navLoggedIn) { %>
-                    <a class="btn btn-outline-danger btn-sm w-100 py-2 rounded-pill fw-bold logout-btn d-flex align-items-center justify-content-center gap-2 mt-1 transition-all" href="logout">
-                        <span><fmt:message key="nav.logout"/></span> <i class="bi bi-box-arrow-right"></i>
-                    </a>
-                <% } else { %>
-                    <a class="btn btn-accent w-100 py-2 rounded-pill fw-bold login-btn shadow-sm d-flex align-items-center justify-content-center gap-2 mt-1 transition-all" href="login.jsp">
-                        <i class="bi bi-person-circle"></i> <fmt:message key="nav.login"/>
-                    </a>
-                <% } %>
             </div>
-
         </div>
     </div>
 </nav>
@@ -233,57 +274,7 @@
     // Start timer on page load
     resetTimer();
 
-    <% if(navRole == 1 || navRole == 3 || navRole == 4) { %>
-    let lastNotificationCount = 0;
-    function showToastNotification(title, message) {
-        let container = document.getElementById('asama-toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'asama-toast-container';
-            container.style.position = 'fixed';
-            container.style.bottom = '20px';
-            container.style.right = '20px';
-            container.style.zIndex = '99999';
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.gap = '10px';
-            document.body.appendChild(container);
-        }
-        
-        const toast = document.createElement('div');
-        toast.className = 'p-3 shadow-lg rounded-3 border border-opacity-50 text-white';
-        toast.style.background = 'rgba(255, 107, 53, 0.95)';
-        toast.style.color = '#fff';
-        toast.style.minWidth = '320px';
-        toast.style.maxWidth = '400px';
-        toast.style.cursor = 'pointer';
-        toast.style.transition = 'all 0.5s ease';
-        toast.style.border = '1px solid rgba(255,255,255,0.2)';
-        toast.style.backdropFilter = 'blur(10px)';
-        toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
-        
-        toast.innerHTML = `
-            <div class="d-flex align-items-center justify-content-between mb-1">
-                <strong class="me-auto"><i class="bi bi-bell-fill me-2"></i>\${title}</strong>
-                <button type="button" class="btn-close btn-close-white btn-sm" onclick="event.stopPropagation(); this.parentElement.parentElement.remove();"></button>
-            </div>
-            <div class="small">\${message}</div>
-        `;
-        
-        toast.onclick = function() {
-            window.location.href = 'online_orders.jsp';
-        };
-        
-        container.appendChild(toast);
-        
-        // Auto-remove after 8 seconds
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(20px)';
-            setTimeout(() => toast.remove(), 500);
-        }, 8000);
-    }
-
+    <% if(navRole == 1 || navRole == 4) { %>
     function checkNotifications() {
         fetch('api/notifications')
             .then(res => res.json())
@@ -294,18 +285,38 @@
                     if(data.unreadCount > 0) {
                         badge.innerText = data.unreadCount;
                         badge.style.display = 'block';
-                        
-                        if (lastNotificationCount > 0 && data.unreadCount > lastNotificationCount) {
-                            showToastNotification("¡Nueva Venta Realizada!", "Se ha registrado un nuevo pedido online. Haz clic aquí para ir al módulo.");
-                        }
                     } else {
                         badge.style.display = 'none';
                     }
-                    lastNotificationCount = data.unreadCount;
+                }
+                const list = document.getElementById('notificationList');
+                if(list && data.orders) {
+                    list.innerHTML = '';
+                    if(data.orders.length === 0) {
+                        list.innerHTML = '<li class="notif-empty">No hay notificaciones nuevas</li>';
+                        return;
+                    }
+                    data.orders.forEach(o => {
+                        let li = document.createElement('li');
+                        li.className = 'notif-item border-bottom';
+                        li.innerHTML = `
+                            <a href="online_orders.jsp" class="text-decoration-none d-block">
+                                <div class="notif-header">
+                                    <span class="notif-id">Pedido #\${o.id}</span>
+                                    <span class="notif-status \${o.status === 'PENDIENTE' ? 'text-warning' : (o.status === 'COMPLETADO' ? 'text-success' : 'text-info')}">\${o.status}</span>
+                                </div>
+                                <div class="notif-customer">\${o.customerName || 'Cliente'}</div>
+                                <div class="notif-footer">
+                                    <span class="notif-total">$\${o.totalAmount.toLocaleString('es-CO')}</span>
+                                    <span class="notif-time"><i class="bi bi-clock me-1"></i>\${o.createdAt.substring(11,16)}</span>
+                                </div>
+                            </a>
+                        `;
+                        list.appendChild(li);
+                    });
                 }
             }).catch(console.error);
     }
-
     document.addEventListener("DOMContentLoaded", function() {
         checkNotifications();
         setInterval(checkNotifications, 15000);

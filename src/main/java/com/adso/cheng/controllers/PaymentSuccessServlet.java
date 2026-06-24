@@ -45,7 +45,7 @@ public class PaymentSuccessServlet extends HttpServlet {
             conn.setAutoCommit(false);
 
             // Verificar estado actual
-            String checkSql = "SELECT o.customer_id, o.items_json, o.status, o.shipping_cost, u.full_name, u.email, u.document_number FROM online_orders o JOIN users u ON o.customer_id = u.id WHERE o.id = ?";
+            String checkSql = "SELECT o.customer_id, o.items_json, o.status, o.shipping_cost, u.full_name, u.email, u.document_id FROM online_orders o JOIN users u ON o.customer_id = u.id WHERE o.id = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
                 checkStmt.setInt(1, orderId);
                 ResultSet rs = checkStmt.executeQuery();
@@ -61,7 +61,7 @@ public class PaymentSuccessServlet extends HttpServlet {
                     double shippingCost = rs.getDouble("shipping_cost");
                     String fullName = rs.getString("full_name");
                     String email = rs.getString("email");
-                    String documentNumber = rs.getString("document_number");
+                    String documentNumber = rs.getString("document_id");
 
                     // Marcar como completado y activar notificaciones
                     String updateSql = "UPDATE online_orders SET status = 'COMPLETADO', is_read_admin = FALSE, is_read_cashier = FALSE WHERE id = ?";

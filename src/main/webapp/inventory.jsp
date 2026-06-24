@@ -9,6 +9,9 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    String lang = (String) session.getAttribute("lang");
+    if (lang == null) lang = "es";
+    boolean isEn = "en".equals(lang);
 %>
 <%!
     public String getStockBadgeHTML(int stock) {
@@ -23,15 +26,15 @@
         }
     }
 
-    public String getStockAlertBadgeHTML(int stock) {
+    public String getStockAlertBadgeHTML(int stock, boolean isEn) {
         if (stock == 0) {
-            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-zero me-2'></span>Sin Stock</span>";
+            return "<span class='badge badge-stock-zero px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-zero me-2'></span>" + (isEn ? "No Stock" : "Sin Stock") + "</span>";
         } else if (stock <= 20) {
-            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-low me-2'></span>Stock Bajo</span>";
+            return "<span class='badge badge-stock-low px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-low me-2'></span>" + (isEn ? "Low Stock" : "Stock Bajo") + "</span>";
         } else if (stock <= 50) {
-            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-medium me-2'></span>Stock Medio</span>";
+            return "<span class='badge badge-stock-medium px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-medium me-2'></span>" + (isEn ? "Medium Stock" : "Stock Medio") + "</span>";
         } else {
-            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-high me-2'></span>Con Stock</span>";
+            return "<span class='badge badge-stock-high px-3 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center'><span class='stock-dot-high me-2'></span>" + (isEn ? "In Stock" : "Con Stock") + "</span>";
         }
     }
 %>
@@ -286,23 +289,23 @@
                             <button class="nav-link active px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="tracker-tab" data-bs-toggle="tab" data-bs-target="#tracker-tab-pane" type="button" role="tab" 
                                     aria-controls="tracker-tab-pane" aria-selected="true">
-                                <i class="bi bi-grid-3x3-gap-fill"></i> Control de Inventario
+                                <i class="bi bi-grid-3x3-gap-fill"></i> <%= isEn ? "Inventory Control" : "Control de Inventario" %>
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link px-4 py-2 rounded-pill fw-bold border border-2 d-flex align-items-center gap-2" 
                                     id="alert-tab" data-bs-toggle="tab" data-bs-target="#alert-tab-pane" type="button" role="tab" 
                                     aria-controls="alert-tab-pane" aria-selected="false">
-                                <i class="bi bi-columns-gap"></i> Alerta de Stock
+                                <i class="bi bi-columns-gap"></i> <%= isEn ? "Stock Alert" : "Alerta de Stock" %>
                             </button>
                         </li>
                     </ul>
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-accent rounded-pill px-4 py-2 fw-bolder d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newProductModal">
-                            <i class="bi bi-plus-circle-fill fs-5"></i> Nuevo Producto
+                            <i class="bi bi-plus-circle-fill fs-5"></i> <%= isEn ? "New Product" : "Nuevo Producto" %>
                         </button>
                         <button class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
-                            <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> Carga Masiva
+                            <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> <%= isEn ? "Mass Upload" : "Carga Masiva" %>
                         </button>
                         <span class="badge bg-secondary bg-opacity-25 text-light px-4 py-2 rounded-pill fw-bolder fs-6 border border-secondary border-opacity-50">
                             Total: <%= productsList != null ? productsList.size() : 0 %>
@@ -315,17 +318,17 @@
                     <div class="tab-pane fade show active px-3" id="tracker-tab-pane" role="tabpanel" aria-labelledby="tracker-tab" tabindex="0">
                         <div class="table-responsive" style="max-height: 62vh; overflow-y: auto;">
                             <table class="table align-middle table-borderless table-hover">
-                                <thead class="sticky-top" style="background: var(--card-bg); z-index: 10;">
-                                    <tr>
-                                        <th class="text-uppercase pb-3 pt-3">Foto</th>
-                                        <th class="text-uppercase pb-3 pt-3">Repuesto</th>
-                                        <th class="text-uppercase pb-3 pt-3">Marca</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Código de Barras</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Cantidad</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Alerta de Stock</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Ubicación</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-end">Precio</th>
-                                        <th class="text-uppercase pb-3 pt-3 text-center">Acciones</th>
+                                <thead>
+                                    <tr class="border-bottom-3 border-secondary">
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Photo" : "Foto" %></th>
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Spare Part" : "Repuesto" %></th>
+                                        <th class="text-uppercase pb-3 pt-3"><%= isEn ? "Brand" : "Marca" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Barcode" : "Código de Barras" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Quantity" : "Cantidad" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Stock Alert" : "Alerta de Stock" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Location" : "Ubicación" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-end"><%= isEn ? "Price" : "Precio" %></th>
+                                        <th class="text-uppercase pb-3 pt-3 text-center"><%= isEn ? "Actions" : "Acciones" %></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -361,7 +364,7 @@
                                             <%= p.getStock() %>
                                         </td>
                                         <td class="text-center">
-                                            <%= getStockAlertBadgeHTML(p.getStock()) %>
+                                            <%= getStockAlertBadgeHTML(p.getStock(), isEn) %>
                                         </td>
                                         <td class="text-center fw-bolder fs-6 text-secondary">
                                             <%= (p.getEstante() != null ? p.getEstante() : "-") %> / <%= (p.getFila() != null ? p.getFila() : "-") %>
@@ -382,7 +385,8 @@
                                     </tr>
                                     <%      }
                                         } else {
-                                            out.print("<tr><td colspan='9' class='text-center text-secondary py-5 fw-bolder fs-5'><i class='bi bi-inbox fs-1 d-block mb-3'></i>El inventario está vacío.</td></tr>");
+                                            String emptyMsg = isEn ? "The inventory is empty." : "El inventario está vacío.";
+                                            out.print("<tr><td colspan='9' class='text-center text-secondary py-5 fw-bolder fs-5'><i class='bi bi-inbox fs-1 d-block mb-3'></i>" + emptyMsg + "</td></tr>");
                                         }
                                     %>
                                 </tbody>
@@ -447,7 +451,7 @@
                                             }
                                             if(!hasZero) {
                                         %>
-                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i><%= isEn ? "Empty" : "Vacío" %></div>
                                         <% } %>
                                     </div>
                                 </div>
@@ -507,7 +511,7 @@
                                             }
                                             if(!hasLow) {
                                         %>
-                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i><%= isEn ? "Empty" : "Vacío" %></div>
                                         <% } %>
                                     </div>
                                 </div>
@@ -567,7 +571,7 @@
                                             }
                                             if(!hasMedium) {
                                         %>
-                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i><%= isEn ? "Empty" : "Vacío" %></div>
                                         <% } %>
                                     </div>
                                 </div>
@@ -627,7 +631,7 @@
                                             }
                                             if(!hasHigh) {
                                         %>
-                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i>Vacío</div>
+                                            <div class="text-center text-secondary py-5 fw-semibold"><i class="bi bi-check-circle fs-3 d-block mb-2"></i><%= isEn ? "Empty" : "Vacío" %></div>
                                         <% } %>
                                     </div>
                                 </div>
@@ -690,8 +694,7 @@
               <div class="row g-2 mb-3">
                   <div class="col-6">
                       <label class="form-label">Precio ($)</label>
-                      <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required oninput="document.getElementById('addBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
-                      <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="addBasePrice" class="fw-bold text-success">$0.00</span></small>
+                      <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
                   </div>
                   <div class="col-6">
                       <label class="form-label">Stock Inicial</label>
@@ -702,21 +705,11 @@
               <div class="row g-2 mb-3">
                   <div class="col-6">
                       <label class="form-label">Estante</label>
-                      <select name="estante" class="form-control">
-                          <option value="">Seleccione...</option>
-                          <% for(int i=1; i<=20; i++) { %>
-                          <option value="<%=i%>"><%=i%></option>
-                          <% } %>
-                      </select>
+                      <input type="text" name="estante" class="form-control" placeholder="Ej. A">
                   </div>
                   <div class="col-6">
                       <label class="form-label">Fila</label>
-                      <select name="fila" class="form-control">
-                          <option value="">Seleccione...</option>
-                          <% for(int i=1; i<=20; i++) { %>
-                          <option value="<%=i%>"><%=i%></option>
-                          <% } %>
-                      </select>
+                      <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
                   </div>
               </div>
               
@@ -795,8 +788,7 @@
               <div class="row g-3 mb-3">
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.price" /></label>
-                      <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required oninput="document.getElementById('editBasePrice').innerText = (this.value / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'})">
-                      <small class="text-muted d-block mt-1">Precio real (sin IVA): <span id="editBasePrice" class="fw-bold text-success">$0.00</span></small>
+                      <input type="number" step="0.01" name="price" id="editPrice" class="form-control" required>
                   </div>
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.cur_stock" /></label>
@@ -806,21 +798,11 @@
               <div class="row g-3 mb-3">
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.shelf" /></label>
-                      <select name="estante" id="editEstante" class="form-control">
-                          <option value="">Seleccione...</option>
-                          <% for(int i=1; i<=20; i++) { %>
-                          <option value="<%=i%>"><%=i%></option>
-                          <% } %>
-                      </select>
+                      <input type="text" name="estante" id="editEstante" class="form-control">
                   </div>
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.row" /></label>
-                      <select name="fila" id="editFila" class="form-control">
-                          <option value="">Seleccione...</option>
-                          <% for(int i=1; i<=20; i++) { %>
-                          <option value="<%=i%>"><%=i%></option>
-                          <% } %>
-                      </select>
+                      <input type="text" name="fila" id="editFila" class="form-control">
                   </div>
               </div>
               <div class="mb-3">
@@ -960,7 +942,6 @@
         document.getElementById('editBrand').value = brand;
         document.getElementById('editDesc').value = (desc === 'null' || !desc) ? '' : desc;
         document.getElementById('editPrice').value = price;
-        document.getElementById('editBasePrice').innerText = (price / 1.19).toLocaleString('es-CO', {style: 'currency', currency: 'COP'});
         document.getElementById('editStock').value = stock;
         document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
         document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
