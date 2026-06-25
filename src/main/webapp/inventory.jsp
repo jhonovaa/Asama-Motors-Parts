@@ -262,7 +262,7 @@
 
 <%@ include file="navbar.jsp" %>
 
-<div class="container-fluid px-4 pb-5 mb-5" style="margin-top: 100px;">
+<div class="container-fluid px-2 px-md-4 pb-5 mb-5" style="margin-top: 100px;">
     <div class="row">
         
         <%
@@ -301,10 +301,10 @@
                         </li>
                     </ul>
                     <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-accent rounded-pill px-4 py-2 fw-bolder d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newProductModal">
+                        <button type="button" class="btn btn-accent rounded-pill px-4 py-2 fw-bolder d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newProductModal">
                             <i class="bi bi-plus-circle-fill fs-5"></i> <%= isEn ? "New Product" : "Nuevo Producto" %>
                         </button>
-                        <button class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
+                        <button type="button" class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bolder border-2 d-flex align-items-center gap-2" style="color: var(--accent-orange); border-color: var(--accent-orange);" data-bs-toggle="modal" data-bs-target="#massUploadModal">
                             <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i> <%= isEn ? "Mass Upload" : "Carga Masiva" %>
                         </button>
                         <span class="badge bg-secondary bg-opacity-25 text-light px-4 py-2 rounded-pill fw-bolder fs-6 border border-secondary border-opacity-50">
@@ -419,7 +419,7 @@
                                                             <div class="d-flex align-items-center gap-3 mb-2">
                                                                 <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
                                                                 <div class="min-w-0">
-                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <h6 class="fw-bolder mb-1 text-truncate asama-text" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
                                                                     <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-muted" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
@@ -479,7 +479,7 @@
                                                             <div class="d-flex align-items-center gap-3 mb-2">
                                                                 <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
                                                                 <div class="min-w-0">
-                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <h6 class="fw-bolder mb-1 text-truncate asama-text" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
                                                                     <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-danger" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
@@ -539,7 +539,7 @@
                                                             <div class="d-flex align-items-center gap-3 mb-2">
                                                                 <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
                                                                 <div class="min-w-0">
-                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <h6 class="fw-bolder mb-1 text-truncate asama-text" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
                                                                     <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-warning" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
@@ -599,7 +599,7 @@
                                                             <div class="d-flex align-items-center gap-3 mb-2">
                                                                 <img src="<%= img %>" width="40" height="40" class="rounded-2 shadow-sm" style="object-fit: cover;">
                                                                 <div class="min-w-0">
-                                                                    <h6 class="fw-bolder mb-1 text-truncate text-white" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
+                                                                    <h6 class="fw-bolder mb-1 text-truncate asama-text" title="<%= p.getName() %>" style="font-size: 0.95rem;"><%= p.getName() %></h6>
                                                                     <div class="d-flex align-items-center gap-2">
                                                                         <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50 py-0 px-2 fw-semibold" style="font-size: 0.72rem;"><%= p.getBrand() %></span>
                                                                         <span class="fw-bold text-success" style="font-size: 0.8rem;">Cant: <%= p.getStock() %></span>
@@ -869,18 +869,18 @@
               </div>
               <p class="fw-medium mb-3 fs-6"><fmt:message key="inventory.inst_p1" /></p>
               
-              <div class="bg-dark bg-opacity-50 p-3 rounded-3 mb-4 border border-info border-opacity-25">
-                  <span class="d-block fw-bold text-white mb-2 small"><fmt:message key="inventory.col_order" /></span>
+              <div class="card-custom bg-opacity-50 p-3 rounded-3 mb-4 border border-info border-opacity-25">
+                  <span class="d-block fw-bold asama-text mb-2 small"><fmt:message key="inventory.col_order" /></span>
                   <code class="fs-6" style="color: #00e5ff; font-weight: 700; word-break: break-all;">Nombre, Marca, Descripcion, Precio, Stock, Estante, Fila, MinimoProgramado, CodigoBarras</code>
               </div>
               
-              <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 bg-dark bg-opacity-25 p-4 rounded-4 border border-secondary border-opacity-50 shadow-inner">
+              <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 card-custom bg-opacity-25 p-4 rounded-4 border border-secondary border-opacity-50 shadow-inner">
                   <div class="d-flex align-items-center gap-3">
                       <div class="bg-info bg-opacity-10 p-3 rounded-circle text-info">
                           <i class="bi bi-filetype-csv fs-2"></i>
                       </div>
                       <div class="text-start">
-                          <h6 class="mb-1 fw-bolder text-white fs-5"><fmt:message key="inventory.template_title" /></h6>
+                          <h6 class="mb-1 fw-bolder asama-text fs-5"><fmt:message key="inventory.template_title" /></h6>
                           <span class="text-secondary fw-medium small"><fmt:message key="inventory.template_desc" /></span>
                       </div>
                   </div>
