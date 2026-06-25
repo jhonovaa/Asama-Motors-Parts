@@ -182,7 +182,7 @@
                             <tr>
                                 <td><%= job.get("id") %></td>
                                 <td class="fw-bold text-white"><%= job.get("plate") %></td>
-                                <td><%= job.get("brand") %> <%= job.get("model") %></td>
+                                <td><%= job.get("motoBrand") %> <%= job.get("motoModel") %></td>
                                 <td><%= job.get("customerName") %></td>
                                 <td><%= job.get("mechanicName") != null ? job.get("mechanicName") : "<fmt:message key='maintenance.unassigned' />" %></td>
                                 <td class="small"><%= job.get("description") %></td>

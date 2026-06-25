@@ -87,9 +87,9 @@ public class ProductDAO {
     }
 
     public boolean updateProduct(Product p) {
-        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=? WHERE id=?";
+        String sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=?, barcode=? WHERE id=?";
         if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=?, image_url=? WHERE id=?";
+            sql = "UPDATE products SET name=?, description=?, brand=?, price=?, stock=?, estante=?, fila=?, minimo_programado=?, motorcycle_brand=?, motorcycle_model=?, part_category=?, weight=?, barcode=?, image_url=? WHERE id=?";
         }
         
         try (Connection conn = DbConnection.getConnection();
@@ -106,12 +106,13 @@ public class ProductDAO {
             stmt.setString(10, p.getMotorcycleModel());
             stmt.setString(11, p.getPartCategory());
             stmt.setDouble(12, p.getWeight());
+            stmt.setString(13, p.getBarcode());
             
             if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) {
-                stmt.setString(13, p.getImageUrl());
-                stmt.setInt(14, p.getId());
+                stmt.setString(14, p.getImageUrl());
+                stmt.setInt(15, p.getId());
             } else {
-                stmt.setInt(13, p.getId());
+                stmt.setInt(14, p.getId());
             }
             
             return stmt.executeUpdate() > 0;

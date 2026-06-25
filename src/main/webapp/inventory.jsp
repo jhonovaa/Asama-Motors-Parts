@@ -372,7 +372,7 @@
                                         <td class="fw-bolder text-end text-accent fs-5">$<%= String.format("%.2f", p.getPrice()) %></td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
-                                                <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>')" title="Editar">
+                                                <button class="btn btn-outline-warning rounded-circle p-2 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;" onclick="openEditModal(<%= p.getId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getBrand().replace("'", "\\'") %>', '<%= (p.getDescription() != null ? p.getDescription().replace("'", "\\'") : "") %>', <%= p.getPrice() %>, <%= p.getStock() %>, '<%= (p.getEstante() != null ? p.getEstante().replace("'", "\\'") : "") %>', '<%= (p.getFila() != null ? p.getFila().replace("'", "\\'") : "") %>', <%= p.getMinimoProgramado() %>, '<%= (p.getMotorcycleBrand() != null ? p.getMotorcycleBrand() : "") %>', '<%= (p.getMotorcycleModel() != null ? p.getMotorcycleModel() : "") %>', '<%= (p.getPartCategory() != null ? p.getPartCategory() : "") %>', '<%= (p.getBarcode() != null ? p.getBarcode().replace("'", "\\'") : "") %>')" title="Editar">
                                                     <i class="bi bi-pencil-fill fs-5"></i>
                                                 </button>
                                                 <form action="inventory" method="POST" class="d-inline" onsubmit="return confirm('Seguro que desea eliminar el producto <%= p.getName().replace("'", "\\'") %>?');">
@@ -705,11 +705,24 @@
               <div class="row g-2 mb-3">
                   <div class="col-6">
                       <label class="form-label">Estante</label>
-                      <input type="text" name="estante" class="form-control" placeholder="Ej. A">
+                      <select name="estante" class="form-select" style="background-color: rgba(255, 255, 255, 0.08); color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.2); font-weight: 600; padding: 12px 18px; font-size: 1.05rem;">
+                          <option value="" style="color: #000;">Seleccione...</option>
+                          <option value="A" style="color: #000;">A</option>
+                          <option value="B" style="color: #000;">B</option>
+                          <option value="C" style="color: #000;">C</option>
+                          <option value="D" style="color: #000;">D</option>
+                          <option value="E" style="color: #000;">E</option>
+                          <option value="F" style="color: #000;">F</option>
+                      </select>
                   </div>
                   <div class="col-6">
                       <label class="form-label">Fila</label>
-                      <input type="text" name="fila" class="form-control" placeholder="Ej. 1">
+                      <select name="fila" class="form-select" style="background-color: rgba(255, 255, 255, 0.08); color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.2); font-weight: 600; padding: 12px 18px; font-size: 1.05rem;">
+                          <option value="" style="color: #000;">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                              <option value="<%= i %>" style="color: #000;"><%= i %></option>
+                          <% } %>
+                      </select>
                   </div>
               </div>
               
@@ -798,17 +811,35 @@
               <div class="row g-3 mb-3">
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.shelf" /></label>
-                      <input type="text" name="estante" id="editEstante" class="form-control">
+                      <select name="estante" id="editEstante" class="form-select" style="background-color: rgba(255, 255, 255, 0.08); color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.2); font-weight: 600; padding: 12px 18px; font-size: 1.05rem;">
+                          <option value="" style="color: #000;">Seleccione...</option>
+                          <option value="A" style="color: #000;">A</option>
+                          <option value="B" style="color: #000;">B</option>
+                          <option value="C" style="color: #000;">C</option>
+                          <option value="D" style="color: #000;">D</option>
+                          <option value="E" style="color: #000;">E</option>
+                          <option value="F" style="color: #000;">F</option>
+                      </select>
                   </div>
                   <div class="col-6">
                       <label class="form-label"><fmt:message key="inventory.row" /></label>
-                      <input type="text" name="fila" id="editFila" class="form-control">
+                      <select name="fila" id="editFila" class="form-select" style="background-color: rgba(255, 255, 255, 0.08); color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.2); font-weight: 600; padding: 12px 18px; font-size: 1.05rem;">
+                          <option value="" style="color: #000;">Seleccione...</option>
+                          <% for(int i=1; i<=20; i++) { %>
+                              <option value="<%= i %>" style="color: #000;"><%= i %></option>
+                          <% } %>
+                      </select>
                   </div>
               </div>
-              <div class="mb-3">
-                  <label class="form-label"><fmt:message key="inventory.min_prog" /></label>
-                  <input type="number" name="minimo_programado" id="editMinimoProgramado" class="form-control" required>
-              </div>
+              <div class="row g-3 mb-3">
+                  <div class="col-6">
+                      <label class="form-label"><fmt:message key="inventory.min_prog" /></label>
+                      <input type="number" name="minimo_programado" id="editMinimoProgramado" class="form-control" required>
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label">Código de Barras</label>
+                      <input type="text" name="barcode" id="editBarcode" class="form-control" placeholder="Dejar vacío para mantener">
+                  </div>
               <div class="mb-4">
                   <label class="form-label"><fmt:message key="inventory.upd_image" /></label>
                   <input type="file" name="image" class="form-control" accept=".jpg,.jpeg">
@@ -936,7 +967,7 @@
         }
     }
 
-    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado, motoBrand, motoModel, partCat) {
+    function openEditModal(id, name, brand, desc, price, stock, estante, fila, minimoProgramado, motoBrand, motoModel, partCat, barcode) {
         document.getElementById('editId').value = id;
         document.getElementById('editName').value = name;
         document.getElementById('editBrand').value = brand;
@@ -946,6 +977,7 @@
         document.getElementById('editEstante').value = (estante === 'null' || !estante) ? '' : estante;
         document.getElementById('editFila').value = (fila === 'null' || !fila) ? '' : fila;
         document.getElementById('editMinimoProgramado').value = minimoProgramado;
+        document.getElementById('editBarcode').value = (barcode === 'null' || !barcode) ? '' : barcode;
         
         document.getElementById('motoBrandEdit').value = motoBrand || '';
         updateModels('motoBrandEdit', 'motoModelEdit', motoModel);

@@ -75,6 +75,13 @@ public class InventoryServlet extends HttpServlet {
             p.setMotorcycleModel(request.getParameter("motorcycle_model"));
             p.setPartCategory(request.getParameter("part_category"));
             
+            String editedBarcode = request.getParameter("barcode");
+            if (editedBarcode != null && !editedBarcode.trim().isEmpty()) {
+                p.setBarcode(editedBarcode.trim());
+            } else if (oldProduct != null) {
+                p.setBarcode(oldProduct.getBarcode());
+            }
+            
             Part filePart = request.getPart("image");
             if (filePart != null && filePart.getSize() > 0) {
                 p.setImageUrl(saveFile(filePart, request));

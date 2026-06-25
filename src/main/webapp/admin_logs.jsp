@@ -53,6 +53,19 @@
             padding: 24px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         }
+        
+        /* --- LEGIBILIDAD EXTREMA --- */
+        .text-secondary, .text-muted {
+            color: rgba(255, 255, 255, 0.75) !important;
+        }
+        body.light-mode .text-secondary, body.light-mode .text-muted {
+            color: rgba(0, 0, 0, 0.65) !important;
+        }
+        
+        /* Forzar contraste en tablas */
+        .table td, .table th {
+            color: var(--text-color) !important;
+        }
     </style>
     <link rel="stylesheet" href="resources/theme.css?v=6">
 </head>
@@ -173,9 +186,9 @@
                                             else if("GARANTIAS".equals(module)) badgeColor = "bg-danger";
                                 %>
                                 <tr>
-                                    <td class="text-muted small"><%= rs.getTimestamp("created_at").toString().substring(0, 16) %></td>
+                                    <td class="text-muted fw-bold small"><%= rs.getTimestamp("created_at").toString().substring(0, 16) %></td>
                                     <td>
-                                        <strong class="text-white"><%= rs.getString("full_name") %></strong><br>
+                                        <strong class="" style="color: var(--text-color);"><%= rs.getString("full_name") %></strong><br>
                                         <small class="text-secondary" style="font-size: 0.75rem;"><%= rs.getString("role_name") %></small>
                                     </td>
                                     <td><span class="badge <%= badgeColor %> bg-opacity-25 border border-secondary px-2"><%= module %></span></td>
@@ -222,8 +235,8 @@
                                         while(rs.next()) {
                                 %>
                                 <tr>
-                                    <td><%= rs.getDate("date") %></td>
-                                    <td><strong class="text-white"><%= rs.getString("full_name") %></strong></td>
+                                    <td class="text-secondary fw-bold"><%= rs.getDate("date") %></td>
+                                    <td><strong class="" style="color: var(--text-color);"><%= rs.getString("full_name") %></strong></td>
                                     <td><span class="badge bg-secondary"><%= rs.getString("role_name") %></span></td>
                                     <td class="text-success fw-medium"><i class="bi bi-box-arrow-in-right me-1"></i><%= rs.getTime("entry_time") %></td>
                                     <td class="text-danger fw-medium">
