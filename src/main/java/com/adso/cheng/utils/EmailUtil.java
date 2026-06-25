@@ -22,6 +22,11 @@ public class EmailUtil {
         properties.put("mail.smtp.port", "587");
         properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
         
+        // Configuraciones recomendadas para servidores Linux
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Previene errores de certificados (PKIX) comunes en Linux
+        properties.put("mail.smtp.connectiontimeout", "10000");  // Timeout de 10 segundos
+        properties.put("mail.smtp.timeout", "10000");
+        
         System.out.println("\n==================================");
         System.out.println("INTENTANDO ENVIAR OTP: " + otp);
         System.out.println("A CORREO: " + recipientEmail);
