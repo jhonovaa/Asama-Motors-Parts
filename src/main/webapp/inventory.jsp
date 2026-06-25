@@ -642,7 +642,7 @@
             </div>
         </div>
     </div></div>
-</div>
+
 <!-- Modal Nuevo Producto -->
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

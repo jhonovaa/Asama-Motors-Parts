@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    ASAMA MOTO PARTS — PREMIUM THEME
    ============================================ */
 
@@ -219,7 +219,7 @@ body.light-mode .table-hover tbody tr:hover td { background: rgba(0, 0, 0, 0.03)
 .theme-toggle-btn:hover { box-shadow: 0 0 15px var(--accent-glow); transform: scale(1.1); }
 
 /* Modals */
-.modal-content { background: var(--card-bg) !important; backdrop-filter: blur(15px); border: 1px solid var(--card-border) !important; }
+.modal-content { background: var(--card-bg) !important; border: 1px solid var(--card-border) !important; }
 .modal-header, .modal-footer { border-color: var(--card-border) !important; }
 
 /* Scrollbars */

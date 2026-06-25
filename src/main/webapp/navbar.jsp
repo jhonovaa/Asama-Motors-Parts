@@ -177,7 +177,6 @@
                     <% } %>
                 <% } else if(navRole == 2) { // Contador %>
                     <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
-                    <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "search_product.jsp") ? "active" : "" %>" href="search_product.jsp"><i class="bi bi-search me-1"></i> <fmt:message key="dashboard.consult_part"/></a></li>
                     <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "accountant.jsp") ? "active" : "" %>" href="accountant.jsp"><i class="bi bi-calculator me-1"></i> <fmt:message key="nav.accounting"/></a></li>
                 <% } else if(navRole == 3) { // Bodeguero %>
                     <li class="nav-item"><a class="nav-link custom-link <%= isActive(currentPage, "dashboard.jsp") ? "active" : "" %>" href="dashboard.jsp"><i class="bi bi-speedometer2 me-1"></i> <fmt:message key="nav.dashboard"/></a></li>
