@@ -146,11 +146,16 @@ public class InventoryServlet extends HttpServlet {
         if (deployUploadPath != null) {
             File deployDir = new File(deployUploadPath);
             if (!deployDir.exists()) deployDir.mkdirs();
-            java.nio.file.Files.copy(
-                new java.io.File(baseUploadPath + File.separator + fileName).toPath(),
-                new java.io.File(deployUploadPath + File.separator + fileName).toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING
-            );
+            java.io.File srcFile = new java.io.File(baseUploadPath + File.separator + fileName);
+            java.io.File destFile = new java.io.File(deployUploadPath + File.separator + fileName);
+            
+            if (!srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
+                java.nio.file.Files.copy(
+                    srcFile.toPath(),
+                    destFile.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                );
+            }
         }
 
         return "resources/fotos/productos/" + fileName;

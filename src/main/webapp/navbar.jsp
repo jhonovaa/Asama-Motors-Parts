@@ -59,7 +59,7 @@
             icon: '<%= icon %>',
             title: '<%= title %>',
             text: '<%= alertMsg %>',
-            confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ff6b00',
+            confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ED1C24',
             background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e1e24',
             color: document.body.classList.contains('light-mode') ? '#333333' : '#f8f9fa',
             customClass: {
@@ -124,22 +124,24 @@
             <div class="nav-user-section d-flex flex-column gap-2 w-100 mt-3 mt-lg-0 mb-lg-3">
                 <% if(navLoggedIn) { %>
                     <!-- User Profile Area -->
-                    <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none">
-                        <div class="user-avatar-circle flex-shrink-0" style="width: 42px; height: 42px; font-size: 1rem;">
-                            <%= navUser.getFullName().substring(0, Math.min(2, navUser.getFullName().length())).toUpperCase() %>
+                    <a href="profile.jsp" class="text-decoration-none custom-profile-link transition-all" style="border-radius: 16px;">
+                        <div class="user-profile-badge w-100 d-flex align-items-center gap-3 p-2 border-0 bg-transparent shadow-none" style="cursor: pointer; border-radius: 16px; transition: all 0.3s ease;">
+                            <div class="user-avatar-circle flex-shrink-0 bg-accent text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px; font-size: 1rem; border-radius: 50%; box-shadow: 0 0 10px var(--accent-glow); background: var(--accent-orange) !important;">
+                                <%= navUser.getFullName().substring(0, Math.min(2, navUser.getFullName().length())).toUpperCase() %>
+                            </div>
+                            <div class="text-start min-w-0 flex-grow-1 text-truncate">
+                                <h6 class="mb-0 fw-bold text-truncate hover-accent transition-all" style="line-height: 1.2; font-size: 0.9rem; color: var(--text-color);"><%= navUser.getFullName() %></h6>
+                                <span class="text-secondary small fw-normal" style="font-size: 0.75rem;">
+                                    <% if(navRole == 1) out.print("Administrador");
+                                       else if(navRole == 2) out.print("Contador");
+                                       else if(navRole == 3) out.print("Bodeguero");
+                                       else if(navRole == 4) out.print("Cajero");
+                                       else if(navRole == 5) out.print("Cliente");
+                                       else if(navRole == 6) out.print("Mecánico"); %>
+                                </span>
+                            </div>
                         </div>
-                        <div class="text-start min-w-0 flex-grow-1 text-truncate">
-                            <h6 class="mb-0 fw-bold text-truncate" style="line-height: 1.2; font-size: 0.9rem; color: var(--text-color);"><%= navUser.getFullName() %></h6>
-                            <span class="text-secondary small fw-normal" style="font-size: 0.75rem;">
-                                <% if(navRole == 1) out.print("Administrador");
-                                   else if(navRole == 2) out.print("Contador");
-                                   else if(navRole == 3) out.print("Bodeguero");
-                                   else if(navRole == 4) out.print("Cajero");
-                                   else if(navRole == 5) out.print("Cliente");
-                                   else if(navRole == 6) out.print("Mecánico"); %>
-                            </span>
-                        </div>
-                    </div>
+                    </a>
                 <% } %>
                 
                 <% if(navLoggedIn) { %>

@@ -50,6 +50,44 @@ public class MaintenanceDAO {
         return jobs;
     }
 
+    public Map<String, Object> getJobById(int jobId) {
+        String sql = "SELECT mj.id, mj.description, mj.status, mj.cost, mj.created_at, mj.is_paid, " +
+                     "m.plate, m.brand AS moto_brand, m.model AS moto_model, m.year AS moto_year, " +
+                     "c.full_name AS customer_name, c.email AS customer_email, c.document_id AS customer_document, mec.full_name AS mechanic_name " +
+                     "FROM maintenance_jobs mj " +
+                     "JOIN motorcycles m ON mj.motorcycle_id = m.id " +
+                     "JOIN users c ON m.customer_id = c.id " +
+                     "LEFT JOIN users mec ON mj.mechanic_id = mec.id " +
+                     "WHERE mj.id = ?";
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, jobId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Map<String, Object> job = new HashMap<>();
+                    job.put("id", rs.getInt("id"));
+                    job.put("description", rs.getString("description"));
+                    job.put("status", rs.getString("status"));
+                    job.put("cost", rs.getDouble("cost"));
+                    job.put("createdAt", rs.getTimestamp("created_at"));
+                    job.put("isPaid", rs.getBoolean("is_paid"));
+                    job.put("plate", rs.getString("plate"));
+                    job.put("motoBrand", rs.getString("moto_brand"));
+                    job.put("motoModel", rs.getString("moto_model"));
+                    job.put("motoYear", rs.getInt("moto_year"));
+                    job.put("customerName", rs.getString("customer_name"));
+                    job.put("customerEmail", rs.getString("customer_email"));
+                    job.put("customerDocument", rs.getString("customer_document"));
+                    job.put("mechanicName", rs.getString("mechanic_name"));
+                    return job;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Map<String, Object>> getJobsByMechanic(int mechanicId) {
         List<Map<String, Object>> jobs = new ArrayList<>();
         String sql = "SELECT mj.id, mj.description, mj.status, mj.cost, mj.created_at, mj.is_paid, " +

@@ -289,6 +289,10 @@
               <label class="form-label text-warning fw-bold">Monto Recibido ($)</label>
               <input type="number" step="0.01" id="amountTendered" class="form-control form-control-lg text-center fw-bold fs-4" placeholder="0.00" autocomplete="off">
           </div>
+          <div class="mb-4">
+              <label class="form-label text-secondary fw-bold">Correo del Cliente (Opcional - Envío de Factura)</label>
+              <input type="email" id="customerEmailInput" class="form-control form-control-lg text-center fw-bold" placeholder="cliente@correo.com" autocomplete="off">
+          </div>
           <div class="p-3 rounded-3" style="background-color: rgba(255, 255, 255, 0.05); border: 1px dashed var(--card-border);">
               <div class="d-flex justify-content-between align-items-center">
                   <span class="text-secondary fw-bold fs-5">Vueltos:</span>
@@ -443,6 +447,7 @@
         if(cart.length === 0) return;
         modalTotalPay.innerText = '$' + globalTotal.toFixed(2);
         amountTendered.value = '';
+        document.getElementById('customerEmailInput').value = '';
         changeDue.innerText = '$0.00';
         changeDue.className = 'text-success fw-bolder fs-3';
         confirmPaymentBtn.disabled = true;
@@ -467,27 +472,47 @@
     confirmPaymentBtn.addEventListener('click', () => {
         confirmPaymentBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Procesando...';
         confirmPaymentBtn.disabled = true;
+        
+        const customerEmail = document.getElementById('customerEmailInput').value.trim();
 
-        let promises = cart.map(item => {
-            let sub = item.qty * item.price;
-            return fetch('cashier', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: 'action=pay&productId=' + item.id + '&quantity=' + item.qty + '&total=' + sub
-            });
-        });
-
-        Promise.all(promises).then(() => {
-            paymentModal.hide();
-            confirmPaymentBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Completar Pago';
-            
-            showStatus('<i class="bi bi-bag-check-fill me-2"></i><fmt:message key="cashier.sale_success" />', 'success');
-            
-            generateInvoice(parseFloat(amountTendered.value), parseFloat(amountTendered.value) - globalTotal);
-            
-            cart = [];
-            renderCart();
-        }).catch(() => {
+        fetch('cashier', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'action=payCart&cartData=' + encodeURIComponent(JSON.stringify(cart)) + '&customerEmail=' + encodeURIComponent(customerEmail)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                paymentModal.hide();
+                confirmPaymentBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Completar Pago';
+                
+                generateInvoice(parseFloat(amountTendered.value), parseFloat(amountTendered.value) - globalTotal);
+                
+                if (data.hasEmail && !data.isRegistered) {
+                    Swal.fire({
+                        title: 'Aviso al Cajero',
+                        text: 'La factura se envió al correo, pero el usuario NO está registrado en el sistema. Se le invitó a registrarse.',
+                        icon: 'warning',
+                        confirmButtonColor: '#ED1C24'
+                    });
+                } else if (data.hasEmail && data.isRegistered) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Venta registrada y factura enviada al correo del cliente.',
+                        icon: 'success',
+                        confirmButtonColor: '#00E676'
+                    });
+                } else {
+                    showStatus('<i class="bi bi-bag-check-fill me-2"></i><fmt:message key="cashier.sale_success" />', 'success');
+                }
+                
+                cart = [];
+                renderCart();
+            } else {
+                throw new Error(data.error || "Error");
+            }
+        })
+        .catch(err => {
             alert('<fmt:message key="cashier.sale_error" />');
             confirmPaymentBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Completar Pago';
             confirmPaymentBtn.disabled = false;
@@ -536,5 +561,6 @@
     renderCart();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

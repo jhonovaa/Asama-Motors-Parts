@@ -103,6 +103,100 @@ public class CashierServlet extends HttpServlet {
                 e.printStackTrace();
                 out.print("{\"error\": \"Error processing payment\"}");
             }
+        } else if ("payCart".equals(action)) {
+            String cartData = request.getParameter("cartData");
+            String customerEmail = request.getParameter("customerEmail");
+            
+            try {
+                java.util.List<java.util.Map<String, Object>> cart = gson.fromJson(cartData, new com.google.gson.reflect.TypeToken<java.util.List<java.util.Map<String, Object>>>() {}.getType());
+                double total = 0.0;
+                
+                com.adso.cheng.dao.UserDAO userDAO = new com.adso.cheng.dao.UserDAO();
+                User customer = null;
+                boolean isRegistered = false;
+                int customerId = -1;
+                String customerName = "Consumidor Final";
+                String customerDoc = "222222222222";
+                
+                if (customerEmail != null && !customerEmail.trim().isEmpty()) {
+                    customer = userDAO.getUserByEmail(customerEmail.trim());
+                    if (customer != null) {
+                        isRegistered = true;
+                        customerId = customer.getId();
+                        customerName = customer.getFullName();
+                        customerDoc = customer.getDocumentId();
+                    } else {
+                        customerName = customerEmail.trim(); // Just for the email greeting
+                    }
+                }
+                
+                try (Connection conn = DbConnection.getConnection()) {
+                    conn.setAutoCommit(false);
+                    String sql = "INSERT INTO sales (customer_id, cashier_id, product_id, quantity, total_price) VALUES (?, ?, ?, ?, ?)";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        for (java.util.Map<String, Object> item : cart) {
+                            int productId = ((Double) item.get("id")).intValue();
+                            int qty = ((Double) item.get("qty")).intValue();
+                            double price = (Double) item.get("price");
+                            double subtotal = price * qty;
+                            total += subtotal;
+                            
+                            if (customerId != -1) {
+                                stmt.setInt(1, customerId);
+                            } else {
+                                stmt.setNull(1, java.sql.Types.INTEGER);
+                            }
+                            stmt.setInt(2, user.getId());
+                            stmt.setInt(3, productId);
+                            stmt.setInt(4, qty);
+                            stmt.setDouble(5, subtotal);
+                            stmt.addBatch();
+                            
+                            try (PreparedStatement stockStmt = conn.prepareStatement("UPDATE products SET stock = stock - ? WHERE id = ?")) {
+                                stockStmt.setInt(1, qty);
+                                stockStmt.setInt(2, productId);
+                                stockStmt.executeUpdate();
+                            }
+                        }
+                        stmt.executeBatch();
+                    }
+                    conn.commit();
+                }
+                
+                int invoiceId = com.adso.cheng.utils.DianInvoiceGenerator.generateInvoice(
+                    customerId,
+                    customerDoc,
+                    customerName,
+                    customerEmail != null && !customerEmail.trim().isEmpty() ? customerEmail.trim() : "no-reply@asama.com",
+                    cart,
+                    0.0,
+                    -1
+                );
+                
+                if (customerEmail != null && !customerEmail.trim().isEmpty()) {
+                    try {
+                        com.adso.cheng.utils.EmailUtil.sendPurchaseInvoiceEmail(
+                            customerEmail.trim(), 
+                            customerName, 
+                            cart, 
+                            total, 
+                            isRegistered, 
+                            false, 
+                            "https://asamamotors.lat/"
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                
+                com.adso.cheng.utils.AuditLogger.logAction(user.getId(), "VENTAS", "Venta POS Multiple", "Vendió carrito con total $" + total);
+                
+                out.print("{\"success\": true, \"invoiceId\": " + invoiceId + ", \"isRegistered\": " + isRegistered + ", \"hasEmail\": " + (customerEmail != null && !customerEmail.trim().isEmpty()) + "}");
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                out.print("{\"error\": \"Error processing cart payment\"}");
+            }
         } else if ("report".equals(action)) {
             try (Connection conn = DbConnection.getConnection()) {
                 

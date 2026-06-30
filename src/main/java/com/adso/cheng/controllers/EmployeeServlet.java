@@ -164,9 +164,15 @@ public class EmployeeServlet extends HttpServlet {
                 
                 AuditLogger.logAction(user.getId(), "PERSONAL", "Empleado Registrado", "Registró al empleado: " + fullName + " con Rol ID: " + roleId);
             }
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+            response.sendRedirect("employees?msg=" + java.net.URLEncoder.encode("Error: El documento o correo ya existen en el sistema", "UTF-8"));
+            return;
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("employees?msg=Error al procesar la solicitud");
+            String err = e.getMessage();
+            if (err == null) err = e.toString();
+            response.sendRedirect("employees?msg=" + java.net.URLEncoder.encode("Error Interno: " + err, "UTF-8"));
             return;
         }
 
@@ -193,11 +199,17 @@ public class EmployeeServlet extends HttpServlet {
         if (deployUploadPath != null) {
             File deployDir = new File(deployUploadPath);
             if (!deployDir.exists()) deployDir.mkdirs();
-            java.nio.file.Files.copy(
-                new java.io.File(uploadPath + File.separator + fileName).toPath(),
-                new java.io.File(deployUploadPath + File.separator + fileName).toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING
-            );
+            
+            java.io.File srcFile = new java.io.File(uploadPath + File.separator + fileName);
+            java.io.File destFile = new java.io.File(deployUploadPath + File.separator + fileName);
+            
+            if (!srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
+                java.nio.file.Files.copy(
+                    srcFile.toPath(),
+                    destFile.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                );
+            }
         }
         
         String photoPath = "resources/fotos/empleados/" + fileName;

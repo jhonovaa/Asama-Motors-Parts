@@ -1,63 +1,116 @@
 package com.adso.cheng.controllers;
 
-import com.adso.cheng.models.User;
-import com.adso.cheng.utils.DbConnection;
+import java.io.IOException;
+import java.security.SecureRandom;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import com.adso.cheng.dao.UserDAO;
+import com.adso.cheng.models.User;
+import com.adso.cheng.utils.EmailUtil;
 
 @WebServlet("/profile")
 public class ProfileServlet extends HttpServlet {
+    private UserDAO userDAO = new UserDAO();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect("profile.jsp");
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
+        String action = request.getParameter("action");
+
+        if ("verifyEmailOtp".equals(action)) {
+            String inputOtp = request.getParameter("otp");
+            String sessionOtp = (String) session.getAttribute("profileOtp");
+            User pendingProfile = (User) session.getAttribute("pendingProfileUpdate");
+
+            if (sessionOtp != null && sessionOtp.equals(inputOtp) && pendingProfile != null) {
+                // Apply changes
+                boolean success = userDAO.updateUser(pendingProfile);
+                if (success) {
+                    // Update current session user
+                    currentUser.setFullName(pendingProfile.getFullName());
+                    currentUser.setDocumentId(pendingProfile.getDocumentId());
+                    currentUser.setEmail(pendingProfile.getEmail());
+                    
+                    session.removeAttribute("profileOtp");
+                    session.removeAttribute("pendingProfileUpdate");
+                    
+                    response.sendRedirect("profile.jsp?msg=Perfil+y+correo+actualizados+con+exito");
+                } else {
+                    response.sendRedirect("profile.jsp?msg=Error+al+guardar+en+base+de+datos");
+                }
+            } else {
+                request.setAttribute("error", "Código de seguridad incorrecto.");
+                request.getRequestDispatcher("verify_email.jsp").forward(request, response);
+            }
+            return;
+        } 
+        
+        if ("cancelUpdate".equals(action)) {
+            session.removeAttribute("profileOtp");
+            session.removeAttribute("pendingProfileUpdate");
+            response.sendRedirect("profile.jsp");
+            return;
+        }
+
+        // Direct Form Submission (Profile Update)
         String fullName = request.getParameter("fullName");
         String documentId = request.getParameter("documentId");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        String newEmail = request.getParameter("email");
 
-        String sql = "UPDATE users SET full_name = ?, document_id = ?, email = ?";
-        boolean updatePass = password != null && !password.trim().isEmpty();
-        if (updatePass) {
-            sql += ", password = ?";
+        if (fullName == null || documentId == null || newEmail == null) {
+            response.sendRedirect("profile.jsp?msg=Datos+invalidos");
+            return;
         }
-        sql += " WHERE id = ?";
 
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, fullName);
-            stmt.setString(2, documentId);
-            stmt.setString(3, email);
-            int idx = 4;
-            if (updatePass) {
-                stmt.setString(idx++, password);
-            }
-            stmt.setInt(idx, user.getId());
-            stmt.executeUpdate();
-
-            // Update session
-            user.setFullName(fullName);
-            user.setDocumentId(documentId);
-            user.setEmail(email);
-            if (updatePass) user.setPassword(password);
+        if (!currentUser.getEmail().equals(newEmail)) {
+            // Email changed - require OTP
+            User pendingProfile = new User();
+            pendingProfile.setId(currentUser.getId());
+            pendingProfile.setFullName(fullName);
+            pendingProfile.setDocumentId(documentId);
+            pendingProfile.setEmail(newEmail);
             
-            response.sendRedirect("dashboard.jsp?msg=Perfil+actualizado");
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect("dashboard.jsp?error=Error+al+actualizar");
+            session.setAttribute("pendingProfileUpdate", pendingProfile);
+            
+            SecureRandom random = new SecureRandom();
+            int otp = 100000 + random.nextInt(900000);
+            session.setAttribute("profileOtp", String.valueOf(otp));
+            
+            try {
+                EmailUtil.sendOtpEmail(newEmail, String.valueOf(otp));
+                System.out.println("OTP de cambio de correo enviado a: " + newEmail);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            response.sendRedirect("verify_email.jsp");
+        } else {
+            // Email not changed - direct update
+            currentUser.setFullName(fullName);
+            currentUser.setDocumentId(documentId);
+            
+            boolean success = userDAO.updateUser(currentUser);
+            if (success) {
+                response.sendRedirect("profile.jsp?msg=Perfil+actualizado+exitosamente");
+            } else {
+                response.sendRedirect("profile.jsp?msg=Error+al+actualizar+el+perfil");
+            }
         }
     }
 }

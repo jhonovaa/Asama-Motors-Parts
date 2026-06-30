@@ -122,6 +122,20 @@ public class MaintenanceServlet extends HttpServlet {
             maintenanceDAO.updateJobStatus(jobId, status, cost);
             AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Orden Actualizada", "Cambió estado a: " + status + " en orden ID: " + jobId + " con costo: $" + cost);
             
+            if ("COMPLETADO".equalsIgnoreCase(status)) {
+                try {
+                    Map<String, Object> job = maintenanceDAO.getJobById(jobId);
+                    if (job != null && job.get("customerEmail") != null) {
+                        List<Map<String, Object>> parts = maintenanceDAO.getJobParts(jobId);
+                        com.adso.cheng.utils.EmailUtil.sendMaintenanceFinishedEmail((String)job.get("customerEmail"), job, parts);
+                        System.out.println("Correo de taller terminado enviado exitosamente a: " + job.get("customerEmail"));
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error enviando correo de taller terminado: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
         } else if ("requestPart".equals(action)) {
             int jobId = Integer.parseInt(request.getParameter("jobId"));
             int productId = Integer.parseInt(request.getParameter("productId"));
@@ -134,7 +148,9 @@ public class MaintenanceServlet extends HttpServlet {
             AuditLogger.logAction(user.getId(), "MANTENIMIENTO", "Repuesto Solicitado", "Solicitó " + quantity + " unid. producto ID: " + productId + " para orden ID: " + jobId);
         }
 
-        response.sendRedirect("maintenance");
+        // Force relative redirect to avoid Tomcat HTTP/HTTPS proxy issues
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        response.setHeader("Location", "maintenance");
     }
 
     private List<Map<String, Object>> getUsersByRole(int roleId) {

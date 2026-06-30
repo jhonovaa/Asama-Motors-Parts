@@ -235,7 +235,25 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    <% String msg = request.getParameter("msg"); 
+       if (msg != null && !msg.trim().isEmpty()) { 
+           boolean isError = msg.toLowerCase().contains("error");
+    %>
+       document.addEventListener("DOMContentLoaded", function() {
+           Swal.fire({
+               title: '<%= isError ? "Aviso del Sistema" : "Éxito" %>',
+               text: '<%= msg.replace("'", "\\'").replace("\n", " ").replace("\r", " ") %>',
+               icon: '<%= isError ? "warning" : "success" %>',
+               confirmButtonColor: '#ED1C24'
+           }).then(() => {
+               // Limpiar la URL
+               window.history.replaceState({}, document.title, window.location.pathname);
+           });
+       });
+    <% } %>
+
     function openEditModal(id, name, doc, email, roleId) {
         document.getElementById('editId').value = id;
         document.getElementById('editName').value = name;

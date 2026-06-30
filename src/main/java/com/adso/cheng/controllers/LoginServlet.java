@@ -41,6 +41,42 @@ public class LoginServlet extends HttpServlet {
                 }
             }
 
+            // CHECK FOR TRUSTED DEVICE COOKIE (30 MIN GRACE PERIOD)
+            boolean isTrusted = false;
+            jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (jakarta.servlet.http.Cookie c : cookies) {
+                    if ("trusted_device".equals(c.getName()) && String.valueOf(user.getId()).equals(c.getValue())) {
+                        isTrusted = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isTrusted) {
+                // Bypass OTP completely
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+                
+                // Set user as online
+                try (java.sql.Connection conn = com.adso.cheng.utils.DbConnection.getConnection();
+                     java.sql.PreparedStatement stmt = conn.prepareStatement("UPDATE users SET is_online = TRUE WHERE id = ?")) {
+                    stmt.setInt(1, user.getId());
+                    stmt.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // Redirect based on role (Android App logic fallback if needed)
+                String ua = request.getHeader("User-Agent");
+                if (user.getRoleId() == 5 && ua != null && ua.contains("ChengAndroidApp")) {
+                    response.sendRedirect("catalog.jsp");
+                } else {
+                    response.sendRedirect("dashboard.jsp");
+                }
+                return;
+            }
+
             HttpSession session = request.getSession();
             session.setAttribute("pendingUser", user);
             

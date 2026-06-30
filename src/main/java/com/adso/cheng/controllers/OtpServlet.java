@@ -39,6 +39,12 @@ public class OtpServlet extends HttpServlet {
                 e.printStackTrace();
             }
 
+            // Create trusted device cookie for 30 minutes (1800 seconds)
+            jakarta.servlet.http.Cookie trustedCookie = new jakarta.servlet.http.Cookie("trusted_device", String.valueOf(pendingUser.getId()));
+            trustedCookie.setMaxAge(1800); // 30 minutes
+            trustedCookie.setPath("/"); // Available throughout the app
+            response.addCookie(trustedCookie);
+
             response.sendRedirect("dashboard.jsp");
         } else {
             request.setAttribute("error", "Código OTP incorrecto. Intenta de nuevo.");

@@ -37,4 +37,13 @@ public class User {
 
     public String getPhotoPath() { return photoPath; }
     public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
+
+    private String resetToken;
+    private java.sql.Timestamp resetTokenExpiry;
+
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public java.sql.Timestamp getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetTokenExpiry(java.sql.Timestamp resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
 }

@@ -227,7 +227,7 @@
                             icon: iconType,
                             title: titleText,
                             text: '<%= sysMsg %>',
-                            confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ff6b00',
+                            confirmButtonColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-orange').trim() || '#ED1C24',
                             background: isLight ? '#ffffff' : '#1e1e24',
                             color: isLight ? '#333333' : '#f8f9fa',
                             customClass: { popup: 'rounded-4 border border-secondary border-opacity-25' }
@@ -254,6 +254,9 @@
                         <i class="bi bi-lock"></i>
                     </div>
                     <input type="password" name="password" class="form-control ps-5" placeholder="<fmt:message key='login.password' />" required>
+                </div>
+                <div class="d-flex justify-content-end mb-4">
+                    <a href="password-reset" class="text-accent text-decoration-none small fw-bold hover-accent transition-all">¿Olvidaste tu contraseña?</a>
                 </div>
                 <button type="submit" class="btn btn-accent w-100 rounded-pill fw-bold py-2 fs-5 shadow-sm transition-all d-flex justify-content-center align-items-center gap-2">
                     <fmt:message key="login.enter" /> <i class="bi bi-arrow-right-short"></i>

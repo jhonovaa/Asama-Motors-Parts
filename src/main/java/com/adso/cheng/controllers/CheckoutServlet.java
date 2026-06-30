@@ -78,6 +78,30 @@ public class CheckoutServlet extends HttpServlet {
 
             // Process Sales and Deduct Stock
             processSales(user.getId(), cart);
+            
+            // Add shipping to cart visually for the email if there is any
+            if (shipping > 0) {
+                java.util.Map<String, Object> shipItem = new java.util.HashMap<>();
+                shipItem.put("name", "Costo de Envío");
+                shipItem.put("qty", 1.0);
+                shipItem.put("price", shipping);
+                cart.add(shipItem);
+            }
+            
+            // Send Invoice Email
+            try {
+                com.adso.cheng.utils.EmailUtil.sendPurchaseInvoiceEmail(
+                        user.getEmail(), 
+                        user.getFullName(), 
+                        cart, 
+                        totalPay, 
+                        true, // isRegistered
+                        true, // isOnline
+                        "https://asamamotors.lat/"
+                );
+            } catch (Exception e) {
+                e.printStackTrace(); // If email fails, don't fail the sale
+            }
 
             // Return success and invoice ID to frontend
             out.print("{\"success\": true, \"invoiceId\": " + invoiceId + ", \"orderId\": " + orderId + "}");

@@ -1,4 +1,5 @@
 <%@ page import="com.adso.cheng.models.User" %>
+<%@ page import="com.adso.cheng.models.Product" %>
 <%@ page import="java.util.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
@@ -206,8 +207,9 @@
                                             <option value="EN_PROCESO" <%= "EN_PROCESO".equals(status)?"selected":"" %>><fmt:message key="maintenance.status_progress" /></option>
                                             <option value="COMPLETADO"><fmt:message key="maintenance.status_completed" /></option>
                                         </select>
-                                        <input type="number" name="cost" step="0.01" min="0" placeholder="$" class="form-control form-control-sm" style="width:80px;font-size:0.75rem;" value="<%= String.format("%.2f", ((Number)job.get("cost")).doubleValue()) %>">
-                                        <button type="submit" class="btn btn-accent btn-sm" style="font-size:0.7rem;padding:5px 10px;"><fmt:message key="maintenance.ok_btn" /></button>
+                                        <input type="hidden" name="cost" value="<%= job.get("cost") %>">
+                                        <button type="submit" class="btn btn-accent btn-sm" style="font-size:0.7rem;padding:5px 10px;" title="Actualizar Estado">OK</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm ms-1" style="font-size:0.7rem;padding:5px 8px;" onclick="openRequestPartModal(<%= job.get("id") %>)" title="Pedir Repuesto"><i class="bi bi-tools"></i></button>
                                     </form>
                                     <% } else { %>
                                     <span class="text-muted small"><fmt:message key="maintenance.finished" /></span>
@@ -288,7 +290,7 @@
                   <select name="mechanicId" class="form-select" required>
                       <option value=""><fmt:message key="maintenance.select_option" /></option>
                       <% for(Map<String, Object> mech : mechanics) { %>
-                      <option value="<%= mech.get("id") %>"><%= mech.get("full_name") %></option>
+                      <option value="<%= mech.get("id") %>"><%= mech.get("fullName") %></option>
                       <% } %>
                   </select>
               </div>
@@ -324,7 +326,7 @@
                   <select name="customerId" class="form-select" required>
                       <option value=""><fmt:message key="maintenance.select_option" /></option>
                       <% for(Map<String, Object> c : customers) { %>
-                      <option value="<%= c.get("id") %>"><%= c.get("full_name") %> (<%= c.get("email") %>)</option>
+                      <option value="<%= c.get("id") %>"><%= c.get("fullName") %> (<%= c.get("email") %>)</option>
                       <% } %>
                   </select>
               </div>
@@ -355,6 +357,101 @@
 </div>
 <% } %>
 
+<!-- Modal Pedir Repuesto -->
+<div class="modal fade" id="requestPartModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-secondary">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-accent fw-bold">
+            <i class="bi bi-tools me-2"></i>Pedir Repuesto
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
+      </div>
+      <form action="maintenance" method="POST">
+          <div class="modal-body p-4">
+              <input type="hidden" name="action" value="requestPart">
+              <input type="hidden" name="jobId" id="partJobId" value="">
+              
+              <div class="mb-3">
+                  <label class="form-label text-secondary small fw-semibold">Repuesto del Catálogo</label>
+                  <div class="dropdown w-100">
+                      <button class="btn form-select text-start d-flex justify-content-between align-items-center w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="selectedProductBtn" style="background-color: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                          <span>Seleccionar...</span>
+                      </button>
+                      <div class="dropdown-menu w-100 p-0 shadow" style="max-height: 350px; overflow-y: auto; background-color: var(--card-bg); border: 1px solid var(--card-border);">
+                          <div class="p-2 position-sticky top-0 z-1" style="background-color: var(--card-bg); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                              <input type="text" class="form-control form-control-sm" id="catalogSearch" placeholder="Buscar por nombre..." onkeyup="filterCatalog()" style="background-color: rgba(255, 255, 255, 0.1); color: white; border: none;">
+                          </div>
+                          <div id="catalogItems">
+                              <% 
+                              List<Product> inventory = (List<Product>) request.getAttribute("inventory");
+                              if (inventory != null) {
+                                  for(Product p : inventory) { 
+                                      String img = p.getImageUrl() != null && !p.getImageUrl().isEmpty() ? p.getImageUrl() : "resources/placeholder.png";
+                              %>
+                              <a class="dropdown-item d-flex align-items-center py-2 catalog-item" href="javascript:void(0)" onclick="selectCatalogProduct(<%= p.getId() %>, '<%= p.getPrice() %>', '<%= p.getName().replace("'", "\\'") %>')" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                  <img src="<%= img %>" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" class="me-3">
+                                  <div>
+                                      <div class="fw-bold text-white catalog-item-name" style="white-space: normal; line-height: 1.2;"><%= p.getName() %></div>
+                                      <div class="small" style="color: var(--accent-orange);">Stock: <%= p.getStock() %> | $<%= String.format("%.2f", p.getPrice()) %></div>
+                                  </div>
+                              </a>
+                              <% } } %>
+                          </div>
+                      </div>
+                  </div>
+                  <input type="hidden" name="productId" id="partProductHidden" required>
+                  <input type="hidden" name="productPrice" id="partProductPrice" value="0">
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-secondary small fw-semibold">Cantidad</label>
+                      <input type="number" name="quantity" class="form-control" value="1" min="1" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-secondary small fw-semibold">Costo Mano de Obra ($)</label>
+                      <input type="number" name="laborCost" step="0.01" min="0" class="form-control" value="0" required>
+                  </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label text-secondary small fw-semibold">Motivo / Descripción</label>
+                  <input type="text" name="reason" class="form-control" placeholder="Ej: Cambio de balatas" required>
+              </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-accent rounded-pill fw-bold">Pedir Repuesto</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function openRequestPartModal(jobId) {
+        document.getElementById('partJobId').value = jobId;
+        new bootstrap.Modal(document.getElementById('requestPartModal')).show();
+    }
+    
+    function selectCatalogProduct(id, price, name) {
+        document.getElementById('partProductHidden').value = id;
+        document.getElementById('partProductPrice').value = price;
+        document.getElementById('selectedProductBtn').querySelector('span').innerText = name;
+    }
+
+    function filterCatalog() {
+        var input = document.getElementById("catalogSearch").value.toLowerCase();
+        var items = document.querySelectorAll(".catalog-item");
+        items.forEach(function(item) {
+            var name = item.querySelector(".catalog-item-name").innerText.toLowerCase();
+            if (name.includes(input)) {
+                item.classList.remove("d-none");
+            } else {
+                item.classList.add("d-none");
+            }
+        });
+    }
+</script>
 </body>
 </html>
